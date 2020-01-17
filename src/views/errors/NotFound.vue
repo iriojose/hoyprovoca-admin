@@ -1,11 +1,7 @@
 <template>
-    <v-app-bar
-        app
-        dark
-        color="red"
-    >
-
-    </v-app-bar>
+    <div>
+        no se encontro la ruta especificada
+    </div>
 </template>
 
 <script>
