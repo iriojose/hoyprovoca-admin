@@ -8,14 +8,14 @@
     >
         <v-list dense>
             <v-list-item>
-                <v-list-title>
+                <v-list-item-title>
                     <v-img 
                         width="46" 
                         height="46" 
                         contain 
                         :src="require('@/assets/log2.png')"
                     ></v-img>
-                </v-list-title>
+                </v-list-item-title>
             </v-list-item>
         </v-list>
         <v-divider/>

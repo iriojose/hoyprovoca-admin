@@ -18,11 +18,29 @@ export default new Vuex.Store({
       }else{
         state.barraLateral = false;
       }
-    }
+    },
+
+    SET_LOGIN(state,val){
+      state.logged=true;
+      state.token=val.token;
+    },
+
+    LOGOUT(state){
+      state.logged=false;
+      state.token=null;
+    },
   },
   actions: {
     setBarraLateral({commit},val){
       commit('SET_BARRALATERAL',val);
+    },
+
+    setLogin({commit},val){
+      commit('SET_LOGIN',val);
+    },
+
+    logout({commit}){
+      commit("LOGOUT");
     }
   },
   modules: {

@@ -12,7 +12,7 @@
 <script>
 import AppBar from '@/components/navbar/AppBar';
 import BarraLateral from '@/components/navbar/BarraLateral';
-import Empresa from '@/services/Empresa';
+import Conceptos from '@/services/Conceptos';
 
     export default {
         components:{
@@ -24,11 +24,11 @@ import Empresa from '@/services/Empresa';
         },
         methods: {
             getEmpresas(){
-                Empresa().get("/").then((response) => {
-                    console.log(response.data.data);
+                Conceptos().get("/").then((response) => {
+                    console.log(response);
                 }).catch(e => {
                     console.log(e);
-                });
+                })
             }
         },
     }

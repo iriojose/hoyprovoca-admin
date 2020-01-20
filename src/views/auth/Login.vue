@@ -1,8 +1,18 @@
 <template>
     <div>
-        <v-row justify="center" align="center" class="fill-height mt-12">
-            <v-col cols="12" md="4" sm="10">
-                <FormLogin />
+        <v-row justify="center" align="center" class="fill-height mt-12 px-5">
+            <v-col cols="12" md="4" sm="8">
+                <v-card height="400" width="100%" elevation="15">
+                    <v-card-title>
+                        titulo
+                    </v-card-title>
+
+                    <v-container>
+                        <v-card-text>
+                            <FormLogin />
+                        </v-card-text>
+                    </v-container>
+                </v-card>
             </v-col>
         </v-row>
 
