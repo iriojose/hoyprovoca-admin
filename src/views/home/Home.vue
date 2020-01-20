@@ -2,6 +2,10 @@
     <div>
         <AppBar />
         <BarraLateral />
+
+        <v-container>
+            <router-view/>
+        </v-container>
     </div>
 </template>
 

@@ -2,7 +2,7 @@
     <v-app-bar
         app
         dark
-        color="#8E24AA"
+        color="#005598"
     >
         <v-app-bar-nav-icon v-if="$vuetify.breakpoint.smAndDown" @click="change"></v-app-bar-nav-icon>
 

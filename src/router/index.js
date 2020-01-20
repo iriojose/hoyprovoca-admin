@@ -3,10 +3,16 @@ import VueRouter from "vue-router";
 //import store from '../store';
 
 import Home from "../views/home/Home.vue";
-
 import Login from '../views/auth/Login';
 import NotFound from '../views/errors/NotFound';
 import NotAuthorized from '../views/errors/NotAuthorized';
+import Dashboard from '../views/dashboard/Dashboard';
+import Formularios from '../views/formularios/Formularios';
+import Clientes from '../views/clientes/Clientes';
+import Empresas from '../views/empresas/Empresas';
+import Pedidos from '../views/pedidos/Pedidos';
+import Estadisticas from '../views/estadisticas/Estadisticas';
+import Notificaciones from '../views/notificaciones/Notificaciones';
 
 Vue.use(VueRouter);
 
@@ -17,7 +23,45 @@ const routes = [
     component: Home,
     meta:{
       auth:true
-    }
+    },
+
+    children:[
+      {
+        path:'dashboard',
+        name:'dashboard',
+        component:Dashboard
+      },
+      {
+        path:'formularios',
+        name:'formularios',
+        component:Formularios
+      },
+      {
+        path:'clientes',
+        name:'clientes',
+        component:Clientes
+      },
+      {
+        path:'empresas',
+        name:'empresas',
+        component:Empresas
+      },
+      {
+        path:'pedidos',
+        name:'pedidos',
+        component:Pedidos
+      },
+      {
+        path:'estadisticas',
+        name:'estadisticas',
+        component:Estadisticas
+      },
+      {
+        path:'notificaciones',
+        name:'notificaciones',
+        component:Notificaciones
+      }
+    ]
   },
   {
     path:"/login",
@@ -42,7 +86,7 @@ const routes = [
 const router = new VueRouter({
   routes,
   mode: "history",
-  base: '/a',
+  base: '/',
   linkActiveClass: 'router-link-active', 
   linkExactActiveClass: 'router-link-exact-active', 
   scrollBehavior(to, from, savedPosition){
