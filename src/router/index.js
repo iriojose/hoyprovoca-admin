@@ -100,8 +100,9 @@ const router = new VueRouter({
   fallback: true,
 });
 
+
 /*router.beforeEach((to, from, next) => {
-  let user=store.state.user.logged;
+  let user = store.state.user.logged;
 
   if(to.meta.auth){
     if(user){

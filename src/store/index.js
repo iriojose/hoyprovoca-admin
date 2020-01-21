@@ -8,7 +8,8 @@ export default new Vuex.Store({
     barraLateral:true,
     user:{
       logged:false,
-      token:null
+      token:null,
+      data:null
     }
   },
   mutations: {
@@ -21,13 +22,17 @@ export default new Vuex.Store({
     },
 
     SET_LOGIN(state,val){
-      state.logged=true;
-      state.token=val.token;
+      state.user.logged=true;
+      state.user.token=val.token;
+      state.user.data=val.response.data;
+      window.localStorage.setItem('token',val.token);
     },
 
     LOGOUT(state){
-      state.logged=false;
-      state.token=null;
+      state.user.logged=false;
+      state.user.token=null;
+      state.user.data=null;
+      window.localStorage.setItem('token',null);
     },
   },
   actions: {

@@ -4,7 +4,7 @@
             <v-col cols="12" md="10" sm="12">
                 <v-text-field
                     label="Email"
-                    v-model="data1.usuario"
+                    v-model="data.usuario"
                     :disabled="loading"
                     type="email"
                     clearable
@@ -18,7 +18,7 @@
             </v-col>
             <v-col cols="12" md="10" sm="12">
                 <v-text-field
-                    v-model="data1.password"
+                    v-model="data.password"
                     label="Password"
                     :disabled="loading"
                     counter="true"
@@ -52,16 +52,16 @@
             </v-col>
         </v-row>
 
-        <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#1B5E20'" right>
+        <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
             <div v-if="error">
-                <v-icon>
+                <v-icon dark>
                     cancel
                 </v-icon>
                 {{error}}
             </div>
             <div v-else>
-                <v-icon>
-                    check
+                <v-icon dark>
+                    check_circle
                 </v-icon>
                 Se ha logueado exitosamente.
             </div>
@@ -72,12 +72,13 @@
 <script>
 import validations from '@/validations/validations';
 import Usuario from '@/services/Usuario';
-import {mapState,mapActions} from 'vuex';
+import {mapActions} from 'vuex';
+import router from '@/router';
 
     export default {
         data() {
             return {
-                data1:{
+                data:{
                     usuario: "",
                     password: "",
                 },
@@ -89,26 +90,28 @@ import {mapState,mapActions} from 'vuex';
                 ...validations,
             }
         },
-        computed: {
-            ...mapState(['user'])
-        },
         methods: {
             ...mapActions(['setLogin']),
 
             login(){
                 this.loading=true;
-                let data = {
-                    usuario:this.data1.usuario,
-                    password:this.data1.password,
-                }
-                Usuario().post("/login",{data}).then((response) => {
-                    console.log(response);
+                Usuario().post("/login",{data:this.data}).then((response) => {
                     this.snackbar=true;
-                    this.loading=false;
+
+                    if(response == undefined){
+                        this.error="Usuario y/o contraseña incorrecta.";
+                    }else{
+                        this.setLogin(response.data);
+                        setTimeout(() => {
+                            this.error=null;
+                            this.loading=false;
+                            router.push('/');
+                        },2000);
+                    }
                 }).catch(e => {
                     this.snackbar=true;
                     this.loading=false;
-                    this.error="Ocurrio un error";
+                    this.error="Usuario y/o contraseña incorrecta.";
                     console.log(e);
                 });
             }

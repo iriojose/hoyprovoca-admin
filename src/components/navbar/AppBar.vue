@@ -15,14 +15,14 @@
         <v-menu offset-y open-on-hover>
             <template v-slot:activator="{ on }">
                 <v-btn text depressed class="white--text caption" v-on="on">
-                    iriojgomezv@gmail.com
+                    jose
                     <v-icon dark class="mx-2">
                         arrow_right
                     </v-icon>
                 </v-btn>
             </template>
             <v-list dense>
-                <v-list-item @click="logout">
+                <v-list-item @click="log">
                     <v-list-item-content>Logout</v-list-item-content>
                 </v-list-item>
             </v-list>
@@ -32,12 +32,15 @@
 
 <script>
 import {mapState, mapActions} from 'vuex';
+import router from '@/router';
 
     export default {
         methods: {
-            ...mapActions(['setBarraLateral']),
+            ...mapActions(['setBarraLateral','logout']),
 
-            logout(){
+            log(){
+                this.logout();
+                router.push("/login");
             },
 
             change(){
@@ -49,11 +52,7 @@ import {mapState, mapActions} from 'vuex';
             }
         },
         computed: {
-            ...mapState(['barraLateral'])
+            ...mapState(['barraLateral','user']),
         },
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
