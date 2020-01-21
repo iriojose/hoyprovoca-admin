@@ -5,7 +5,9 @@ import store from "./store";
 import vuetify from './plugins/vuetify';
 import "@mdi/font/css/materialdesignicons.css";
 import Usuario from '@/services/Usuario';
+import Croppa from 'vue-croppa'
 
+Vue.use(Croppa);
 Vue.config.productionTip = false;
 
 let token = window.localStorage.getItem('token');

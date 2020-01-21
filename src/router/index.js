@@ -7,7 +7,7 @@ import Login from '../views/auth/Login';
 import NotFound from '../views/errors/NotFound';
 import NotAuthorized from '../views/errors/NotAuthorized';
 import Dashboard from '../views/dashboard/Dashboard';
-import Formularios from '../views/formularios/Formularios';
+import Inventario from '../views/inventario/Inventario';
 import Clientes from '../views/clientes/Clientes';
 import Empresas from '../views/empresas/Empresas';
 import Pedidos from '../views/pedidos/Pedidos';
@@ -32,9 +32,9 @@ const routes = [
         component:Dashboard
       },
       {
-        path:'formularios',
-        name:'formularios',
-        component:Formularios
+        path:'inventario',
+        name:'Inventario',
+        component:Inventario
       },
       {
         path:'clientes',

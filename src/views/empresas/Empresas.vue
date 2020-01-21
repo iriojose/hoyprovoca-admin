@@ -40,6 +40,24 @@
                 </v-data-table>
             </v-card-text>
         </v-card>
+
+        <v-dialog v-model="dialog" transition="dialog-bottom-transition" fullscreen>
+            <v-card width="100%" height="100%">
+                <v-card-title class="color">
+                    <v-btn icon @click="dialog=false">
+                        <v-icon color="#005598" x-large>
+                            keyboard_arrow_left
+                        </v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <div class="font-weight-bold title">
+                        Pedidos
+                    </div>
+                    <v-spacer></v-spacer>
+                </v-card-title>
+                <v-divider></v-divider>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -49,6 +67,7 @@ import Empresa from '@/services/Empresa';
     export default {
         data(){
             return {    
+                dialog:false,
                 empresas:[],
                 pedidos:[],
                 conceptos:[],
@@ -94,18 +113,24 @@ import Empresa from '@/services/Empresa';
                 });
             },
             callPedidos(item){
+                this.dialog = true;
                 this.getEmpresaPedidos(item.id);
             },
             callConceptos(item){
+                this.dialog = true;
                 this.getEmpresasConceptos(item.id);
             }
         },
     }
 </script>
 
-<style>
+<style scope>
     .v-sheet--offset {
         top: -30px;
         position: relative;
+    }
+
+    .color{
+        background-color: #f5f5f5;
     }
 </style>

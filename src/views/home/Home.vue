@@ -3,9 +3,9 @@
         <AppBar />
         <BarraLateral />
 
-        <v-container>
+        <v-content class="mr-4">
             <router-view/>
-        </v-container>
+        </v-content>
     </div>
 </template>
 

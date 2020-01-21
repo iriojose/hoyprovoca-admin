@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     barraLateral:true,
+    dialogEmpresa:false,
     user:{
       logged:false,
       token:null,
@@ -18,6 +19,14 @@ export default new Vuex.Store({
         state.barraLateral = true;
       }else{
         state.barraLateral = false;
+      }
+    },
+
+    SET_DIALOGEMPRESA(state,val){
+      if(val){
+        state.dialogEmpresa = true;
+      }else{
+        state.dialogEmpresa = false;
       }
     },
 
@@ -38,6 +47,10 @@ export default new Vuex.Store({
   actions: {
     setBarraLateral({commit},val){
       commit('SET_BARRALATERAL',val);
+    },
+
+    setDialogEmpresa({commit},val){
+      commit('SET_DIALOGEMPRESA',val);
     },
 
     setLogin({commit},val){

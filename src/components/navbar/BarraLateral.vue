@@ -42,7 +42,7 @@ import {mapState, mapActions} from 'vuex';
             return{
                 items:[
                     {icon:"dashboard",text:"Principal",path:"/dashboard"},
-                    {icon:"assignment",text:"Formularios",path:"/formularios"},
+                    {icon:"assignment",text:"Inventario",path:"/Inventario"},
                     {icon:"supervisor_account",text:"Clientes",path:"/clientes"},
                     {icon:"business",text:"Empresas",path:"/empresas"},
                     {icon:"shopping_basket",text:"Pedidos",path:"/pedidos"},
