@@ -17,6 +17,15 @@
                         </v-avatar>
                     </v-hover>
                 </v-col>
+                <v-col cols="12" md="3" sm="12">
+                    <v-select
+                        :items="grupos"
+                        label="Grupos"
+                        outlined
+                        dense
+                        color="#005598"
+                    ></v-select>
+                </v-col>
             </v-row>
         </v-container>
 
@@ -135,6 +144,8 @@ import validations from '@/validations/validations';
             getGrupos(){
                 Grupos().get("/").then((response) => {
                     this.grupos=response.data.data;
+                    console.log(this.grupos);
+                    this.refactorVariable();
                 }).catch(e => {
                     console.log(e);
                 });
@@ -156,6 +167,11 @@ import validations from '@/validations/validations';
                     this.snackbar=true;
                     this.error="Ocurrio un error.";
                 });
+            },
+
+            refactorVariable(){
+                const bad = this.grupos.filter(value => value.text=value.nombre);
+                console.log(bad);
             },
 
             //EVENTOS DEL VUE CROPPA

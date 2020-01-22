@@ -15,13 +15,15 @@
             </v-row>
         </v-card>
 
-        <v-dialog v-model="dialog" fullscreen>
+        <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition">
             <v-card-title class="color">
                <v-btn icon @click="dialog = false">
                     <v-icon color="#005598" x-large>
                         keyboard_arrow_left
                     </v-icon>
                 </v-btn>
+                <v-spacer></v-spacer>
+                    
                 <v-spacer></v-spacer>
             </v-card-title>
             <v-card>
