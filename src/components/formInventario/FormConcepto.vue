@@ -3,19 +3,17 @@
         <v-container>
             <v-row>
                 <v-col cols="12" md="3" sm="12">
-                    <v-hover v-slot:default="{hover}">
-                        <v-avatar size="150" class="elevatio-5">
-                            <v-img :src="imagen" :class="hover ? 'elevation-10':'elevation-2'">
-                                <v-row class="fill-height" align="center" justify="center">
-                                    <template v-if="hover">
-                                        <v-btn fab color="blue darken-5" @click="modal= !modal" elevation="3">
-                                            <v-icon color="#fff">add_circle</v-icon>
-                                        </v-btn>
-                                    </template>
-                                </v-row>
-                            </v-img>
-                        </v-avatar>
-                    </v-hover>
+                    <v-file-input
+                        :rules="rules"
+                        accept="image/png, image/jpeg, image/bmp"
+                        placeholder="Seleccionar imagen"
+                        prepend-icon="mdi-camera"
+                        label="Imagen Concepto"
+                        dense
+                        @change="procesoImg($event)"
+                        color="#005598"
+                        v-model="imagen"
+                    ></v-file-input>
                 </v-col>
                 <v-col cols="12" md="3" sm="12">
                     <v-select
@@ -27,6 +25,7 @@
                         hide-selected
                         hide-details
                         color="#005598"
+                        :rules="[required('Grupo')]"
                         @change="refactorSubgrupo($event)"
                     ></v-select>
                 </v-col>
@@ -40,91 +39,54 @@
                         dense
                         hide-details
                         :disabled="selectGrupo==''"
+                        :rules="[required('SubGrupo')]"
                         color="#005598"
                     ></v-select>
                 </v-col>
                 <v-col cols="12" md="3" sm="12">
                     <v-select
-                        v-model="empresa_id"
                         :items="empresas"
                         label="Empresas"
                         outlined
+                        dense
                         hide-selected
                         hide-details
-                        dense
                         color="#005598"
+                        :rules="[required('Empresa')]"
                     ></v-select>
+                </v-col>
+                <v-col cols="12" md="12" sm="12" justify-self="center" align-self="center" class="fill-height">
+                    <v-img width="500" height="200" contain v-if="showImage" :src="showImage" />
+                </v-col>
+                <v-col cols="12" md="2" sm="2" :offset="$vuetify.breakpoint.smAndDown ? 0:8">
+                    <v-btn 
+                        color="#005598" 
+                        width="100%" 
+                        :dark="valid" 
+                        :disabled="!valid" 
+                        class="white--text caption"
+                        @click="postConceptos"
+                    >
+                        Enviar
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-container>
 
-        <v-dialog v-model="modal" width="400" close-delay>
-            <v-card>
-                <v-card-title class="headline grey lighten-4">
-                    Editar foto  <v-spacer />
-                    <v-btn icon color="#005598" text @click="modal = !modal">
-                        <v-icon>close</v-icon>
-                    </v-btn>
-                </v-card-title>
-                <v-divider/>
-
-                <v-card-text class="mt-5">     
-                    <v-row>
-                        <v-col cols="12" md="8" sm="12" :offset="$vuetify.breakpoint.smAndDown ? null:2">
-                            <!-- plugins para recortar la imagen -->
-                            <croppa 
-                                v-model="myCroppa"
-                                :width="250"
-                                :height="250"
-                                :canvas-color="'#eee'"
-                                prevent-white-space
-                                :placeholder="'Selecciona una imagen'"
-                                :placeholder-font-size="20"
-                                @new-image-drawn="onNewImage()"
-                                @zoom="onZoom()"
-                                @init="onInit()"
-                                initial-image="https://zhanziyang.github.io/vue-croppa/static/500.jpeg"
-                            ></croppa>
-                        </v-col>
-                        <v-col cols="12" md="8" sm="12" :offset="$vuetify.breakpoint.smAndDown ? null:2">
-                            <!-- slider para hacer zoom -->
-                            <v-slider
-                                track-color="#eee"
-                                class="mt-8"
-                                id="#slider"
-                                v-model="sliderVal"
-                                append-icon="panorama"
-                                prepend-icon="photo"
-                                thumb-label
-                                color="teal"
-                                @input="onSliderChange($event)"
-                                :min="sliderMin" 
-                                :max="sliderMax" 
-                                step="0.001" 
-                            ></v-slider>
-                        </v-col>
-                    </v-row>
-                </v-card-text>
-
-                <v-card-actions class="mx-5">
-                    <v-spacer/>
-                    <v-btn text @click="modal = !modal" elevation="0" class="blue--text">
-                        Cancelar
-                    </v-btn>
-                    <v-hover v-slot:default="{hover}">
-                        <v-btn 
-                            :color="hover ? '#005598':'#005598'" 
-                            :elevation="hover ? '5':'1'" 
-                            dark 
-                            class="px-4"
-                            @click="editImage()"
-                        >
-                            Guardar
-                        </v-btn>
-                    </v-hover>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+        <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
+            <div v-if="error">
+                <v-icon dark>
+                    cancel
+                </v-icon>
+                {{error}}
+            </div>
+            <div v-else>
+                <v-icon dark>
+                    check_circle
+                </v-icon>
+                Se ha logueado exitosamente.
+            </div>
+        </v-snackbar>
     </v-form>
 </template>
 
@@ -138,6 +100,8 @@ import validations from '@/validations/validations';
     export default {
         data() {
             return {
+                imagen:null,
+                showImage:null,
                 selectGrupo:'',
                 selectSubgrupo:'',
                 selectesSubgrupos:[],
@@ -148,18 +112,15 @@ import validations from '@/validations/validations';
                 subgrupos:[],
                 empresas:[],
                 ...validations,
+                rules: [
+                    value => !value || value.size < 2000000 || 'Debe pesar menos de 2 MB!',
+                ],
                 data:{
-                    empresa_id:5,
+                    empresa_id:null,
                     subgrupos_id:1,
                     grupos_id:1,
                 },
-
-                modal:false,
-                imagen: "https://us.123rf.com/450wm/thesomeday123/thesomeday1231712/thesomeday123171200009/91087331-icono-de-perfil-de-avatar-predeterminado-para-hombre-marcador-de-posici%C3%B3n-de-foto-gris-vector-de-ilustr.jpg?ver=6",
-                myCroppa:{},
-                sliderVal:0,
-                sliderMin:0,
-                sliderMax:0,
+                
             }
         },
         mounted() {
@@ -171,7 +132,7 @@ import validations from '@/validations/validations';
             getEmpresa(){
                 Empresa().get("/").then((response) => {
                     this.empresas=response.data.data;
-                    this.empresas = this.refactorVariable(this.empresas);
+                    this.empresas=this.refactorVariableEmpresa(this.empresas);
                 }).catch(e => {
                     console.log(e);
                 }); 
@@ -180,7 +141,6 @@ import validations from '@/validations/validations';
                 Grupos().get("/").then((response) => {
                     this.grupos=response.data.data;
                     this.grupos=this.refactorVariable(this.grupos);
-                    console.log(this.grupos);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -189,7 +149,6 @@ import validations from '@/validations/validations';
                 SubGrupos().get("/").then((response) => {
                     this.subgrupos=response.data.data;
                     this.subgrupos=this.refactorVariable(this.subgrupos);
-                    console.log(this.subgrupos);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -206,6 +165,10 @@ import validations from '@/validations/validations';
                 });
             },
             
+            refactorVariableEmpresa(array){//crea una propiedad text para que se pueda leer en los select
+                array.filter(value => value.text=value.nombre_comercial);
+                return array;
+            },
             refactorVariable(array){//crea una propiedad text para que se pueda leer en los select
                 array.filter(value => value.text=value.nombre);
                 return array;
@@ -215,39 +178,15 @@ import validations from '@/validations/validations';
                 let id = this.grupos.filter(a => a.nombre == evt);
                 this.selectesSubgrupos = this.subgrupos.filter(a => a.grupos_id == id[0].id);
             },
-
-            //EVENTOS DEL VUE CROPPA
-            onNewImage() {
-                this.sliderVal = this.myCroppa.scaleRatio;
-                this.sliderMin = this.myCroppa.scaleRatio / 2;
-                this.sliderMax = this.myCroppa.scaleRatio * 2;
-            },
-            //al mover el slide se desencadena este evento
-            onSliderChange(evt) {
-                var increment = evt;
-                this.myCroppa.scaleRatio = + increment;
-            },
-            //zoom a la imagen
-            onZoom() {
-                this.sliderVal = this.myCroppa.scaleRatio;
-            },
-            //le pone el fondo circular
-            onInit() {
-                this.myCroppa.addClipPlugin(function (ctx, x, y, w, h) {
-                    ctx.beginPath()
-                    ctx.arc(x + w / 2, y + h / 2, w / 2, 0, 2 * Math.PI, true)
-                    ctx.closePath()
-                });
-            },
-            //edita la imagen
-            editImage(){
-                let url = this.myCroppa.generateDataUrl();
-                if(!url){//requiere una imagen
-                    alert('No imagen');
-                    return;
-                }else{
-                    this.imagen=url;
-                    this.modal=false;
+            procesoImg(evt){
+                this.showImage=null;
+                if(evt){
+                    var reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.showImage = e.target.result;
+                        this.imagen = evt;
+                    }
+                    reader.readAsDataURL(evt);
                 }
             },
         },

@@ -23,13 +23,17 @@
                     </v-icon>
                 </v-btn>
                 <v-spacer></v-spacer>
-                    
+                    <div class="title font-weight-bold" v-show="opc==1">Crear Grupo</div>
+                    <div class="title font-weight-bold" v-show="opc==2">Crear SubGrupo</div>
+                    <div class="title font-weight-bold" v-show="opc==3">Crear Concepto</div>
+                    <div class="title font-weight-bold" v-show="opc==4">Actualizar Existencias</div>
                 <v-spacer></v-spacer>
             </v-card-title>
             <v-card>
                 <FormGrupo v-if="opc==1"/>
-                <!-- <FormSubGrupo v-else-if="opc==2"/> -->
+                <FormSubGrupo v-else-if="opc==2"/>
                 <FormConcepto v-else-if="opc==3"/>
+                <FormExistencia v-else-if="opc==4"/>
             </v-card>
         </v-dialog>
     </div>
@@ -37,14 +41,16 @@
 
 <script>
 import FormGrupo from '@/components/formInventario/FormGrupo';
-//import FormSubGrupo from '@/components/formInventario/FormSubGrupo';
+import FormSubGrupo from '@/components/formInventario/FormSubGrupo';
 import FormConcepto from '@/components/formInventario/FormConcepto';
+import FormExistencia from '@/components/formInventario/FormExistencia';
 
     export default {
         components:{
             FormGrupo,
-            //FormSubGrupo,
-            FormConcepto
+            FormSubGrupo,
+            FormConcepto,
+            FormExistencia
         },
         data() {
             return {
@@ -61,7 +67,6 @@ import FormConcepto from '@/components/formInventario/FormConcepto';
         methods: {
             openDialog(opc){
                 this.opc=opc;
-                console.log(opc);
                 this.dialog=true;
             }
         },
