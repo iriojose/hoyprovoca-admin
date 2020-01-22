@@ -19,9 +19,38 @@
                 </v-col>
                 <v-col cols="12" md="3" sm="12">
                     <v-select
+                        v-model="selectGrupo"
                         :items="grupos"
                         label="Grupos"
                         outlined
+                        dense
+                        hide-selected
+                        hide-details
+                        color="#005598"
+                        @change="refactorSubgrupo($event)"
+                    ></v-select>
+                </v-col>
+                <v-col cols="12" md="3" sm="12">
+                    <v-select
+                        v-model="selectSubgrupo"
+                        :items="selectesSubgrupos"
+                        label="SubGrupos"
+                        outlined
+                        hide-selected
+                        dense
+                        hide-details
+                        :disabled="selectGrupo==''"
+                        color="#005598"
+                    ></v-select>
+                </v-col>
+                <v-col cols="12" md="3" sm="12">
+                    <v-select
+                        v-model="empresa_id"
+                        :items="empresas"
+                        label="Empresas"
+                        outlined
+                        hide-selected
+                        hide-details
                         dense
                         color="#005598"
                     ></v-select>
@@ -109,6 +138,9 @@ import validations from '@/validations/validations';
     export default {
         data() {
             return {
+                selectGrupo:'',
+                selectSubgrupo:'',
+                selectesSubgrupos:[],
                 valid:false,
                 snackbar:false,
                 error:null,
@@ -117,7 +149,9 @@ import validations from '@/validations/validations';
                 empresas:[],
                 ...validations,
                 data:{
-
+                    empresa_id:5,
+                    subgrupos_id:1,
+                    grupos_id:1,
                 },
 
                 modal:false,
@@ -136,7 +170,8 @@ import validations from '@/validations/validations';
         methods: {
             getEmpresa(){
                 Empresa().get("/").then((response) => {
-                    this.empresa=response.data.data;
+                    this.empresas=response.data.data;
+                    this.empresas = this.refactorVariable(this.empresas);
                 }).catch(e => {
                     console.log(e);
                 }); 
@@ -144,8 +179,8 @@ import validations from '@/validations/validations';
             getGrupos(){
                 Grupos().get("/").then((response) => {
                     this.grupos=response.data.data;
+                    this.grupos=this.refactorVariable(this.grupos);
                     console.log(this.grupos);
-                    this.refactorVariable();
                 }).catch(e => {
                     console.log(e);
                 });
@@ -153,6 +188,8 @@ import validations from '@/validations/validations';
             getSubGrupos(){
                 SubGrupos().get("/").then((response) => {
                     this.subgrupos=response.data.data;
+                    this.subgrupos=this.refactorVariable(this.subgrupos);
+                    console.log(this.subgrupos);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -168,10 +205,15 @@ import validations from '@/validations/validations';
                     this.error="Ocurrio un error.";
                 });
             },
-
-            refactorVariable(){
-                const bad = this.grupos.filter(value => value.text=value.nombre);
-                console.log(bad);
+            
+            refactorVariable(array){//crea una propiedad text para que se pueda leer en los select
+                array.filter(value => value.text=value.nombre);
+                return array;
+            },
+            refactorSubgrupo(evt){//agrupa los subgrupos que pertenecen a un grupo
+                this.selectGrupo=evt;
+                let id = this.grupos.filter(a => a.nombre == evt);
+                this.selectesSubgrupos = this.subgrupos.filter(a => a.grupos_id == id[0].id);
             },
 
             //EVENTOS DEL VUE CROPPA
