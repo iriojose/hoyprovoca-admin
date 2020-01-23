@@ -1,5 +1,5 @@
 let required = (properType) => {
-    return v => v && v.length > 0 || `debe ingresar un ${properType}`
+    return v => v && v.length > 0 || `Debe ingresar un ${properType}`
 }
 
 let minLength = (properType,minLength) => {
@@ -14,7 +14,7 @@ let emailFormat = () => {
     // eslint-disable-next-line
     let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/ 
 
-    return v => v && regex.test(v) || `debe ingresar un email válido`;
+    return v => v && regex.test(v) || `Debe ingresar un email válido`;
 }
 
 let number = (properType) => {
@@ -25,6 +25,13 @@ let number = (properType) => {
 let cedula = (properType) => {
     let regex = /^[V|E|J|P][0-9]{5,9}$/ 
     return v => v && regex.test(v) || `${properType} incorrecta`
+}
+
+let urlFormat = () => {
+    // eslint-disable-next-line
+    let regex = /^(http|https)\:\/\/[a-z0-9\.-]+\.[a-z]{2,4}/gi;
+
+    return v => v && regex.test(v) || `Debe ser una URL valida`;
 }
 
 //incompleto, falta expresion regular para los 4 primeros numeros del telefono
@@ -38,6 +45,7 @@ export default{
     minLength,
     maxLength,
     emailFormat,
+    urlFormat,
     number,
     cedula
 }

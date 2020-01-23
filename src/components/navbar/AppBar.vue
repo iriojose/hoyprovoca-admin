@@ -15,7 +15,7 @@
         <v-menu offset-y open-on-hover v-if="usuario !== null">
             <template v-slot:activator="{ on }">
                 <v-btn text depressed class="white--text caption" v-on="on">
-                    <div>{{usuario.nombre}}</div>
+                    <div class="text-capitalize">{{usuario.nombre}}</div>
                     <v-icon dark class="mx-2">
                         arrow_right
                     </v-icon>

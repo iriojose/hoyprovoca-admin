@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card width="100%" height="500" class="px-4 py-2">
+        <v-card width="100%" class="px-4 py-2">
             <v-row>
                 <v-col cols="12" sm="12" lg="4" md="6" v-for="(opcion,i) in opciones" :key="i" @click="openDialog(i+1)">
                    <v-tooltip right>
@@ -27,6 +27,7 @@
                     <div class="title font-weight-bold" v-show="opc==2">Crear SubGrupo</div>
                     <div class="title font-weight-bold" v-show="opc==3">Crear Concepto</div>
                     <div class="title font-weight-bold" v-show="opc==4">Actualizar Existencias</div>
+                    <div class="title font-weight-bold" v-show="opc==5">Crear Empresa</div>
                 <v-spacer></v-spacer>
             </v-card-title>
             <v-card>
@@ -34,6 +35,7 @@
                 <FormSubGrupo v-else-if="opc==2"/>
                 <FormConcepto v-else-if="opc==3"/>
                 <FormExistencia v-else-if="opc==4"/>
+                <FormEmpresa v-else-if="opc==5"/>
             </v-card>
         </v-dialog>
     </div>
@@ -44,13 +46,15 @@ import FormGrupo from '@/components/formInventario/FormGrupo';
 import FormSubGrupo from '@/components/formInventario/FormSubGrupo';
 import FormConcepto from '@/components/formInventario/FormConcepto';
 import FormExistencia from '@/components/formInventario/FormExistencia';
+import FormEmpresa from '@/components/formInventario/FormEmpresa';
 
     export default {
         components:{
             FormGrupo,
             FormSubGrupo,
             FormConcepto,
-            FormExistencia
+            FormExistencia,
+            FormEmpresa
         },
         data() {
             return {
@@ -61,6 +65,7 @@ import FormExistencia from '@/components/formInventario/FormExistencia';
                     {text:'Crear Subgrupo',icon:'subgrupos',color:''},
                     {text:'Agregar conceptos',icon:'conceptos',color:''},
                     {text:'Manejo de Existencias',icon:'existencias',color:''},
+                    {text:'Crear Empresa',icon:'empresa',color:''}
                 ]
             }
         },
