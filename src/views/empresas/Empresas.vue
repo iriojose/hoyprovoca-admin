@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="mt-12">
+        <v-card class="mt-5">
             <v-sheet
                 class="v-sheet--offset mx-auto title text-center white--text py-5"
                 dark

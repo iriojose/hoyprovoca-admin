@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card width="100%" height="500" class="pa-4">
+        <v-card width="100%" height="500" class="px-4 py-2">
             <v-row>
                 <v-col cols="12" sm="12" lg="4" md="6" v-for="(opcion,i) in opciones" :key="i" @click="openDialog(i+1)">
                    <v-tooltip right>

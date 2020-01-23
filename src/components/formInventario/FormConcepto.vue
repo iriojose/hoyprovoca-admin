@@ -1,77 +1,105 @@
 <template>
     <v-form v-model="valid" @submit.prevent="">
-        <v-container>
-            <v-row>
-                <v-col cols="12" md="3" sm="12">
-                    <v-file-input
-                        :rules="rules"
-                        accept="image/png, image/jpeg, image/bmp"
-                        placeholder="Seleccionar imagen"
-                        prepend-icon="mdi-camera"
-                        label="Imagen Concepto"
-                        dense
-                        @change="procesoImg($event)"
-                        color="#005598"
-                        v-model="imagen"
-                    ></v-file-input>
-                </v-col>
-                <v-col cols="12" md="3" sm="12">
-                    <v-select
-                        v-model="selectGrupo"
-                        :items="grupos"
-                        label="Grupos"
-                        outlined
-                        dense
-                        hide-selected
-                        hide-details
-                        color="#005598"
-                        :rules="[required('Grupo')]"
-                        @change="refactorSubgrupo($event)"
-                    ></v-select>
-                </v-col>
-                <v-col cols="12" md="3" sm="12">
-                    <v-select
-                        v-model="selectSubgrupo"
-                        :items="selectesSubgrupos"
-                        label="SubGrupos"
-                        outlined
-                        hide-selected
-                        dense
-                        hide-details
-                        :disabled="selectGrupo==''"
-                        :rules="[required('SubGrupo')]"
-                        color="#005598"
-                    ></v-select>
-                </v-col>
-                <v-col cols="12" md="3" sm="12">
-                    <v-select
-                        :items="empresas"
-                        label="Empresas"
-                        outlined
-                        dense
-                        hide-selected
-                        hide-details
-                        color="#005598"
-                        :rules="[required('Empresa')]"
-                    ></v-select>
-                </v-col>
-                <v-col cols="12" md="12" sm="12" justify-self="center" align-self="center" class="fill-height">
-                    <v-img width="500" height="200" contain v-if="showImage" :src="showImage" />
-                </v-col>
-                <v-col cols="12" md="2" sm="2" :offset="$vuetify.breakpoint.smAndDown ? 0:8">
-                    <v-btn 
-                        color="#005598" 
-                        width="100%" 
-                        :dark="valid" 
-                        :disabled="!valid" 
-                        class="white--text caption"
-                        @click="postConceptos"
-                    >
-                        Enviar
-                    </v-btn>
-                </v-col>
-            </v-row>
-        </v-container>
+        <v-row>
+            <v-col cols="12" md="4" sm="12" class="px-8">
+                <v-row justify="center" align="center">
+                    <v-col cols="12" md="12" sm="12">
+                        <v-card width="100%" height="220" class="pa-2">
+                            <v-img height="200" contain v-if="showImage" :src="showImage" />
+                        </v-card>
+                    </v-col>
+                    <v-col cols="12" md="12" sm="12">
+                        <v-file-input
+                            :rules="rules"
+                            accept="image/png, image/jpeg, image/bmp"
+                            placeholder="Seleccionar imagen"
+                            prepend-icon="mdi-camera"
+                            label="Imagen Concepto"
+                            dense
+                            @change="procesoImg($event)"
+                            color="#005598"
+                            v-model="imagen"
+                        ></v-file-input>
+                    </v-col>
+                    <v-col cols="12" md="12" sm="12">
+                        <v-select
+                            v-model="selectGrupo"
+                            :items="grupos"
+                            label="Grupos"
+                            outlined
+                            dense
+                            hide-selected
+                            hide-details
+                            color="#005598"
+                            :rules="[required('Grupo')]"
+                            @change="refactorSubgrupo($event)"
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="12" md="12" sm="12">
+                        <v-select
+                            v-model="selectSubgrupo"
+                            :items="selectesSubgrupos"
+                            label="SubGrupos"
+                            outlined
+                            hide-selected
+                            dense
+                            hide-details
+                            :disabled="selectGrupo==''"
+                            :rules="[required('SubGrupo')]"
+                            color="#005598"
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="12" md="12" sm="12">
+                        <v-select
+                            :items="empresas"
+                            label="Empresas"
+                            outlined
+                            dense
+                            hide-selected
+                            hide-details
+                            color="#005598"
+                            :rules="[required('Empresa')]"
+                        ></v-select>
+                    </v-col>
+                </v-row>
+            </v-col>
+            <v-col cols="12" md="8" sm="12">
+                <v-row>
+                    <v-col cols="12" md="4" sm="12">
+                        <v-text-field
+                            type="text"
+                            dense
+                            outlined
+                            color="#005598"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="8" sm="12">
+                        <v-container fluid>
+                            <v-textarea
+                                clearable
+                                filled
+                                color="#005598"
+                                hide-details
+                                clear-icon="cancel"
+                                label="Descripción"
+                            ></v-textarea>
+                        </v-container>
+                    </v-col>
+                    <v-col class="px-2" cols="12" md="2" sm="2" :offset="$vuetify.breakpoint.smAndDown ? 0:8">
+                        <v-btn 
+                            color="#005598" 
+                            width="100%" 
+                            :dark="valid" 
+                            :disabled="!valid" 
+                            class="white--text caption"
+                            @click="postConceptos"
+                        >
+                            Enviar
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
 
         <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
             <div v-if="error">
