@@ -1,147 +1,203 @@
 <template>
     <v-form v-model="valid" @submit.prevent="">
-        <v-row>
-            <v-col cols="12" md="3" sm="12" class="px-8">
-                <v-row justify="center" align="center">
-                    <v-col cols="12" md="12" sm="12">
-                        <v-card width="100%" height="220" class="pa-2">
-                            <v-img height="200" contain v-if="showImage" :src="showImage" />
-                        </v-card>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="12">
-                        <v-file-input
-                            :rules="rules"
-                            accept="image/png, image/jpeg, image/bmp"
-                            placeholder="Seleccionar imagen"
-                            prepend-icon="mdi-camera"
-                            label="Imagen Concepto"
-                            dense
-                            @change="procesoImg($event)"
-                            color="#005598"
-                            v-model="imagen"
-                        ></v-file-input>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="12">
-                        <v-select
-                            :items="grupos"
-                            label="Grupos"
-                            outlined
-                            dense
-                            hide-selected
-                            hide-details
-                            color="#005598"
-                            :rules="[required('Grupo')]"
-                            @change="refactorSubgrupo($event)"
-                        ></v-select>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="12">
-                        <v-select
-                            :items="selectesSubgrupos"
-                            label="SubGrupos"
-                            outlined
-                            hide-selected
-                            dense
-                            hide-details
-                            :disabled="selectGrupo==''"
-                            :rules="[required('SubGrupo')]"
-                            color="#005598"
-                            @change="changeSubGrupo($event)"
-                        ></v-select>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="12">
-                        <v-select
-                            :items="empresas"
-                            label="Empresas"
-                            outlined
-                            dense
-                            hide-selected
-                            hide-details
-                            color="#005598"
-                            @change="changeEmpresa($event)"
-                            :rules="[required('Empresa')]"
-                        ></v-select>
-                    </v-col>
-                    <v-col cols="12" md="12" sm="12">
-                        <v-select
-                            :items="tipos"
-                            label="Tipo de concepto"
-                            outlined
-                            dense
-                            hide-selected
-                            hide-details
-                            color="#005598"
-                            @change="changeTipo($event)"
-                            :rules="[required('tipo de concepto')]"
-                        ></v-select>
-                    </v-col>
-                </v-row>
-            </v-col>
+        <div class="pa-3">
+            <v-btn 
+                :loading="loading"
+                color="#005598" 
+                :dark="valid" 
+                :disabled="!valid" 
+                class="white--text caption mx-10"
+                @click="postConceptos"
+            >
+                Guardar
+            </v-btn>
 
-            <v-col cols="12" md="8" sm="12">
-                <v-row>
-                    <v-col cols="12" md="4" sm="10">
-                        <v-text-field
-                            v-model="data.nombre"
-                            type="text"
-                            label="Nombre"
-                            :rules="[required('Nombre')]"
-                            dense
-                            outlined
-                            color="#005598"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4" sm="10">
-                        <v-text-field
-                            v-model="data.codigo"
-                            type="text"
-                            label="Codigo"
-                            :rules="[required('Codigo')]"
-                            dense
-                            outlined
-                            color="#005598"
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4" sm="10">
-                        <v-text-field
-                            v-model="data.referencia"
-                            type="text"
-                            label="Referencia"
-                            :rules="[required('Referencia')]"
-                            dense
-                            outlined
-                            color="#005598"
-                        ></v-text-field>
-                    </v-col>
-                    
-                    <v-col cols="12" md="8" sm="12" :offset="$vuetify.breakpoint.smAndDown ? null:2">
-                        <v-container fluid>
-                            <v-textarea
-                                clearable
-                                filled
-                                color="#005598"
-                                hide-details
-                                clear-icon="cancel"
-                                label="Descripción"
-                                v-model="data.descripcion"
-                            ></v-textarea>
-                        </v-container>
-                    </v-col>
-                    <v-col class="px-2" cols="12" md="2" sm="2" :offset="$vuetify.breakpoint.smAndDown ? 0:8">
-                        <v-btn 
-                            :loading="loading"
-                            color="#005598" 
-                            width="100%" 
-                            :dark="valid" 
-                            :disabled="!valid" 
-                            class="white--text caption"
-                            @click="postConceptos"
-                        >
-                            Enviar
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-col>
-        </v-row>
+            <v-stepper v-model="step" class="elevation-0">
+                <v-stepper-header class="elevation-0">
+                    <v-stepper-step editable step="1" color="#005598">Descripcion</v-stepper-step>
+                    <v-divider></v-divider>
+                    <v-stepper-step editable step="2" color="#005598">Costos</v-stepper-step>
+                    <v-divider></v-divider>
+                    <v-stepper-step editable step="3" color="#005598">Existencias</v-stepper-step>
+                </v-stepper-header>
+
+                <v-stepper-items>
+                    <v-stepper-content step="1">
+                        <v-row>
+                            <v-col cols="12" md="4" sm="12" class="px-8">
+                                <v-row justify="center" align="center">
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-card width="100%" height="220" class="pa-2">
+                                            <v-img height="200" contain v-if="showImage" :src="showImage" />
+                                        </v-card>
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-file-input
+                                            :rules="rules"
+                                            accept="image/png, image/jpeg"
+                                            placeholder="Seleccionar imagen"
+                                            prepend-icon="mdi-camera"
+                                            label="Imagen Concepto"
+                                            dense
+                                            @change="procesoImg($event)"
+                                            color="#005598"
+                                            v-model="imagen"
+                                        ></v-file-input>
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-select
+                                            :items="tipos"
+                                            label="Tipo de concepto"
+                                            outlined
+                                            dense
+                                            hide-selected
+                                            hide-details
+                                            color="#005598"
+                                            @change="changeTipo($event)"
+                                            :rules="[required('tipo de concepto')]"
+                                        ></v-select>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="12" md="8" sm="10">
+                                <v-row>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-text-field
+                                            v-model="data.nombre"
+                                            type="text"
+                                            label="Nombre"
+                                            :rules="[required('Nombre')]"
+                                            dense
+                                            outlined
+                                            color="#005598"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-text-field
+                                            v-model="data.codigo"
+                                            type="text"
+                                            label="Codigo"
+                                            :rules="[required('Codigo')]"
+                                            dense
+                                            outlined
+                                            color="#005598"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-text-field
+                                            v-model="data.referencia"
+                                            type="text"
+                                            label="Referencia"
+                                            :rules="[required('Referencia')]"
+                                            dense
+                                            outlined
+                                            color="#005598"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-select
+                                            :items="grupos"
+                                            label="Grupos"
+                                            outlined
+                                            dense
+                                            hide-selected
+                                            hide-details
+                                            color="#005598"
+                                            :rules="[required('Grupo')]"
+                                            @change="refactorSubgrupo($event)"
+                                        ></v-select>
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-select
+                                            :items="selectesSubgrupos"
+                                            label="SubGrupos"
+                                            outlined
+                                            hide-selected
+                                            dense
+                                            hide-details
+                                            :disabled="selectGrupo==''"
+                                            :rules="[required('SubGrupo')]"
+                                            color="#005598"
+                                            @change="changeSubGrupo($event)"
+                                        ></v-select>
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-select
+                                            :items="empresas"
+                                            label="Empresas"
+                                            outlined
+                                            dense
+                                            hide-selected
+                                            hide-details
+                                            color="#005598"
+                                            @change="changeEmpresa($event)"
+                                            :rules="[required('Empresa')]"
+                                        ></v-select>
+                                    </v-col>
+                                    <v-col cols="12" md="10" sm="12" :offset="$vuetify.breakpoint.smAndDown ? null:1">
+                                        <v-container fluid>
+                                            <v-textarea
+                                                clearable
+                                                filled
+                                                color="#005598"
+                                                hide-details
+                                                clear-icon="cancel"
+                                                label="Descripción"
+                                                v-model="data.descripcion"
+                                            ></v-textarea>
+                                        </v-container>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                    </v-stepper-content>
+                    <v-stepper-content step="2">
+                        <v-row>
+                            <v-col cols="12" sm="10" md="4">
+                                <v-text-field
+                                    v-model="data.precio_a"
+                                    type="number"
+                                    label="Precio A"
+                                    :rules="[required('Precio A')]"
+                                    dense
+                                    outlined
+                                    color="#005598"
+                                />
+                            </v-col>
+                             <v-col cols="12" sm="10" md="4">
+                                <v-text-field
+                                    v-model="data.precio_b"
+                                    type="number"
+                                    label="Precio B"
+                                    :rules="[required('Precio B')]"
+                                    dense
+                                    outlined
+                                    color="#005598"
+                                />
+                            </v-col>
+                             <v-col cols="12" sm="10" md="4">
+                                <v-text-field
+                                    v-model="data.precio_c"
+                                    type="number"
+                                    label="Precio C"
+                                    :rules="[required('Precio C')]"
+                                    dense
+                                    outlined
+                                    color="#005598"
+                                />
+                            </v-col>
+                        </v-row>
+                    </v-stepper-content>
+                    <v-stepper-content step="3">
+                        <v-row>
+                            <v-col>
+                                
+                            </v-col>
+                        </v-row>
+                    </v-stepper-content>
+                </v-stepper-items>
+            </v-stepper>
+        </div>
 
         <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
             <div v-if="error">
@@ -170,6 +226,11 @@ import validations from '@/validations/validations';
     export default {
         data() {
             return {
+                step:1,
+                tabs:[
+                    'Descripcion','Costos','Existencias'
+                ],
+                tab:null,
                 imagen:null,
                 loading:false,
                 showImage:null,
@@ -183,9 +244,10 @@ import validations from '@/validations/validations';
                 subgrupos:[],
                 empresas:[],
                 tipos:[
-                    {id:2,text:'Producto'},
-                    {id:3,text:'Servicio'},
-                    {id:5,text:'Ensamblado'}
+                    {id:1,text:'Servicio',disabled:false},
+                    {id:2,text:'Producto',disabled:false},
+                    {id:4,text:'Compuesto',disabled:true},
+                    {id:5,text:'Ensamblado',disabled:false}
                 ],
                 ...validations,
                 rules: [
@@ -197,59 +259,16 @@ import validations from '@/validations/validations';
                     "referencia": "",
                     "nombre": "",
                     "descripcion": "",
-                    "talla": null,
-                    "color": null,
-                    "descuento": null,
-                    "serial_estatico": 0,
-                    "serial_dinamico": 0,
-                    "existencia_minima": "20.000",
-                    "existencia_maxima": "500.000",
                     "tipos_conceptos_id": 0,
-                    "ubicacion_id": 1,
-                    "costo": null,
-                    "ultimo_costo": null,
-                    "costo_mayor": null,
-                    "costo_promedio": null,
-                    "fecha_at": Date(),
-                    "fecha_in": Date(),
-                    "fecha_uc": Date(),
+                    "fecha_at": "2019-07-11T04",
+                    "fecha_in": "2019-08-13T04",
+                    "fecha_uc": "2019-08-12T04",
                     "grupos_id": 0,
                     "subgrupos_id": 0,
-                    "presentacion": null,
-                    "unidades_id": 3,
-                    "fecha_hora": null,
-                    "marcas_id": null,
-                    "estado": 1,
-                    "pvp": null,
-                    "precio_a": "0",
-                    "precio_b": "0",
-                    "precio_c": "0",
-                    "precio_dolar": "0",
-                    "utilidad": null,
-                    "utilidad_a": "0",
-                    "utilidad_b": "0",
-                    "utilidad_c": "0",
-                    "utilidad_dolar": "0",
-                    "costo_dolar": "0.00",
-                    "precio_variable": 0,
-                    "retiene": 0,
-                    "farm_principio_activo_id": null,
-                    "costo_adicional": "0.00",
-                    "costo_adicional2": "0.00",
-                    "cant_ensamblado": "0.00",
-                    "licor": 0,
-                    "porcentaje": null,
-                    "visible_pv": 1,
-                    "visible_web": null,
-                    "rest_areas_id": null,
-                    "setcortesia": 0,
-                    "exento": null,
-                    "merma": 1,
-                    "existencia_c": null,
-                    "obviar_ajuste": 1,
-                    "iva": 1,
+                    "precio_a": "",
+                    "precio_b":"",
+                    "precio_c":""
                 },
-                
             }
         },
         mounted() {
@@ -284,10 +303,14 @@ import validations from '@/validations/validations';
             },
             postConceptos(){
                 this.loading=true;
-                console.log(this.data);
-
                 this.error=null;
-                Conceptos().post("/",{data:this.data}).then((response) => {
+                let data = this.data;
+
+                let formdata = new FormData();
+                formdata.append('image',this.imagen);
+                formdata.append('data',JSON.stringify(data));
+
+                Conceptos().post("/",formdata).then((response) => {
                     console.log(response);
                     this.snackbar=true;
                     this.loading=false;
