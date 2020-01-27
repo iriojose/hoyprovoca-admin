@@ -1,13 +1,24 @@
 <template>
     <div>
-        <v-card width="100%" class="px-4 py-2">
+        <v-card width="100%" class="px-4 py-2" elevation="0" color="#eee">
             <v-row>
                 <v-col cols="12" sm="12" lg="4" md="6" v-for="(opcion,i) in opciones" :key="i" @click="openDialog(i+1)">
                    <v-tooltip right>
                         <template v-slot:activator="{ on }">
-                           <v-card width="100%" height="100" v-on="on">
-                                <div class="text-center">{{opcion.icon}}</div>
-                            </v-card>
+                            <v-hover v-slot:default="{hover}">
+                                <v-card width="100%" height="150" v-on="on" :color="opcion.color" :elevation="hover ? 10:3">
+                                    <v-row justify="center" align="center" class="fill-height">
+                                        <v-col cols="12" sm="6" md="6">
+                                                <div class="text-center white--text font-weight-bold">{{opcion.text}}</div>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <v-icon dark size="70">
+                                                {{opcion.icon}}
+                                            </v-icon>
+                                        </v-col>
+                                    </v-row>
+                                </v-card>
+                            </v-hover>
                         </template>
                         <span>{{opcion.text}}</span>
                    </v-tooltip>
@@ -23,11 +34,11 @@
                     </v-icon>
                 </v-btn>
                 <v-spacer></v-spacer>
-                    <div class="title font-weight-bold" v-show="opc==1">Crear Grupo</div>
-                    <div class="title font-weight-bold" v-show="opc==2">Crear SubGrupo</div>
-                    <div class="title font-weight-bold" v-show="opc==3">Crear Concepto</div>
-                    <div class="title font-weight-bold" v-show="opc==4">Actualizar Existencias</div>
-                    <div class="title font-weight-bold" v-show="opc==5">Crear Empresa</div>
+                    <div class="title font-weight-bold" v-show="opc==1">Grupos</div>
+                    <div class="title font-weight-bold" v-show="opc==2">SubGrupos</div>
+                    <div class="title font-weight-bold" v-show="opc==3">Producto</div>
+                    <div class="title font-weight-bold" v-show="opc==4">Existencias</div>
+                    <div class="title font-weight-bold" v-show="opc==5">Empresas</div>
                 <v-spacer></v-spacer>
             </v-card-title>
             <v-card>
@@ -61,11 +72,11 @@ import FormEmpresa from '@/components/formInventario/FormEmpresa';
                 dialog:false,
                 opc:0,
                 opciones:[
-                    {text:'Crear Grupo',icon:'grupos',color:''},
-                    {text:'Crear Subgrupo',icon:'subgrupos',color:''},
-                    {text:'Agregar conceptos',icon:'conceptos',color:''},
-                    {text:'Manejo de Existencias',icon:'existencias',color:''},
-                    {text:'Crear Empresa',icon:'empresa',color:''}
+                    {text:'Grupos',icon:'group',color:'#7B1FA2'},
+                    {text:'SubGrupos',icon:'group_work',color:'#C2185B'},
+                    {text:'Productos',icon:'fastfood',color:'#D32F2F'},
+                    {text:'Existencias',icon:'hourglass_empty',color:'#1976D2'},
+                    {text:'Empresas',icon:'business',color:'#303F9F'}
                 ]
             }
         },

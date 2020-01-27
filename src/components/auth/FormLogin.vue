@@ -3,17 +3,17 @@
         <v-row justify="center" align="center">
             <v-col cols="12" md="10" sm="12">
                 <v-text-field
-                    label="Email"
+                    label="Usuario/Email"
                     v-model="data.usuario"
                     :disabled="loading"
-                    type="email"
+                    type="text"
                     clearable
                     outlined
                     prepend-inner-icon="email"
                     color="#005598"
                     dense
                     counter="50"
-                    :rules="[required('Email'), emailFormat(), maxLength('Email',50)]"
+                    :rules="[required('Usuario/Email'), maxLength('Usuario/Email',50)]"
                 />       
             </v-col>
             <v-col cols="12" md="10" sm="12">
@@ -97,7 +97,7 @@ import router from '@/router';
                 this.loading=true;
                 Usuario().post("/login",{data:this.data}).then((response) => {
                     this.snackbar=true;
-
+                    console.log(response);
                     if(response == undefined){
                         this.error="Usuario y/o contraseña incorrecta.";
                     }else{

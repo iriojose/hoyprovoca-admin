@@ -41,7 +41,7 @@ import {mapState, mapActions} from 'vuex';
         data(){
             return{
                 items:[
-                    {icon:"dashboard",text:"Principal",path:"/"},
+                    {icon:"dashboard",text:"Principal",path:"/dashboard"},
                     {icon:"assignment",text:"Inventario",path:"/Inventario"},
                     {icon:"supervisor_account",text:"Clientes",path:"/clientes"},
                     {icon:"business",text:"Empresas",path:"/empresas"},
