@@ -233,7 +233,7 @@ import validations from '@/validations/validations';
                 tab:null,
                 imagen:null,
                 loading:false,
-                showImage:null,
+                showImage:'http://192.168.0.253:81/api/images/default.png',
                 selectGrupo:'',
                 selectSubgrupo:'',
                 selectesSubgrupos:[],
@@ -312,6 +312,23 @@ import validations from '@/validations/validations';
 
                 Conceptos().post("/",formdata).then((response) => {
                     console.log(response);
+                    this.data = {
+                        "empresa_id": 0,
+                        "codigo": "",
+                        "referencia": "",
+                        "nombre": "",
+                        "descripcion": "",
+                        "tipos_conceptos_id": 0,
+                        "fecha_at": "2019-07-11T04",
+                        "fecha_in": "2019-08-13T04",
+                        "fecha_uc": "2019-08-12T04",
+                        "grupos_id": 0,
+                        "subgrupos_id": 0,
+                        "precio_a": "",
+                        "precio_b":"",
+                        "precio_c":""
+                    },
+                    this.showImage='http://192.168.0.253:81/api/images/default.png',
                     this.snackbar=true;
                     this.loading=false;
                 }).catch(e => {
