@@ -27,26 +27,28 @@
         </v-card>
 
         <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition">
-            <v-card-title class="color">
-               <v-btn icon @click="dialog = false">
-                    <v-icon color="#005598" x-large>
-                        keyboard_arrow_left
-                    </v-icon>
-                </v-btn>
-                <v-spacer></v-spacer>
-                    <div class="title font-weight-bold" v-show="opc==1">Grupos</div>
-                    <div class="title font-weight-bold" v-show="opc==2">SubGrupos</div>
-                    <div class="title font-weight-bold" v-show="opc==3">Producto</div>
-                    <div class="title font-weight-bold" v-show="opc==4">Existencias</div>
-                    <div class="title font-weight-bold" v-show="opc==5">Empresas</div>
-                <v-spacer></v-spacer>
-            </v-card-title>
             <v-card>
-                <FormGrupo v-if="opc==1"/>
-                <FormSubGrupo v-else-if="opc==2"/>
-                <FormConcepto v-else-if="opc==3"/>
-                <FormExistencia v-else-if="opc==4"/>
-                <FormEmpresa v-else-if="opc==5"/>
+                <v-card-title class="color">
+                    <v-btn icon @click="dialog = false">
+                        <v-icon color="#005598" x-large>
+                            keyboard_arrow_left
+                        </v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                        <div class="title font-weight-bold" v-show="opc==1">Grupos</div>
+                        <div class="title font-weight-bold" v-show="opc==2">SubGrupos</div>
+                        <div class="title font-weight-bold" v-show="opc==3">Producto</div>
+                        <div class="title font-weight-bold" v-show="opc==4">Existencias</div>
+                        <div class="title font-weight-bold" v-show="opc==5">Empresas</div>
+                    <v-spacer></v-spacer>
+                </v-card-title>
+                <v-card-text>
+                    <FormGrupo v-if="opc==1"/>
+                    <FormSubGrupo v-else-if="opc==2"/>
+                    <FormConcepto v-else-if="opc==3"/>
+                    <FormExistencia v-else-if="opc==4"/>
+                    <FormEmpresa v-else-if="opc==5"/>
+                </v-card-text>
             </v-card>
         </v-dialog>
     </div>

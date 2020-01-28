@@ -105,7 +105,7 @@ import validations from '@/validations/validations';
                 precio:null,
                 empresa:null,
                 ...validations,
-                ruta:'http://192.168.0.253:81/api/images/',
+                ruta:'http://107.152.36.120/api/images/',
                 data:{
                     depositos_id:1,
                     conceptos_id:0,

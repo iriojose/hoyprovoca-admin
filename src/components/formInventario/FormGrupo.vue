@@ -30,7 +30,7 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="600">
+        <v-dialog v-model="dialog" width="500">
             <v-card>
                 <v-card-title>
                     Agregar
@@ -41,11 +41,11 @@
                 </v-card-title>
                 <v-card-text>
                     <v-form v-model="valid" @submit.prevent="">
-                        <v-card width="100%" height="500" elevation="0" class="pa-5">
+                        <v-card width="100%" elevation="0" height="500" class="pa-5">
                             <v-row>
                                 <v-col cols="12" md="12" sm="12">
-                                    <v-card width="100%" height="220" class="pa-2">
-                                        <v-img height="200" contain v-if="showImage" :src="showImage" />
+                                    <v-card width="100%" height="220" class="pa-2" elevation="0">
+                                        <v-img height="200" contain :src="showImage" />
                                     </v-card>
                                 </v-col>
                                 <v-col cols="12" md="12" sm="12">
@@ -84,7 +84,7 @@
                                         >
                                             Enviar
                                         </v-btn>
-                                        <v-btn @click="dialog = false">cancelar</v-btn>
+                                        <v-btn class="caption" @click="dialog = false">cancelar</v-btn>
                                     </v-card-actions>
                                 </v-col>
                             </v-row>
@@ -133,7 +133,7 @@ import validations from '@/validations/validations';
                 snackbar:false,
                 error:null,
                 imagen:null,
-                showImage:'http://192.168.0.253:81/api/images/default.png',
+                showImage:'http://localhost:81/api/images/default.png',
                 ...validations,
                 rules: [
                     value => !value || value.size < 2000000 || 'Debe pesar menos de 2 MB!',
@@ -169,7 +169,7 @@ import validations from '@/validations/validations';
                     this.error="Ocurrio un error.";
                 });
             },
-            update(item){
+            updateGrupos(item){
                 Grupos().post(`/${item.id}`).then((response) => {
                     console.log(response);
                     const index = this.grupos.indexOf(item);
@@ -186,6 +186,7 @@ import validations from '@/validations/validations';
                 Grupos().post("/",{data:this.data}).then((response) => {
                     console.log(response);
                     this.snackbar=true;
+                    this.grupos.push(this.data);
                 }).catch(e => {
                     console.log(e);
                     this.snackbar=true;

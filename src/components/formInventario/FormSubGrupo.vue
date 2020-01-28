@@ -1,5 +1,54 @@
 <template>
-    <v-form v-model="valid" @submit.prevent="">  
+    <div>
+        <v-container>
+            <v-toolbar flat color="white">
+                <v-toolbar-title>SubGrupos</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn color="#005598" dark class="mb-2" @click="dialog=!dialog">
+                    Nuevo <v-icon dark class="mx-2">add_circle</v-icon>
+                </v-btn>
+            </v-toolbar>
+            <v-data-table
+                :headers="headers"
+                :items="subgrupos"
+                sort-by="id"
+                class="elevation-0"
+            >  
+                <template v-slot:item.action="{ item }">
+                    <v-icon
+                        small
+                        class="mr-2"
+                        @click="editItem(item)"
+                    >
+                        edit
+                    </v-icon>
+                    <v-icon
+                        small
+                        @click="deleteItem(item)"
+                    >
+                        delete
+                    </v-icon>
+                </template>
+            </v-data-table>
+        </v-container>
+
+        <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
+            <div v-if="error">
+                <v-icon dark>
+                    cancel
+                </v-icon>
+                {{error}}
+            </div>
+            <div v-else>
+                <v-icon dark>
+                    check_circle
+                </v-icon>
+                Se ha registrado exitosamente.
+            </div>
+        </v-snackbar>
+    </div>
+
+    <!-- <v-form v-model="valid" @submit.prevent="">  
         <v-row justify="center" align="center" class="fill-height">
             <v-col cols="12" md="4" sm="12">
                 <v-card width="100%" height="600" elevation="5" class="pa-5">
@@ -65,22 +114,7 @@
                 </v-card>
             </v-col>
         </v-row>
-
-        <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
-            <div v-if="error">
-                <v-icon dark>
-                    cancel
-                </v-icon>
-                {{error}}
-            </div>
-            <div v-else>
-                <v-icon dark>
-                    check_circle
-                </v-icon>
-                Se ha registrado exitosamente.
-            </div>
-        </v-snackbar>
-    </v-form>
+    </v-form>-->
 </template>
 
 <script>
@@ -91,12 +125,23 @@ import validations from '@/validations/validations';
     export default {
         data() {
             return {
+                dialog: false,
+                headers: [
+                    {text: 'Id',align: 'left',sortable: true,value:'id',},
+                    {text: 'Nombre',sortable: true, value: 'nombre' },
+                    {text:'Grupo',sortable:true,value:'grupo'},
+                    { text: 'Visualizar', value: 'visualizar' },
+                    { text: 'posicion', value: 'posicion' },
+                    { text: 'Imagen', value: 'imagen' },
+                    { text: 'Acciones', value: 'action', sortable: false },
+                ],
                 grupos:[],
+                subgrupos:[],
                 snackbar:false,
                 error:null,
                 valid:false,
                 imagen:null,
-                showImage:null,
+                showImage:'http://localhost:81/api/images/default.png',
                 data:{
                     nombre:'',
                     visualizar:1,
@@ -114,6 +159,15 @@ import validations from '@/validations/validations';
             this.getGrupos();
         },
         methods: {
+            refactorGrupos(){
+                for (let i = 0; i < this.subgrupos.length; i++) {
+                    for (let e = 0; e < this.grupos.length; e++) {
+                       if(this.subgrupos[i].grupos_id == this.grupos[e].id){
+                           this.subgrupos[i].grupo = this.grupos[e].nombre;
+                       }
+                    }
+                }
+            },
             refactorVariable(array){//crea una propiedad text para que se pueda leer en los select
                 array.filter(value => value.text=value.nombre);
                 return array;
@@ -136,9 +190,42 @@ import validations from '@/validations/validations';
             getGrupos(){
                 Grupos().get("/").then((response) => {
                     this.grupos=response.data.data;
+                    this.getSubGrupos();
                     this.grupos=this.refactorVariable(this.grupos);
                 }).catch(e => {
                     console.log(e);
+                });
+            },
+            getSubGrupos(){
+                SubGrupos().get("/").then((response) => {
+                    this.subgrupos = response.data.data;
+                    this.refactorGrupos();
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            deleteSubgrupos(item){
+                SubGrupos().delete(`/${item.id}`).then((response) => {
+                    console.log(response);
+                    const index = this.subgrupos.indexOf(item);
+                    this.subgrupos.splice(index, 1);
+                    this.snackbar = true;
+                }).catch(e => {
+                    console.log(e);
+                    this.snackbar = true;
+                    this.error="Ocurrio un error.";
+                });
+            },
+            updateSubgrupos(item){
+                SubGrupos().post(`/${id}`,{data:this.data}).then((response) => {
+                    console.log(response);
+                    const index = this.subgrupos.indexOf(item);
+                    this.subgrupos[index] = response.data.data;
+                    this.snackbar = true;
+                }).catch(e => {
+                    console.log(e);
+                    this.snackbar = true;
+                    this.error="Ocurrio un error.";
                 });
             },
             postSubGrupos(){
@@ -151,11 +238,13 @@ import validations from '@/validations/validations';
                     this.snackbar = true;
                     this.error="Ocurrio un error.";
                 });
+            },
+            deleteItem(item){
+                confirm('¿Esta seguro de eliminar este SubGrupo?') && this.deleteSubGrupos(item);
+            },
+            editItem(item){
+                console.log(item);
             }
         },        
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
