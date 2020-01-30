@@ -8,12 +8,23 @@
                 </v-icon>
             </v-btn>
             <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                label="Buscar"
+                single-line
+                append-icon="search"
+                type="text"
+                color="#005598"
+                hide-details
+                dense
+            />
         </v-toolbar>
         <v-data-table
             :headers="headers"
             :items="grupos"
             class="elevation-0"
             :items-per-page="7"
+            :search="search"
         >
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
@@ -106,6 +117,7 @@ import validations from '@/validations/validations';
                 dialog:false,
                 editIndex:-1,
                 valid:false,
+                search:'',
                 showImage:'http://107.152.36.120/api/images/default.png',
                 imagen:null,
                 grupos:[],
@@ -225,8 +237,10 @@ import validations from '@/validations/validations';
             },
             close(){
                 this.dialog = false;
-                this.editIndex = -1;
-                this.editItem = this.defaultItem;
+                setTimeout(() => { 
+                    this.editIndex = -1;
+                    this.editItem = this.defaultItem;
+                },300);               
             },
             deleteItem(item){
                 this.error = null;

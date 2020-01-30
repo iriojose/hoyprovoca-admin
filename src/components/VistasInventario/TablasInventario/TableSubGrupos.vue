@@ -8,12 +8,23 @@
                 </v-icon>
             </v-btn>
             <v-spacer></v-spacer>
+            <v-text-field
+                v-model="search"
+                label="Buscar"
+                single-line
+                append-icon="search"
+                type="text"
+                color="#005598"
+                hide-details
+                dense
+            />
         </v-toolbar>
         <v-data-table
             :headers="headers"
             :items="subgrupos"
             class="elevation-0"
             :items-per-page="7"
+            :search="search"
         >
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
@@ -44,7 +55,7 @@
                                     accept="image/png, image/jpeg"
                                     placeholder="Seleccionar imagen"
                                     prepend-icon="mdi-camera"
-                                    label="Imagen Grupo"
+                                    label="Imagen SubGrupo"
                                     dense
                                     @change="procesoImg($event)"
                                     color="#005598"
@@ -122,6 +133,7 @@ import {mapActions} from 'vuex';
                 valid:false,
                 dialog:false,
                 loading:false,
+                search:'',
                 subgrupos:[],
                 grupos:[],
                 ...validations,
@@ -154,7 +166,6 @@ import {mapActions} from 'vuex';
                     posicion:1,
                     imagen:'default.png',
                 }
-
             }
         },
         mounted(){
@@ -185,6 +196,7 @@ import {mapActions} from 'vuex';
                 });
             },
             postSubgrupos(item){
+                delete item.grupo;
                 SubGrupos().post("/",{data:item}).then((response) => {
                     console.log(response);
                     this.exito = 'Se creo el Subgrupo exitosamente.';
@@ -192,6 +204,7 @@ import {mapActions} from 'vuex';
                     this.setSnackbar(true);
                     this.loading =false;
                     this.close();
+                    this.refactor();
                 }).catch(e => {
                     console.log(e);
                     this.error = 'No se pudo crear este Subgrupo.';
@@ -200,6 +213,7 @@ import {mapActions} from 'vuex';
                 });
             },
             updateSubgrupos(item){
+                console.log(delete item.grupo);
                 SubGrupos().post(`/${item.id}`,{data:item}).then((response) => {
                     console.log(response);
                     const index = this.subgrupos.indexOf(item);
@@ -209,6 +223,7 @@ import {mapActions} from 'vuex';
                     this.setSnackbar(true);
                     this.loading = false;
                     this.close();
+                    this.refactor();
                 }).catch(e => {
                     console.log(e);
                     this.error = 'No se pudo actualizar este Subgrupo.';
@@ -229,12 +244,12 @@ import {mapActions} from 'vuex';
                     this.setSnackbar(true);
                 });
             },
-            refactor(array){
+            refactor(){
                 for (let i = 0; i < this.subgrupos.length; i++) {
-                    for (let e = 0; e < array.length; e++) {
-                        this.grupos[e].text = array[e].nombre;
-                        if(this.subgrupos[i].grupos_id == array[e].id){
-                            this.subgrupos[i].grupo = array[e].nombre;
+                    for (let e = 0; e < this.grupos.length; e++) {
+                        this.grupos[e].text = this.grupos[e].nombre;
+                        if(this.subgrupos[i].grupos_id == this.grupos[e].id){
+                            this.subgrupos[i].grupo = this.grupos[e].nombre;
                         }
                     }
                 }
@@ -245,7 +260,6 @@ import {mapActions} from 'vuex';
                         this.editItem.grupos_id = this.grupos[i].id;
                     }
                 }
-                console.log(this.editItem);
             },
             procesoImg(evt){
                 if(evt){
