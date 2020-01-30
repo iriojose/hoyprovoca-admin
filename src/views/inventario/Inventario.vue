@@ -37,17 +37,18 @@
                     <v-spacer></v-spacer>
                         <div class="title font-weight-bold" v-show="opc==1">Grupos</div>
                         <div class="title font-weight-bold" v-show="opc==2">SubGrupos</div>
-                        <div class="title font-weight-bold" v-show="opc==3">Producto</div>
+                        <div class="title font-weight-bold" v-show="opc==3">Productos</div>
                         <div class="title font-weight-bold" v-show="opc==4">Existencias</div>
                         <div class="title font-weight-bold" v-show="opc==5">Empresas</div>
                     <v-spacer></v-spacer>
                 </v-card-title>
+                <v-divider></v-divider>
                 <v-card-text>
-                    <FormGrupo v-if="opc==1"/>
-                    <FormSubGrupo v-else-if="opc==2"/>
-                    <FormConcepto v-else-if="opc==3"/>
-                    <FormExistencia v-else-if="opc==4"/>
-                    <FormEmpresa v-else-if="opc==5"/>
+                    <TablePrueba v-if="opc==1"/>
+                    <TableSubGrupos v-else-if="opc==2"/>
+                    <TableConceptos v-else-if="opc==3"/>
+                    <TableExistencias v-else-if="opc==4"/>
+                    <TableEmpresa v-else-if="opc==5"/>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -55,19 +56,19 @@
 </template>
 
 <script>
-import FormGrupo from '@/components/formInventario/FormGrupo';
-import FormSubGrupo from '@/components/formInventario/FormSubGrupo';
-import FormConcepto from '@/components/formInventario/FormConcepto';
-import FormExistencia from '@/components/formInventario/FormExistencia';
-import FormEmpresa from '@/components/formInventario/FormEmpresa';
+import TablePrueba from '@/components/VistasInventario/TablasInventario/TablePrueba';
+import TableSubGrupos from '@/components/VistasInventario/TablasInventario/TableSubGrupos';
+import TableEmpresa from '@/components/VistasInventario/TablasInventario/TableEmpresa';
+import TableConceptos from '@/components/VistasInventario/TablasInventario/TableConceptos';
+import TableExistencias from '@/components/VistasInventario/TablasInventario/TableExistencias';
 
     export default {
         components:{
-            FormGrupo,
-            FormSubGrupo,
-            FormConcepto,
-            FormExistencia,
-            FormEmpresa
+            TablePrueba,
+            TableSubGrupos,
+            TableEmpresa,
+            TableConceptos,
+            TableExistencias
         },
         data() {
             return {

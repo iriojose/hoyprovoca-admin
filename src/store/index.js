@@ -7,6 +7,9 @@ export default new Vuex.Store({
   state: {
     barraLateral:true,
     dialogEmpresa:false,
+    dialogInventario:false,
+    snackbar:false,
+    inventario:{},
     user:{
       logged:false,
       token:null,
@@ -14,6 +17,26 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    SET_SNACKBAR(state,val){
+      if(val){
+        state.snackbar = true;
+      }else{
+        state.snackbar = false;
+      }
+    },
+
+    SET_INVENTARIO(state,val){
+      state.inventario = val;
+    },
+
+    SET_DIALOG_INVENTARIO(state,val){
+      if(val){
+        state.dialogInventario = true;
+      }else{
+        state.dialogInventario = false;
+      }
+    },
+
     SET_BARRALATERAL(state,val){
       if(val){
         state.barraLateral = true;
@@ -45,12 +68,24 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    setSnackbar({commit},val){
+      commit('SET_SNACKBAR',val);
+    },
+
     setBarraLateral({commit},val){
       commit('SET_BARRALATERAL',val);
     },
 
     setDialogEmpresa({commit},val){
       commit('SET_DIALOGEMPRESA',val);
+    },
+
+    setInventario({commit},val){
+      commit('SET_INVENTARIO',val);
+    },
+
+    setDialogInventario({commit},val){
+      commit('SET_DIALOG_INVENTARIO',val);
     },
 
     setLogin({commit},val){
