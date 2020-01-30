@@ -32,15 +32,16 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="900">
+        <v-dialog v-model="dialog" width="900" @MouseEvent="close">
             <v-card>
-                <v-card-title>
+                <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
                     <v-icon @click="close">
                         cancel
                     </v-icon>
                 </v-card-title>
+                <v-divider></v-divider>
                 <v-card-text>
                     <v-form v-model="valid" @submit.prevent="" class="px-5">
                         <v-row>
@@ -48,7 +49,7 @@
                                 <v-row justify="center" align="center">
                                     <v-col cols="12" md="12" sm="12">
                                         <v-card width="100%" height="170" class="pa-2" elevation="0">
-                                            <v-img height="150" width="100%" contain :src="showImage" />
+                                            <v-img height="150" width="100%" contain v-if="showImage" :src="showImage" />
                                         </v-card>
                                     </v-col>
                                     <v-col cols="12" md="12" sm="12">
@@ -382,9 +383,11 @@ import Snackbar from '@/components/helpers/Snackbar';
                 setTimeout(() => {
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
+                    this.showImage='http://192.168.0.253:81/api/images/default.png';
                 },300);
             },
             procesoImg(evt){
+                this.showImage = null;
                 if(evt){
                     var reader = new FileReader();
                     reader.onload = (e) => {
@@ -397,3 +400,9 @@ import Snackbar from '@/components/helpers/Snackbar';
         },
     }
 </script>
+
+<style scope>
+    .color{
+        background: #eee;
+    }
+</style>

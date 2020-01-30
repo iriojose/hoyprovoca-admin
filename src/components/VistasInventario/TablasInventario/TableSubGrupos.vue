@@ -32,15 +32,16 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="400">
+        <v-dialog v-model="dialog" width="400" @MouseEvent="close">
             <v-card width="100%" height="600">
-                <v-card-title>
+                <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
                     <v-icon @click="close">
                         cancel
                     </v-icon>
                 </v-card-title>
+                <v-divider></v-divider>
                 <v-card-text>
                     <v-form v-model="valid" @submit.prevent="" class="px-5">
                         <v-row>
@@ -181,78 +182,35 @@ import {mapActions} from 'vuex';
 
             getSubgrupos(){
                 SubGrupos().get("/").then((response) => {
-                    this.subgrupos = response.data.data;
-                    this.getGrupos();
+                    this.getGrupos(response.data.data);
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getGrupos(){
+            getGrupos(subgrupos){
                 Grupos().get("/").then((response) => {
-                    this.grupos = response.data.data;
-                    this.refactor(response.data.data);
+                    this.refactor(subgrupos,response.data.data);
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            postSubgrupos(item){
-                delete item.grupo;
-                SubGrupos().post("/",{data:item}).then((response) => {
-                    console.log(response);
-                    this.exito = 'Se creo el Subgrupo exitosamente.';
-                    this.subgrupos.push(item);
-                    this.setSnackbar(true);
-                    this.loading =false;
-                    this.close();
-                    this.refactor();
-                }).catch(e => {
-                    console.log(e);
-                    this.error = 'No se pudo crear este Subgrupo.';
-                    this.setSnackbar(true);
-                    this.loading = false;
-                });
-            },
-            updateSubgrupos(item){
-                console.log(delete item.grupo);
-                SubGrupos().post(`/${item.id}`,{data:item}).then((response) => {
-                    console.log(response);
-                    const index = this.subgrupos.indexOf(item);
-                    this.subgrupos[index]=item;
-                    this.editIndex = -1;
-                    this.exito = 'Se actualizo el Subgrupo exitosamente'
-                    this.setSnackbar(true);
-                    this.loading = false;
-                    this.close();
-                    this.refactor();
-                }).catch(e => {
-                    console.log(e);
-                    this.error = 'No se pudo actualizar este Subgrupo.';
-                    this.setSnackbar(true);
-                    this.loading = false;
-                });
-            },
-            deleteSubgrupos(item){
-                SubGrupos().delete(`/${item.id}`).then((response) => {
-                    console.log(response);
-                    this.exito = 'Se elimino el subgrupo exitosamente.';
-                    this.setSnackbar(true);
-                    const index = this.subgrupos.indexOf(item);
-                    this.subgrupos.splice(index,1);
-                }).catch(e => {
-                    console.log(e);
-                    this.error = 'No se pudo eliminar este Subgrupo.';
-                    this.setSnackbar(true);
-                });
-            },
-            refactor(){
-                for (let i = 0; i < this.subgrupos.length; i++) {
-                    for (let e = 0; e < this.grupos.length; e++) {
-                        this.grupos[e].text = this.grupos[e].nombre;
-                        if(this.subgrupos[i].grupos_id == this.grupos[e].id){
-                            this.subgrupos[i].grupo = this.grupos[e].nombre;
+            refactor(subgrupos,grupos){
+                for (let i = 0; i < subgrupos.length; i++) {
+                    for (let e = 0; e < grupos.length; e++) {
+                        if(subgrupos[i].grupos_id == grupos[e].id){
+                            subgrupos[i].grupo = grupos[e].nombre;
                         }
                     }
                 }
+                this.refactorGrupos(grupos);
+                this.subgrupos = subgrupos;
+
+            },
+            refactorGrupos(grupos){
+                for (let i = 0; i < grupos.length; i++) {
+                    grupos[i].text = grupos[i].nombre;
+                }
+                this.grupos = grupos;
             },
             change(evt){
                 for (let i = 0; i < this.grupos.length; i++) {
@@ -271,12 +229,64 @@ import {mapActions} from 'vuex';
                     reader.readAsDataURL(evt);
                 }
             },
+            //Metodos del crud y llamadas a la api
+            postSubgrupos(item){
+                const aux = item.grupo;
+                delete item.grupo;
+                SubGrupos().post("/",{data:item}).then((response) => {
+                    console.log(response);
+                    this.exito = 'Se creo el subgrupo '+item.nombre+' exitosamente.';
+                    item.grupo = aux;
+                    this.subgrupos.push(item);
+                    this.setSnackbar(true);
+                    this.loading = false;
+                    this.close();
+                }).catch(e => {
+                    console.log(e);
+                    this.error = 'No se pudo crear el subgrupo '+item.nombre;
+                    this.setSnackbar(true);
+                    this.loading = false;
+                    this.close();
+                });
+            },
+            updateSubgrupos(item){
+                const aux = item.grupo;
+                delete item.grupo;
+                SubGrupos().post(`/${item.id}`,{data:item}).then((response) => {
+                    console.log(response);
+                    item.grupo = aux;
+                    Object.assign(this.subgrupos[this.editIndex],item);
+                    this.editIndex = -1;
+                    this.exito = 'Se actualizo el subgrupo '+item.nombre+' exitosamente.';
+                    this.setSnackbar(true);
+                    this.loading = false;
+                    this.close();
+                }).catch(e => {
+                    console.log(e);
+                    this.error = 'No se pudo actualizar el subgrupo '+item.nombre+'.';
+                    this.setSnackbar(true);
+                    this.loading = false;
+                    this.close();
+                });
+            },
+            deleteSubgrupos(item){
+                SubGrupos().delete(`/${item.id}`).then((response) => {
+                    console.log(response);
+                    this.exito = 'Se elimino el subgrupo '+item.nombre+' exitosamente.';
+                    this.setSnackbar(true);
+                    const index = this.subgrupos.indexOf(item);
+                    this.subgrupos.splice(index,1);
+                }).catch(e => {
+                    console.log(e);
+                    this.error = 'No se pudo eliminar el Grupo '+item.nombre+'.';
+                    this.setSnackbar(true);
+                });
+            },
             save(item){
                 this.loading = true;
                 this.error = null;
                 this.exito = null;
-                const index = this.subgrupos.indexOf(item);
-                if(index > -1){
+                if(this.editIndex > -1){
                     this.updateSubgrupos(item);
                 }else{
                     this.postSubgrupos(item);
@@ -286,13 +296,16 @@ import {mapActions} from 'vuex';
                 this.error = null;
                 this.exito = null;
                 this.dialog = true;
-                this.editItem = item;
                 this.editIndex = this.subgrupos.indexOf(item);
+                this.editItem = Object.assign({},item);
             },
             close(){
                 this.dialog = false;
-                this.editIndex = -1;
-                this.editItem = this.defaultItem;
+                setTimeout(() => {
+                    this.editIndex = -1;
+                    this.editItem = Object.assign({},this.defaultItem);
+                    this.showImage='http://192.168.0.253:81/api/images/default.png';
+                },300);
             },
             deleteItem(item){
                 this.error = null;
@@ -302,3 +315,9 @@ import {mapActions} from 'vuex';
         }
     }
 </script>
+
+<style scope>
+    .color{
+        background: #eee;
+    }
+</style>

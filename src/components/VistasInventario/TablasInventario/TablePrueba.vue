@@ -32,15 +32,16 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="400">
+        <v-dialog v-model="dialog" width="400" @MouseEvent="close">
             <v-card width="100%">
-                <v-card-title>
+                <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
                     <v-icon @click="close">
                         cancel
                     </v-icon>
                 </v-card-title>
+                <v-divider></v-divider>
                 <v-card-text>
                     <v-form v-model="valid" @submit.prevent="" class="px-5">
                         <v-row>
@@ -118,7 +119,7 @@ import validations from '@/validations/validations';
                 editIndex:-1,
                 valid:false,
                 search:'',
-                showImage:'http://107.152.36.120/api/images/default.png',
+                showImage:'http://192.168.0.253:81/api/images/default.png',
                 imagen:null,
                 grupos:[],
                 ...validations,
@@ -176,25 +177,25 @@ import validations from '@/validations/validations';
                     console.log(response);
                     const index = this.grupos.indexOf(item);
                     this.grupos.splice(index,1);
-                    this.exito = 'Se elimino el grupo exitosamente.';
+                    this.exito = 'Se elimino el grupo '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
                 }).catch(e => {
                     console.log(e);
-                    this.error = 'No se pudo eliminar el Grupo.';
+                    this.error = 'No se pudo eliminar el Grupo '+item.nombre+'.';
                     this.setSnackbar(true);
                 });
             },
             postGrupos(item){
                 Grupos().post("/",{data:item}).then((response) => {
                     console.log(response);
-                    this.exito = 'Se creo el grupo exitosamente.';
+                    this.exito = 'Se creo el grupo '+item.nombre+' exitosamente.';
                     this.grupos.push(item);
                     this.setSnackbar(true);
                     this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
-                    this.error = 'No se pudo crear el grupo';
+                    this.error = 'No se pudo crear el grupo '+item.nombre;
                     this.loading =false;
                     this.setSnackbar(true);
                 });
@@ -202,17 +203,16 @@ import validations from '@/validations/validations';
             updateGrupos(item){
                 Grupos().post(`/${item.id}`,{data:item}).then((response) => {
                     console.log(response);
-                    const index = this.grupos.indexOf(item);
-                    this.grupos[index]=item;
+                    Object.assign(this.grupos[this.editIndex],item);
                     this.editIndex = -1;
-                    this.exito = 'Se actualizo el grupo exitosamente'
+                    this.exito = 'Se actualizo el grupo '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
                     this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
                     this.loading = false;
-                    this.error = 'No se pudo actualizar el grupo.';
+                    this.error = 'No se pudo actualizar el grupo '+item.nombre+'.';
                     this.setSnackbar(true);
                 });
                 this.close();
@@ -221,8 +221,7 @@ import validations from '@/validations/validations';
                 this.loading = true;
                 this.error = null;
                 this.exito = null;
-                const index = this.grupos.indexOf(item);
-                if(index > -1){
+                if(this.editIndex > -1){
                     this.updateGrupos(item);
                 }else{
                     this.postGrupos(item);
@@ -232,14 +231,15 @@ import validations from '@/validations/validations';
                 this.error = null;
                 this.exito = null;
                 this.dialog = true;
-                this.editItem = item;
                 this.editIndex = this.grupos.indexOf(item);
+                this.editItem = Object.assign({},item);
             },
             close(){
                 this.dialog = false;
                 setTimeout(() => { 
                     this.editIndex = -1;
-                    this.editItem = this.defaultItem;
+                    this.editItem = Object.assign({},this.defaultItem);
+                    this.showImage='http://192.168.0.253:81/api/images/default.png';
                 },300);               
             },
             deleteItem(item){
@@ -260,3 +260,9 @@ import validations from '@/validations/validations';
         }
     }
 </script>
+
+<style scope>
+    .color{
+        background: #eee;
+    }
+</style>
