@@ -23,7 +23,6 @@
             :headers="headers"
             :items="grupos"
             class="elevation-0"
-            :items-per-page="7"
             :search="search"
         >
             <template v-slot:item.action="{ item }">

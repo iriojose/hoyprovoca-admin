@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card class="mt-5">
+        <v-card class="mt-10">
             <v-sheet
                 class="v-sheet--offset mx-auto title text-center white--text py-5"
                 dark
@@ -15,13 +15,12 @@
                     no-results-text="No se encontraron resultados..."
                     :headers="headers"
                     :items="empresas"
-                    :items-per-page="5"
                     hide-default-footer
                 >
                     <template v-slot:item.action="{ item }">
                         <v-tooltip left>
                             <template v-slot:activator="{ on }">
-                                 <v-icon v-on="on" class="mr-2" @click="callPedidos(item)"> 
+                                 <v-icon v-on="on" small class="mr-2" @click="callPedidos(item)"> 
                                     shop
                                 </v-icon>
                             </template>
@@ -30,7 +29,7 @@
 
                         <v-tooltip left>
                             <template v-slot:activator="{ on }">
-                                <v-icon v-on="on" class="mr-2" @click="callConceptos(item)"> 
+                                <v-icon v-on="on" small class="mr-2" @click="callConceptos(item)"> 
                                     remove_red_eye
                                 </v-icon>
                             </template>
@@ -72,18 +71,14 @@ import Empresa from '@/services/Empresa';
                 pedidos:[],
                 conceptos:[],
                 headers: [
-                    {
-                        text: 'Id',
-                        align: 'left',
-                        sortable: true,
-                        value: 'id',
-                    },
-                    { text: 'Nombre', value: 'nombre_comercial'},
-                    { text: 'Direccion', value: 'direccion'},
-                    { text: 'Rif', value: 'rif'},
-                    { text: 'Telefono', value: 'telefono'},
-                    { text: 'Email', value: 'correo_electronico'},
-                    {text: 'Acciones', value: 'action', sortable: false},
+                    { text: 'Id',align: 'left',sortable: true,value:'id',},
+                    { text: 'Rif',sortable: true, value: 'rif' },
+                    { text: 'Razon social', value: 'razon_social' },
+                    { text: 'Nombre', value: 'nombre_comercial' },
+                    { text: 'Direccion', value: 'direccion' },
+                    { text: 'Email', value: 'correo_electronico' },
+                    { text: 'Telefono', value: 'telefono1' },
+                    { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
         },

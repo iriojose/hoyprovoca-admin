@@ -23,7 +23,6 @@
             :headers="headers"
             :items="conceptos"
             class="elevation-0"
-            :items-per-page="7"
             :search="search"
         >
             <template v-slot:item.action="{ item }">
@@ -32,13 +31,132 @@
             </template>
         </v-data-table>
 
+        <v-dialog v-model="dialog" fullscreen>
+            <v-card>
+                <v-card-title class="color">
+                    {{title}}
+                    <v-spacer></v-spacer>
+                    <v-icon @click="close">
+                        cancel
+                    </v-icon>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                    <v-form v-model="valid" @submit.prevent="">
+                        <v-col cols="12" md="12" sm="12">
+                            <v-btn 
+                                @click="save(editItem)"
+                                :loading="loading"
+                                class="white--text caption text-capitalize"
+                                :disabled="!valid"
+                                :dark="valid"
+                                color="#005598"
+                            >
+                                Enviar
+                            </v-btn>
+                        </v-col>
+                        <v-stepper non-linear class="elevation-0">
+                            <v-stepper-header>
+                                <v-stepper-step editable step="1" color="#005598">Datos</v-stepper-step>
+                                <v-divider></v-divider>
+                                <v-stepper-step editable step="2" color="#005598">Precios</v-stepper-step>
+                                <v-divider></v-divider>
+                                <v-stepper-step step="3" editable color="#005598">Existencias</v-stepper-step>
+                            </v-stepper-header>
+                        </v-stepper>
+                        <v-row justify="center" align="center">
+                            <v-col cols="12" md="3" sm="12">
+                                <v-row justify="center" align="center">
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-card width="100%" height="170" class="pa-2" elevation="0">
+                                            <v-img height="150" width="100%" contain v-if="showImage" :src="showImage" />
+                                        </v-card>
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-file-input
+                                            :rules="rules"
+                                            accept="image/png, image/jpeg"
+                                            placeholder="Seleccionar imagen"
+                                            prepend-icon="mdi-camera"
+                                            label="Imagen Concepto"
+                                            dense
+                                            @change="procesoImg($event)"
+                                            color="#005598"
+                                            v-model="imagen"
+                                        ></v-file-input>
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-select 
+                                            :items="empresas"
+                                            label="Empresa"
+                                            hide-details
+                                            hide-selected
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Empresa')]"
+                                            @change="changeEmpresa($event)"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-select 
+                                            :items="grupos"
+                                            label="Grupo"
+                                            hide-details
+                                            hide-selected
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Grupo')]"
+                                            @change="changeGrupo($event)"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-select 
+                                            :items="subgrupos"
+                                            label="Subgrupo"
+                                            hide-details
+                                            hide-selected
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Subgrupo')]"
+                                            @change="changeSubgrupo($event)"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-select 
+                                            :items="tipos"
+                                            label="Tipo de concepto"
+                                            hide-details
+                                            hide-selected
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Tipo')]"
+                                            @change="changeSubgrupo($event)"
+                                        />
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="12" md="9" sm="12">
 
-        <Snackbar :error="error" :exito="exito" />
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+
+            <Snackbar :error="error" :exito="exito" />
+        </v-dialog>
     </v-container>
 </template>
 
 <script>
 import Conceptos from '@/services/Conceptos';
+import Empresa from '@/services/Empresa';
+import Grupos from '@/services/Grupos';
+import SubGrupos from '@/services/SubGrupos';
 import Snackbar from '@/components/helpers/Snackbar';
 import validations from '@/validations/validations';
 import {mapActions} from 'vuex';
@@ -59,6 +177,9 @@ import {mapActions} from 'vuex';
                 imagen:null,
                 editIndex: -1,
                 conceptos:[],
+                grupos:[],
+                subgrupos:[],
+                empresas:[],
                 ...validations,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
@@ -74,10 +195,113 @@ import {mapActions} from 'vuex';
                 rules: [
                     value => !value || value.size < 2000000 || 'Debe pesar menos de 2 MB!',
                 ],
+                tipos:[
+                    {id:1,text:'Servicio'},
+                    {id:2,text:'Producto'},
+                    {id:4,text:'Compuesto',disabled:true},
+                    {id:5,text:'Emsamblado',disabled:true}
+                ],
+                editItem:{
+                    "empresa_id": 0,
+                    "codigo": "",
+                    "referencia": "",
+                    "nombre": "",
+                    "descripcion": "",
+                    "talla": null,
+                    "color": null,
+                    "descuento": null,
+                    "serial_estatico": 0,
+                    "serial_dinamico": 0,
+                    "existencia_minima": "00.00",
+                    "existencia_maxima": "00.00",
+                    "tipos_conceptos_id": 2,
+                    "ubicacion_id": 1,
+                    "costo": null,
+                    "ultimo_costo": "00.00",
+                    "costo_mayor": "00.00",
+                    "costo_promedio": "00.00",
+                    "fecha_at": "2019-07-11T04",
+                    "fecha_in": "2019-08-13T04",
+                    "fecha_uc": "2019-08-12T04",
+                    "grupos_id": 0,
+                    "subgrupos_id": 0,
+                    "unidades_id": 0,
+                    "fecha_hora": null,
+                    "marcas_id": null,
+                    "estado": 1,
+                    "pvp": null,
+                    "precio_a": "00.00",
+                    "precio_dolar": "00.00",
+                    "utilidad": null,
+                    "utilidad_a": "00.00",
+                    "utilidad_dolar": "0",
+                    "costo_dolar": "00.00",
+                    "precio_variable": 0,
+                    "retiene": 0,
+                    "costo_adicional": "0.00",
+                    "costo_adicional2": "0.00",
+                    "cant_ensamblado": "0.00",
+                    "licor": 0,
+                    "porcentaje": null,
+                    "visible_pv": 1,
+                    "visible_web": null,
+                    "obviar_ajuste": 1,
+                    "iva": 1,
+                },
+                defaultItem:{
+                    "empresa_id": 0,
+                    "codigo": "",
+                    "referencia": "",
+                    "nombre": "",
+                    "descripcion": "",
+                    "talla": null,
+                    "color": null,
+                    "descuento": null,
+                    "serial_estatico": 0,
+                    "serial_dinamico": 0,
+                    "existencia_minima": "00.00",
+                    "existencia_maxima": "00.00",
+                    "tipos_conceptos_id": 2,
+                    "ubicacion_id": 1,
+                    "costo": null,
+                    "ultimo_costo": "00.00",
+                    "costo_mayor": "00.00",
+                    "costo_promedio": "00.00",
+                    "fecha_at": "2019-07-11T04",
+                    "fecha_in": "2019-08-13T04",
+                    "fecha_uc": "2019-08-12T04",
+                    "grupos_id": 0,
+                    "subgrupos_id": 0,
+                    "unidades_id": 0,
+                    "fecha_hora": null,
+                    "marcas_id": null,
+                    "estado": 1,
+                    "pvp": null,
+                    "precio_a": "00.00",
+                    "precio_dolar": "00.00",
+                    "utilidad": null,
+                    "utilidad_a": "00.00",
+                    "utilidad_dolar": "0",
+                    "costo_dolar": "00.00",
+                    "precio_variable": 0,
+                    "retiene": 0,
+                    "costo_adicional": "0.00",
+                    "costo_adicional2": "0.00",
+                    "cant_ensamblado": "0.00",
+                    "licor": 0,
+                    "porcentaje": null,
+                    "visible_pv": 1,
+                    "visible_web": null,
+                    "obviar_ajuste": 1,
+                    "iva": 1,
+                }
             }
         },
         mounted() {
             this.getConceptos();
+            this.getGrupos();
+            this.getSubgrupos();
+            this.getEmpresa();
         },
         computed: {
             title(){
@@ -94,10 +318,40 @@ import {mapActions} from 'vuex';
                     console.log(e);
                 });
             },
+            getEmpresa(){
+                Empresa().get("/").then((response)  => {
+                    this.empresas = response.data.data;
+                    for (let i = 0; i < this.empresas.length; i++) {
+                        this.empresas[i].text = this.empresas[i].nombre_comercial;
+                    }
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            getGrupos(){
+                Grupos().get("/").then((response) => {
+                    this.grupos = response.data.data;
+                    for (let i = 0; i < this.grupos.length; i++) {
+                        this.grupos[i].text = this.grupos[i].nombre;
+                    }
+                }).catch(e => {
+                    console.log(e);
+                })
+            },
+            getSubgrupos(){
+                SubGrupos().get("/").then((response) => {
+                    this.subgrupos = response.data.data
+                    for (let i = 0; i < this.subgrupos.length; i++) {
+                       this.subgrupos[i].text = this.subgrupos[i].nombre;
+                    }
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             deleteConceptos(item){
                 Conceptos().delete(`/${item.id}`).then((response)  => {
                     console.log(response);
-                    this.error = "Se elimino el concepto exitosamente.";
+                    this.exito = "Se elimino el concepto exitosamente.";
                     this.setSnackbar(true);
                     const index = this.conceptos.indexOf(item);
                     this.conceptos.splice(index,1);
@@ -107,14 +361,85 @@ import {mapActions} from 'vuex';
                     this.setSnackbar(true);
                 });
             },
+            postConceptos(item){
+                let formdata = new FormData();
+                formdata.append('image',this.imagen);
+                formdata.append('data',JSON.stringify(item));
+
+                Conceptos().post("/",formdata).then((response) => {
+                    console.log(response);
+                    this.exito = "Se creo exitosamente";
+                    this.setSnackbar(true);
+                    this.conceptos.push(item);
+                    this.close();
+                }).catch(e => {
+                    console.log(e);
+                    this.error = "No se pudo crear este concepto";
+                    this.setSnackbar(true);
+                    this.loading = false;
+                });
+            },
+            updateConceptos(item){
+                delete item.imagen;
+                let formdata = new FormData();
+                formdata.append('image',this.imagen);
+                formdata.append('data',JSON.stringify(item));
+
+                Conceptos().post("/",formdata).then((response) => {
+                    this.exito = "Se actualizo exitosamente";
+                    this.setSnackbar(true);
+                    Object.assign(this.conceptos[this.editIndex],item);
+                    this.editIndex = -1;
+                    this.close();
+                    console.log(response);
+                }).catch(e => {
+                    console.log(e);
+                    this.error = "No se pudo actualizar este concepto";
+                    this.setSnackbar(true);
+                    this.loading = false;
+                });
+            },
             deleteItem(item){
                 this.error = null;
                 this.exito = null;
                 confirm('¿Esta seguro de eliminar este Concepto?') && this.deleteConceptos(item);
             },
             editedItem(item){
-                console.log(item);
-            }
+                this.error = null;
+                this.exito = null;
+                this.dialog = true;
+                this.editIndex = this.conceptos.indexOf(item);
+                this.editItem = Object.assign({},item);
+            },
+            close(){
+                this.dialog = false;
+                setTimeout(() => {
+                    this.editIndex = -1;
+                    this.editItem = Object.assign({},this.defaultItem);
+                    this.showImage='http://192.168.0.253:81/api/images/default.png';
+                },300);
+            },
+            save(item){
+                this.loading = true;
+                this.error = null;
+                this.exito = null;
+                if(this.editIndex > -1){
+                    this.updateConceptos(item);
+                }else{
+                    //this.postEmpresas(item);
+                }
+            },
+            procesoImg(evt){
+                this.showImage = null;
+                if(evt){
+                    var reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.showImage = e.target.result;
+                        this.imagen = evt;
+                    }
+                    reader.readAsDataURL(evt);
+                }
+            },
         },
     }
 </script>

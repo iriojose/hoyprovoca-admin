@@ -17,7 +17,6 @@
             :headers="headers"
             :items="conceptos"
             class="elevation-0"
-            :items-per-page="7"
             :search="search"
         >
             <template v-slot:item.action="{ item }">

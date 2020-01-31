@@ -23,7 +23,6 @@
             :headers="headers"
             :items="empresas"
             class="elevation-0"
-            :items-per-page="7"
             :search="search"
         >
             <template v-slot:item.action="{ item }">
@@ -328,7 +327,6 @@ import Snackbar from '@/components/helpers/Snackbar';
                     this.empresas.push(item);
                     this.exito = "Se creo la empresa exitosamente";
                     this.setSnackbar(true);
-                    this.loading =false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
@@ -345,7 +343,6 @@ import Snackbar from '@/components/helpers/Snackbar';
                     this.editIndex = -1;
                     this.exito = "Se actualizo "+ item.nombre_comercial +" exitosamente";
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
@@ -363,7 +360,6 @@ import Snackbar from '@/components/helpers/Snackbar';
                 this.loading = true;
                 this.error = null;
                 this.exito = null;
-                console.log(this.editIndex);
                 
                 if(this.editIndex > -1){
                     this.updateEmpresas(item);
