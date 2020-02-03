@@ -35,7 +35,7 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
-                    <v-form v-model="valid" @submit.prevent="" class="px-5">
+                    <v-form v-model="valid" @submit.prevent="" class="pa-5">
                         <v-row>
                             <v-col cols="12" md="12" sm="12">
                                 <v-text-field 
@@ -55,6 +55,7 @@
                                     dense
                                     color="#005598"
                                     label="Existencia fisica"
+                                    :rules="[positivo()]"
                                     clearable
                                     outlined
                                 />
@@ -83,6 +84,7 @@
 </template>
 
 <script>
+import validations from '@/validations/validations';
 import Conceptos from '@/services/Conceptos';
 import Movimiento_deposito from '@/services/Movimiento_deposito';
 import Snackbar from '@/components/helpers/Snackbar';
@@ -94,6 +96,7 @@ import {mapActions} from 'vuex';
         },
         data(){
             return {
+                ...validations,
                 error:null,
                 exito:null,
                 search:'',
@@ -159,7 +162,7 @@ import {mapActions} from 'vuex';
             updateLocal(id,monto){
                 for (let i = 0; i < this.conceptos.length; i++) {
                     if(this.conceptos[i].id == id){
-                        this.conceptos[i].existencia = Number.parseFloat(monto);
+                        this.conceptos[i].existencia = monto+'.00';
                     }
                 }
             },

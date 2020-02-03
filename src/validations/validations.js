@@ -34,6 +34,12 @@ let urlFormat = () => {
     return v => v && regex.test(v) || `Debe ser una URL valida`;
 }
 
+let positivo = () => {
+    // eslint-disable-next-line
+    let regex = /^[+]?([1-9][0-9]*(?:[\.][0-9]*)?|0*\.0*[1-9][0-9]*)(?:[eE][+-][0-9]+)?$/;
+    return v => v && regex.test(v) || `Debe ser un numero positivo`;
+}
+
 //incompleto, falta expresion regular para los 4 primeros numeros del telefono
 /*let telefonoFormat = () => {
     let regex= aa;
@@ -47,5 +53,6 @@ export default{
     emailFormat,
     urlFormat,
     number,
-    cedula
+    cedula,
+    positivo
 }

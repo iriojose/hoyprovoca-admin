@@ -35,6 +35,15 @@
                             </template>
                             <span>conceptos</span>
                         </v-tooltip>
+
+                        <v-tooltip left>
+                            <template v-slot:activator="{ on }">
+                                <v-icon v-on="on" small class="mr-2" @click="call(item)"> 
+                                    remove_red_eye
+                                </v-icon>
+                            </template>
+                            <span>Factura</span>
+                        </v-tooltip>
                     </template>
                 </v-data-table>
             </v-card-text>

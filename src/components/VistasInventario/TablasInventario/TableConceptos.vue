@@ -87,6 +87,19 @@
                                     </v-col>
                                     <v-col cols="12" md="12" sm="12">
                                         <v-select 
+                                            :items="tipos"
+                                            label="Tipo de concepto"
+                                            hide-details
+                                            hide-selected
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Tipo')]"
+                                            @change="changeTipo($event)"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="12" sm="12">
+                                        <v-select 
                                             :items="empresas"
                                             label="Empresa"
                                             hide-details
@@ -96,19 +109,6 @@
                                             outlined
                                             :rules="[required('Empresa')]"
                                             @change="changeEmpresa($event)"
-                                        />
-                                    </v-col>
-                                    <v-col cols="12" md="12" sm="12">
-                                        <v-select 
-                                            :items="tipos"
-                                            label="Tipo de concepto"
-                                            hide-details
-                                            hide-selected
-                                            dense
-                                            color="#005598"
-                                            outlined
-                                            :rules="[required('Tipo')]"
-                                            @change="changeSubgrupo($event)"
                                         />
                                     </v-col>
                                 </v-row>
@@ -152,7 +152,6 @@
                                         <v-select 
                                             :items="grupos"
                                             label="Grupo"
-                                            v-model="selectGrupo"
                                             hide-details
                                             hide-selected
                                             dense
@@ -164,16 +163,16 @@
                                     </v-col>
                                     <v-col cols="12" md="4" sm="12">
                                         <v-select 
-                                            :items="subgrupos"
+                                            :items="subgruposSelect"
                                             label="Subgrupo"
                                             hide-details
                                             hide-selected
-                                            :disabled="selectGrupo == '' ? false:true"
+                                            :disabled="subgruposSelect.length > 0 ? false:true"
                                             dense
                                             color="#005598"
                                             outlined
                                             :rules="[required('Subgrupo')]"
-                                            @change="changeSubgrupo($event)"
+                                            @change="changeSubGrupo($event)"
                                         />
                                     </v-col>
                                 </v-row>
@@ -182,12 +181,13 @@
                     </v-form>
                 </v-card-text>
             </v-card>
-            <Snackbar :error="error" :exito="exito" />
         </v-dialog>
+        <Snackbar :error="error" :exito="exito" />
     </v-container>
 </template>
 
 <script>
+import MovimientoDeposito from '@/services/Movimiento_deposito';
 import Conceptos from '@/services/Conceptos';
 import Empresa from '@/services/Empresa';
 import Grupos from '@/services/Grupos';
@@ -202,6 +202,7 @@ import {mapActions} from 'vuex';
         },
         data() {
             return {
+                disabled:true,
                 valid:false,
                 dialog:false,
                 loading:false,
@@ -212,8 +213,8 @@ import {mapActions} from 'vuex';
                 imagen:null,
                 editIndex: -1,
                 conceptos:[],
-                selectGrupo:'',
                 grupos:[],
+                subgruposSelect:[],
                 subgrupos:[],
                 empresas:[],
                 ...validations,
@@ -304,13 +305,25 @@ import {mapActions} from 'vuex';
         },
         methods: {
             ...mapActions(['setSnackbar']),
-
+        
             getConceptos(){
                 Conceptos().get("/").then((response) => {
                     this.conceptos = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
+            },
+            postMovimientoDeposito(id){
+                let data ={
+                    depositos_id:1,
+                    conceptos_id:id,
+                    existencia:0
+                }
+                MovimientoDeposito().post("/",{data:data}).then((response) => {
+                    console.log(response);
+                }).catch(e => {
+                    console.log(e);
+                })
             },
             getEmpresa(){
                 Empresa().get("/").then((response)  => {
@@ -361,11 +374,14 @@ import {mapActions} from 'vuex';
                 formdata.append('data',JSON.stringify(item));
 
                 Conceptos().post("/",formdata).then((response) => {
-                    console.log(response);
+                    console.log(response.data.data);
                     this.exito = "Se creo exitosamente";
                     this.setSnackbar(true);
-                    this.conceptos.push(item);
+                    this.conceptos.push(response.data.data);
                     this.close();
+                    if(response.data.data.tipos_conceptos_id !== 1){
+                        this.postMovimientoDeposito(response.data.data.id);
+                    }
                 }).catch(e => {
                     console.log(e);
                     this.error = "No se pudo crear este concepto";
@@ -404,6 +420,7 @@ import {mapActions} from 'vuex';
                 this.dialog = true;
                 this.editIndex = this.conceptos.indexOf(item);
                 this.editItem = Object.assign({},item);
+                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
             },
             close(){
                 this.dialog = false;
@@ -420,11 +437,10 @@ import {mapActions} from 'vuex';
                 if(this.editIndex > -1){
                     this.updateConceptos(item);
                 }else{
-                    //this.postEmpresas(item);
+                    this.postConceptos(item);
                 }
             },
             procesoImg(evt){
-                this.showImage = null;
                 if(evt){
                     var reader = new FileReader();
                     reader.onload = (e) => {
@@ -432,10 +448,43 @@ import {mapActions} from 'vuex';
                         this.imagen = evt;
                     }
                     reader.readAsDataURL(evt);
+                }else{
+                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
                 }
             },
             changeGrupo(evt){
-                console.log(evt);
+                this.subgruposSelect = [];
+                for (let i = 0; i < this.grupos.length; i++){
+                    if(this.grupos[i].text == evt){
+                        this.editItem.grupos_id = this.grupos[i].id;
+                        for (let e = 0; e < this.subgrupos.length; e++) {
+                            if(this.subgrupos[e].grupos_id == this.grupos[i].id){
+                                this.subgruposSelect.push(this.subgrupos[e]);
+                            }
+                        }
+                    }
+                }
+            },
+            changeSubGrupo(evt){
+                for (let i = 0; i < this.subgruposSelect.length; i++) {
+                    if(this.subgruposSelect[i].text == evt){
+                        this.editItem.subgrupos_id = this.subgruposSelect[i].id;
+                    }
+                }
+            },
+            changeTipo(evt){
+                for (let i = 0; i < this.tipos.length; i++) {
+                    if(this.tipos[i].text == evt){
+                        this.editItem.tipos_conceptos_id = this.tipos[i].id
+                    }
+                }
+            },
+            changeEmpresa(evt){
+                for (let i = 0; i < this.empresas.length; i++) {
+                    if(this.empresas[i].text == evt){
+                        this.editItem.empresa_id=this.empresas[i].id;
+                    }
+                }
             }
         },
     }

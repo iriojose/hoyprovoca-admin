@@ -19,15 +19,30 @@
 
             <v-col cols="12" md="6" sm="6">
                 <v-hover v-slot:default="{hover}">
-                    <v-card width="100%" height="300" :elevation="hover ? 15:0" color="#eee" class="pa-4">
-        
+                    <v-card width="100%" height="380" :elevation="hover ? 15:0" color="#eee" class="pa-4">
+                        <BarChart />
                     </v-card>
                 </v-hover>
             </v-col>
             <v-col cols="12" md="6" sm="6">
                  <v-hover v-slot:default="{hover}">
-                    <v-card width="100%" height="300" :elevation="hover ? 15:0" color="#eee">
-                    
+                    <v-card width="100%" height="380" :elevation="hover ? 15:0" color="#eee">
+                        <LineChart /> 
+                    </v-card>
+                </v-hover>
+            </v-col>
+
+            <v-col cols="12" md="6" sm="6" class="mt-12">
+                <v-hover v-slot:default="{hover}">
+                    <v-card width="100%" height="380" :elevation="hover ? 15:0" color="#eee" class="pa-4">
+                        <BarChart /> 
+                    </v-card>
+                </v-hover>
+            </v-col>
+            <v-col cols="12" md="6" sm="6" class="mt-12">
+                 <v-hover v-slot:default="{hover}">
+                    <v-card width="100%" height="380" :elevation="hover ? 15:0" color="#eee">
+                        <PieChart /> 
                     </v-card>
                 </v-hover>
             </v-col>
@@ -36,11 +51,15 @@
 </template>
 
 <script>
-//import LineChart from '@/components/chartjs/LineChart';
+import BarChart from '@/components/chartjs/BarChart';
+import LineChart from '@/components/chartjs/LineChart';
+import PieChart from '@/components/chartjs/PieChart';
 
     export default {
         components: {
-            //LineChart,
+            BarChart,
+            LineChart,
+            PieChart
         },
         data() {
             return {
