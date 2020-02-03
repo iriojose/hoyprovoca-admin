@@ -16,19 +16,39 @@
                     </v-row>
                 </v-card>
             </v-col>
+
+            <v-col cols="12" md="6" sm="6">
+                <v-hover v-slot:default="{hover}">
+                    <v-card width="100%" height="300" :elevation="hover ? 15:0" color="#eee" class="pa-4">
+        
+                    </v-card>
+                </v-hover>
+            </v-col>
+            <v-col cols="12" md="6" sm="6">
+                 <v-hover v-slot:default="{hover}">
+                    <v-card width="100%" height="300" :elevation="hover ? 15:0" color="#eee">
+                    
+                    </v-card>
+                </v-hover>
+            </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
+//import LineChart from '@/components/chartjs/LineChart';
+
     export default {
+        components: {
+            //LineChart,
+        },
         data() {
             return {
                 stats:[
-                    {text:'Clientes',icon:'person',number:'500',color:'#303F9F'},
-                    {text:'Pedidos',icon:'shopping_basket',number:'40',color:'#00796B'},
-                    {text:'Utilidad',icon:'monetization_on',number:'30%',color:'#455A64'},
-                ]
+                    {text:'Clientes',icon:'person',number:'500',color:'#303f9f'},
+                    {text:'Pedidos',icon:'shopping_basket',number:'40',color:'#00796b'},
+                    {text:'Utilidad',icon:'monetization_on',number:'30%',color:'#455a64'}
+                ],
             }
         },
     }

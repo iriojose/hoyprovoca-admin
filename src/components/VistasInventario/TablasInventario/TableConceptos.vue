@@ -64,7 +64,7 @@
                                 <v-stepper-step step="3" editable color="#005598">Existencias</v-stepper-step>
                             </v-stepper-header>
                         </v-stepper>
-                        <v-row justify="center" align="center">
+                        <v-row>
                             <v-col cols="12" md="3" sm="12">
                                 <v-row justify="center" align="center">
                                     <v-col cols="12" md="12" sm="12">
@@ -100,32 +100,6 @@
                                     </v-col>
                                     <v-col cols="12" md="12" sm="12">
                                         <v-select 
-                                            :items="grupos"
-                                            label="Grupo"
-                                            hide-details
-                                            hide-selected
-                                            dense
-                                            color="#005598"
-                                            outlined
-                                            :rules="[required('Grupo')]"
-                                            @change="changeGrupo($event)"
-                                        />
-                                    </v-col>
-                                    <v-col cols="12" md="12" sm="12">
-                                        <v-select 
-                                            :items="subgrupos"
-                                            label="Subgrupo"
-                                            hide-details
-                                            hide-selected
-                                            dense
-                                            color="#005598"
-                                            outlined
-                                            :rules="[required('Subgrupo')]"
-                                            @change="changeSubgrupo($event)"
-                                        />
-                                    </v-col>
-                                    <v-col cols="12" md="12" sm="12">
-                                        <v-select 
                                             :items="tipos"
                                             label="Tipo de concepto"
                                             hide-details
@@ -140,13 +114,74 @@
                                 </v-row>
                             </v-col>
                             <v-col cols="12" md="9" sm="12">
-
+                                <v-row>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-text-field 
+                                            v-model="editItem.nombre"
+                                            label="Nombre"
+                                            color="#005598"
+                                            type="text"
+                                            outlined
+                                            dense
+                                            :rules="[required('Nombre')]"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-text-field 
+                                            v-model="editItem.codigo"
+                                            label="Codigo"
+                                            color="#005598"
+                                            type="text"
+                                            outlined
+                                            dense
+                                            :rules="[required('Codigo')]"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-text-field 
+                                            v-model="editItem.referencia"
+                                            label="Referencia"
+                                            color="#005598"
+                                            type="text"
+                                            outlined
+                                            dense
+                                            :rules="[required('Referencia')]"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-select 
+                                            :items="grupos"
+                                            label="Grupo"
+                                            v-model="selectGrupo"
+                                            hide-details
+                                            hide-selected
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Grupo')]"
+                                            @change="changeGrupo($event)"
+                                        />
+                                    </v-col>
+                                    <v-col cols="12" md="4" sm="12">
+                                        <v-select 
+                                            :items="subgrupos"
+                                            label="Subgrupo"
+                                            hide-details
+                                            hide-selected
+                                            :disabled="selectGrupo == '' ? false:true"
+                                            dense
+                                            color="#005598"
+                                            outlined
+                                            :rules="[required('Subgrupo')]"
+                                            @change="changeSubgrupo($event)"
+                                        />
+                                    </v-col>
+                                </v-row>
                             </v-col>
                         </v-row>
                     </v-form>
                 </v-card-text>
             </v-card>
-
             <Snackbar :error="error" :exito="exito" />
         </v-dialog>
     </v-container>
@@ -177,6 +212,7 @@ import {mapActions} from 'vuex';
                 imagen:null,
                 editIndex: -1,
                 conceptos:[],
+                selectGrupo:'',
                 grupos:[],
                 subgrupos:[],
                 empresas:[],
@@ -207,45 +243,24 @@ import {mapActions} from 'vuex';
                     "referencia": "",
                     "nombre": "",
                     "descripcion": "",
-                    "talla": null,
-                    "color": null,
-                    "descuento": null,
-                    "serial_estatico": 0,
-                    "serial_dinamico": 0,
                     "existencia_minima": "00.00",
                     "existencia_maxima": "00.00",
-                    "tipos_conceptos_id": 2,
-                    "ubicacion_id": 1,
+                    "tipos_conceptos_id": 0,
+                    "ubicacion_id": 0,
                     "costo": null,
-                    "ultimo_costo": "00.00",
-                    "costo_mayor": "00.00",
-                    "costo_promedio": "00.00",
                     "fecha_at": "2019-07-11T04",
                     "fecha_in": "2019-08-13T04",
                     "fecha_uc": "2019-08-12T04",
                     "grupos_id": 0,
                     "subgrupos_id": 0,
-                    "unidades_id": 0,
-                    "fecha_hora": null,
-                    "marcas_id": null,
-                    "estado": 1,
-                    "pvp": null,
                     "precio_a": "00.00",
                     "precio_dolar": "00.00",
                     "utilidad": null,
                     "utilidad_a": "00.00",
                     "utilidad_dolar": "0",
                     "costo_dolar": "00.00",
-                    "precio_variable": 0,
-                    "retiene": 0,
-                    "costo_adicional": "0.00",
-                    "costo_adicional2": "0.00",
-                    "cant_ensamblado": "0.00",
-                    "licor": 0,
-                    "porcentaje": null,
                     "visible_pv": 1,
                     "visible_web": null,
-                    "obviar_ajuste": 1,
                     "iva": 1,
                 },
                 defaultItem:{
@@ -254,45 +269,24 @@ import {mapActions} from 'vuex';
                     "referencia": "",
                     "nombre": "",
                     "descripcion": "",
-                    "talla": null,
-                    "color": null,
-                    "descuento": null,
-                    "serial_estatico": 0,
-                    "serial_dinamico": 0,
                     "existencia_minima": "00.00",
                     "existencia_maxima": "00.00",
-                    "tipos_conceptos_id": 2,
-                    "ubicacion_id": 1,
+                    "tipos_conceptos_id": 0,
+                    "ubicacion_id": 0,
                     "costo": null,
-                    "ultimo_costo": "00.00",
-                    "costo_mayor": "00.00",
-                    "costo_promedio": "00.00",
                     "fecha_at": "2019-07-11T04",
                     "fecha_in": "2019-08-13T04",
                     "fecha_uc": "2019-08-12T04",
                     "grupos_id": 0,
                     "subgrupos_id": 0,
-                    "unidades_id": 0,
-                    "fecha_hora": null,
-                    "marcas_id": null,
-                    "estado": 1,
-                    "pvp": null,
                     "precio_a": "00.00",
                     "precio_dolar": "00.00",
                     "utilidad": null,
                     "utilidad_a": "00.00",
                     "utilidad_dolar": "0",
                     "costo_dolar": "00.00",
-                    "precio_variable": 0,
-                    "retiene": 0,
-                    "costo_adicional": "0.00",
-                    "costo_adicional2": "0.00",
-                    "cant_ensamblado": "0.00",
-                    "licor": 0,
-                    "porcentaje": null,
                     "visible_pv": 1,
                     "visible_web": null,
-                    "obviar_ajuste": 1,
                     "iva": 1,
                 }
             }
@@ -440,6 +434,9 @@ import {mapActions} from 'vuex';
                     reader.readAsDataURL(evt);
                 }
             },
+            changeGrupo(evt){
+                console.log(evt);
+            }
         },
     }
 </script>

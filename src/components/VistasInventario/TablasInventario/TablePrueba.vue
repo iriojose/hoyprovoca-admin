@@ -118,7 +118,6 @@ import validations from '@/validations/validations';
                 editIndex:-1,
                 valid:false,
                 search:'',
-                showImage:'http://192.168.0.253:81/api/images/default.png',
                 imagen:null,
                 grupos:[],
                 ...validations,
@@ -144,7 +143,8 @@ import validations from '@/validations/validations';
                     visualizar:1,
                     posicion:1,
                     imagen:'default.png',
-                }
+                },
+                showImage:'http://192.168.0.253:81/api/images/default.png',
             }
         },
         mounted() {
@@ -185,17 +185,19 @@ import validations from '@/validations/validations';
                 });
             },
             postGrupos(item){
-                Grupos().post("/",{data:item}).then((response) => {
+                let formdata = new FormData();
+                formdata.append('image',this.imagen);
+                formdata.append('data',JSON.stringify(item));
+                Grupos().post("/",formdata).then((response) => {
                     console.log(response);
                     this.exito = 'Se creo el grupo '+item.nombre+' exitosamente.';
-                    this.grupos.push(item);
+                    this.grupos.push(response.data.data);
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
                     this.error = 'No se pudo crear el grupo '+item.nombre;
-                    this.loading =false;
+                    this.close();
                     this.setSnackbar(true);
                 });
             },
@@ -206,11 +208,10 @@ import validations from '@/validations/validations';
                     this.editIndex = -1;
                     this.exito = 'Se actualizo el grupo '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
-                    this.loading = false;
+                    this.close();
                     this.error = 'No se pudo actualizar el grupo '+item.nombre+'.';
                     this.setSnackbar(true);
                 });
@@ -232,6 +233,7 @@ import validations from '@/validations/validations';
                 this.dialog = true;
                 this.editIndex = this.grupos.indexOf(item);
                 this.editItem = Object.assign({},item);
+                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
             },
             close(){
                 this.dialog = false;
@@ -254,6 +256,8 @@ import validations from '@/validations/validations';
                         this.imagen = evt;
                     }
                     reader.readAsDataURL(evt);
+                }else{
+                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
                 }
             },
         }

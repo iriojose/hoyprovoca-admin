@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-toolbar flat color="#fff">
-            <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="dialog=!dialog">
+            <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="close">
                 Nuevo
                 <v-icon dark class="ml-2">
                     add_circle
@@ -226,25 +226,26 @@ import {mapActions} from 'vuex';
                         this.imagen = evt;
                     }
                     reader.readAsDataURL(evt);
+                }else{
+                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
                 }
             },
             //Metodos del crud y llamadas a la api
             postSubgrupos(item){
-                const aux = item.grupo;
                 delete item.grupo;
-                SubGrupos().post("/",{data:item}).then((response) => {
+                let formdata = new FormData();
+                formdata.append('image',this.imagen);
+                formdata.append('data',JSON.stringify(item));
+                SubGrupos().post("/",formdata).then((response) => {
                     console.log(response);
                     this.exito = 'Se creo el subgrupo '+item.nombre+' exitosamente.';
-                    item.grupo = aux;
-                    this.subgrupos.push(item);
+                    this.subgrupos.push(response.data.data);
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
                     this.error = 'No se pudo crear el subgrupo '+item.nombre;
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 });
             },
@@ -258,13 +259,11 @@ import {mapActions} from 'vuex';
                     this.editIndex = -1;
                     this.exito = 'Se actualizo el subgrupo '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 }).catch(e => {
                     console.log(e);
                     this.error = 'No se pudo actualizar el subgrupo '+item.nombre+'.';
                     this.setSnackbar(true);
-                    this.loading = false;
                     this.close();
                 });
             },
@@ -297,6 +296,7 @@ import {mapActions} from 'vuex';
                 this.dialog = true;
                 this.editIndex = this.subgrupos.indexOf(item);
                 this.editItem = Object.assign({},item);
+                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
             },
             close(){
                 this.dialog = false;

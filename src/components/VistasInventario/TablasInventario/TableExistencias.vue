@@ -20,7 +20,6 @@
             :search="search"
         >
             <template v-slot:item.action="{ item }">
-                <v-icon small class="mr-2" @click="crearMovimiento(item)">create</v-icon>
                 <v-icon small class="mr-2" @click="editedItem(item)">add</v-icon>
             </template>
         </v-data-table>
@@ -28,7 +27,7 @@
         <v-dialog v-model="dialog" width="400" @MouseEvent="close">
             <v-card>
                 <v-card-title class="color">
-                    {{title}}
+                    Actualizar
                     <v-spacer></v-spacer>
                     <v-icon @click="close">
                         cancel
@@ -103,6 +102,7 @@ import {mapActions} from 'vuex';
                 loading:false,
                 conceptos:[],
                 existencia:0,
+                id:0,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
                     { text: 'Nombre',sortable: true, value: 'nombre' },
@@ -113,26 +113,13 @@ import {mapActions} from 'vuex';
                     { text: 'Existencia',sortable: true, value: 'existencia' },
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
-                editIndex:-1,
                 editItem:{
-                    depositos_id:1,
-                    conceptos_id:0,
                     existencia:0,
                 },
-                defaultItem:{
-                    depositos_id:1,
-                    conceptos_id:0,
-                    existencia:0,
-                }
             }
         },
         mounted() {
             this.getConceptos();
-        },
-        computed: {
-            title(){
-                return this.editIndex == -1 ? 'Crear movimiento de deposito':'Editar movimiento de deposito';
-            }
         },
         methods: {
             ...mapActions(['setSnackbar']),
@@ -154,26 +141,13 @@ import {mapActions} from 'vuex';
                     console.log(e);
                 });
             },
-            postMovimientoDepoito(item){
-                Movimiento_deposito().post("/",{data:item}).then((response) => {
-                    console.log(response);
-                    this.exito="Se creo el movimiento de deposito exitosamente.";
-                    this.setSnackbar(true);
-                    this.close();
-                }).catch(e => {
-                    console.log(e);
-                    this.error = "No se pudo crear el movimiento.";
-                    this.setSnackbar(true);
-                    this.close();
-                });
-            },
             updateMovimientoDeposito(item){
-                const aux = item.existencia + this.existencia;
-                Movimiento_deposito().post(`/${item.conceptos_id}`,{data:aux}).then((response) => {
+                const aux = Number.parseInt(item.existencia) + Number.parseInt(this.existencia);
+                Movimiento_deposito().post(`/${this.id}`,{data:{existencia:aux}}).then((response) => {
                     console.log(response);
-                    this.error = "se actualizo el movimiento exitosamente.";
+                    this.updateLocal(this.id,aux);
+                    this.exito= "se actualizo el movimiento exitosamente.";
                     this.setSnackbar(true);
-                    this.editIndex = -1;
                     this.close();
                 }).catch(e => {
                     console.log(e);
@@ -182,32 +156,26 @@ import {mapActions} from 'vuex';
                     this.close();
                 })
             },
+            updateLocal(id,monto){
+                for (let i = 0; i < this.conceptos.length; i++) {
+                    if(this.conceptos[i].id == id){
+                        this.conceptos[i].existencia = Number.parseFloat(monto);
+                    }
+                }
+            },
             editedItem(item){
                 this.existencia=item.existencia;
-                this.editIndex = this.conceptos.indexOf(item);
+                this.id = item.id;
                 this.dialog = true;
-                console.log(item);
-            },
-            crearMovimiento(item){
-                this.dialog = true;
-                console.log(item);
             },
             close(){
                 this.dialog = false;
-                this.existencia=0;
-                setTimeout(() => { 
-                    this.editIndex = -1;
-                    this.editItem = Object.assign({},this.defaultItem);
-                },300);               
+                this.existencia=0;             
             },
             save(item){
                 this.error = null;
                 this.exito = null;
-                if(this.editIndex > -1){
-                    this.updateMovimientoDeposito(item);
-                }else{
-                    this.updateMovimientoDeposito(item);
-                }
+                this.updateMovimientoDeposito(item);
             }
         },
     }
