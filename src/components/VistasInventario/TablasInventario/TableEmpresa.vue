@@ -48,7 +48,7 @@
                                 <v-row justify="center" align="center">
                                     <v-col cols="12" md="12" sm="12">
                                         <v-card width="100%" height="170" class="pa-2" elevation="0">
-                                            <v-img height="150" width="100%" contain v-if="showImage" :src="showImage" />
+                                            <v-img height="150" width="100%" contain :src="showImage" />
                                         </v-card>
                                     </v-col>
                                     <v-col cols="12" md="12" sm="12">
@@ -221,6 +221,7 @@
 <script>
 import validations from '@/validations/validations';
 import Empresa from '@/services/Empresa';
+import url from '@/services/ruta';
 import {mapActions} from 'vuex';
 import Snackbar from '@/components/helpers/Snackbar';
 
@@ -230,6 +231,7 @@ import Snackbar from '@/components/helpers/Snackbar';
         },
         data(){
             return {
+                ruta:null,
                 search:'',
                 valid:false,
                 loading:false,
@@ -238,7 +240,7 @@ import Snackbar from '@/components/helpers/Snackbar';
                 empresas:[],
                 dialog:false,
                 editIndex:-1,
-                showImage:'http://192.168.0.253:81/api/images/default.png',
+                showImage:null,
                 imagen:null,
                 ...validations,
                 headers: [
@@ -291,6 +293,8 @@ import Snackbar from '@/components/helpers/Snackbar';
             }
         },
         mounted() {
+            this.ruta=url;
+            this.showImage=this.ruta+'default.png';
             this.getEmpresas();
         },
         computed: {
@@ -373,17 +377,17 @@ import Snackbar from '@/components/helpers/Snackbar';
                 this.dialog = true;
                 this.editIndex = this.empresas.indexOf(item);
                 this.editItem = Object.assign({},item);
+                //this.showImage=this.ruta+this.editItem.logo;
             },
             close(){
                 this.dialog = false;
                 setTimeout(() => {
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage='http://192.168.0.253:81/api/images/default.png';
+                    this.showImage=this.ruta+'default.png';
                 },300);
             },
             procesoImg(evt){
-                this.showImage = null;
                 if(evt){
                     var reader = new FileReader();
                     reader.onload = (e) => {
@@ -391,6 +395,9 @@ import Snackbar from '@/components/helpers/Snackbar';
                         this.imagen = evt;
                     }
                     reader.readAsDataURL(evt);
+                }else{
+                    this.imagen = null;
+                    this.showImage=this.ruta+this.editItem.logo;
                 }
             },
         },

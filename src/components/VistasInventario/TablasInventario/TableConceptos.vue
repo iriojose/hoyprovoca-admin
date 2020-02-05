@@ -273,6 +273,7 @@
 </template>
 
 <script>
+import url from '@/services/ruta';
 import MovimientoDeposito from '@/services/Movimiento_deposito';
 import Conceptos from '@/services/Conceptos';
 import Empresa from '@/services/Empresa';
@@ -289,6 +290,7 @@ import {mapActions} from 'vuex';
         },
         data() {
             return {
+                ruta:null,
                 disabled:true,
                 valid:false,
                 dialog:false,
@@ -296,7 +298,7 @@ import {mapActions} from 'vuex';
                 error:null,
                 exito:null,
                 search:'',
-                showImage:'http://192.168.0.253:81/api/images/default.png',
+                showImage:null,
                 imagen:null,
                 editIndex: -1,
                 conceptos:[],
@@ -383,6 +385,8 @@ import {mapActions} from 'vuex';
             }
         },
         mounted() {
+            this.ruta=url;
+            this.showImage=this.ruta+'default.png';
             this.getConceptos();
             this.getGrupos();
             this.getSubgrupos();
@@ -521,7 +525,7 @@ import {mapActions} from 'vuex';
                 this.dialog = true;
                 this.editIndex = this.conceptos.indexOf(item);
                 this.editItem = Object.assign({},item);
-                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                this.showImage=this.ruta+this.editItem.imagen;
             },
             close(){
                 this.dialog = false;
@@ -529,7 +533,7 @@ import {mapActions} from 'vuex';
                 setTimeout(() => {
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage='http://192.168.0.253:81/api/images/default.png';
+                    this.showImage=this.ruta+'default.png';
                 },300);
             },
             save(item){
@@ -552,7 +556,7 @@ import {mapActions} from 'vuex';
                     reader.readAsDataURL(evt);
                 }else{
                     this.imagen = null;
-                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                    this.showImage=this.ruta+'default.png';
                 }
             },
             changeGrupo(evt){

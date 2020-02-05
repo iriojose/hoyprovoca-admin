@@ -102,6 +102,7 @@
 <script>
 import Snackbar from '@/components/helpers/Snackbar';
 import Grupos from '@/services/Grupos';
+import url from '@/services/ruta';
 import {mapActions} from 'vuex';
 import validations from '@/validations/validations';
 
@@ -111,6 +112,7 @@ import validations from '@/validations/validations';
         },
         data() {
             return {
+                ruta:null,
                 loading:false,
                 exito:null,
                 error:null,
@@ -144,10 +146,12 @@ import validations from '@/validations/validations';
                     posicion:1,
                     imagen:'default.png',
                 },
-                showImage:'http://192.168.0.253:81/api/images/default.png',
+                showImage:'',
             }
         },
         mounted() {
+            this.ruta = url;
+            this.showImage=this.ruta+'default.png'
             this.getGrupos();
         },
         computed: {
@@ -227,7 +231,7 @@ import validations from '@/validations/validations';
                 this.dialog = true;
                 this.editIndex = this.grupos.indexOf(item);
                 this.editItem = Object.assign({},item);
-                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                this.showImage=this.ruta+this.editItem.imagen;
             },
             close(){
                 this.loading = false;
@@ -235,7 +239,7 @@ import validations from '@/validations/validations';
                 setTimeout(() => { 
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage='http://192.168.0.253:81/api/images/default.png';
+                    this.showImage=this.ruta+'default.png';
                 },300);               
             },
             deleteItem(item){
@@ -252,7 +256,8 @@ import validations from '@/validations/validations';
                     }
                     reader.readAsDataURL(evt);
                 }else{
-                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                    this.imagen = null;
+                    this.showImage=this.ruta+this.editItem.imagen;
                 }
             },
         }

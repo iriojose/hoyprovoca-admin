@@ -116,6 +116,7 @@
 <script>
 import SubGrupos from '@/services/SubGrupos';
 import Grupos from '@/services/Grupos';
+import url from '@/services/ruta';
 import validations from '@/validations/validations';
 import Snackbar from '@/components/helpers/Snackbar';
 import {mapActions} from 'vuex';
@@ -126,7 +127,8 @@ import {mapActions} from 'vuex';
         },
         data() {
             return {
-                showImage:'http://192.168.0.253:81/api/images/default.png',
+                ruta:null,
+                showImage:null,
                 imagen:null,
                 exito:null,
                 error:null,
@@ -169,6 +171,8 @@ import {mapActions} from 'vuex';
             }
         },
         mounted(){
+            this.ruta = url;
+            this.showImage=this.ruta+'default.png';
             this.getSubgrupos();
         },
         computed: {
@@ -227,7 +231,8 @@ import {mapActions} from 'vuex';
                     }
                     reader.readAsDataURL(evt);
                 }else{
-                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                    this.imagen = null;
+                    this.showImage=this.ruta+this.editItem.imagen;
                 }
             },
             //Metodos del crud y llamadas a la api
@@ -296,7 +301,7 @@ import {mapActions} from 'vuex';
                 this.dialog = true;
                 this.editIndex = this.subgrupos.indexOf(item);
                 this.editItem = Object.assign({},item);
-                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                this.showImage=this.ruta+this.editItem.imagen;
             },
             close(){
                 this.loading = false;
@@ -304,7 +309,7 @@ import {mapActions} from 'vuex';
                 setTimeout(() => {
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage='http://192.168.0.253:81/api/images/default.png';
+                    this.showImage=this.ruta+'default.png';
                 },300);
             },
             deleteItem(item){
