@@ -3,9 +3,7 @@
         <v-toolbar flat color="#fff">
             <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="dialog = !dialog">
                 Nuevo
-                <v-icon dark class="ml-2">
-                    add_circle
-                </v-icon>
+                <v-icon dark class="ml-2">add_circle</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
             <v-text-field
@@ -19,26 +17,19 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table
-            :headers="headers"
-            :items="subgrupos"
-            class="elevation-0"
-            :search="search"
-        >
+        <v-data-table :headers="headers" :items="subgrupos" class="elevation-0" :search="search">
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
                 <v-icon small @click="deleteItem(item)">delete</v-icon>
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="400" @MouseEvent="close">
+        <v-dialog v-model="dialog" width="400">
             <v-card width="100%" height="600">
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="close">
-                        cancel
-                    </v-icon>
+                    <v-icon @click="dialog=!dialog">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -135,6 +126,7 @@ import {mapActions} from 'vuex';
                 valid:false,
                 dialog:false,
                 loading:false,
+                editIndex:-1,
                 search:'',
                 subgrupos:[],
                 grupos:[],
@@ -151,7 +143,6 @@ import {mapActions} from 'vuex';
                     { text: 'Imagen', value: 'imagen' },
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
-                editIndex:-1,
                 editItem:{
                     nombre:'',
                     grupo:'',
@@ -180,6 +171,19 @@ import {mapActions} from 'vuex';
                 return this.editIndex == -1 ? 'Agregar':'Editar';
             }
         },
+        watch: {
+            dialog(){
+                if(!this.dialog){
+                    this.loading = false;
+                    setTimeout(() => {
+                        this.editIndex = -1;
+                        this.editItem = Object.assign({},this.defaultItem);
+                        this.showImage=this.ruta+'default.png';
+                        this.imagen=null;
+                    },300);
+                }
+            }
+        },
         methods:{
             ...mapActions(['setSnackbar']),
 
@@ -198,29 +202,11 @@ import {mapActions} from 'vuex';
                 });
             },
             refactor(subgrupos,grupos){
-                for (let i = 0; i < subgrupos.length; i++) {
-                    for (let e = 0; e < grupos.length; e++) {
-                        if(subgrupos[i].grupos_id == grupos[e].id){
-                            subgrupos[i].grupo = grupos[e].nombre;
-                        }
-                    }
-                }
-                this.refactorGrupos(grupos);
-                this.subgrupos = subgrupos;
-
-            },
-            refactorGrupos(grupos){
-                for (let i = 0; i < grupos.length; i++) {
-                    grupos[i].text = grupos[i].nombre;
-                }
-                this.grupos = grupos;
+                this.subgrupos = subgrupos.filter(a=> grupos.filter(b=> a.grupos_id==b.id ? a.grupo=b.nombre:null));
+                this.grupos = grupos.filter(a=> a.text=a.nombre);
             },
             change(evt){
-                for (let i = 0; i < this.grupos.length; i++) {
-                    if(this.grupos[i].nombre == evt){
-                        this.editItem.grupos_id = this.grupos[i].id;
-                    }
-                }
+                this.grupos.filter(a=> a.nombre==evt ? this.editItem.grupos_id=a.id:null);
             },
             procesoImg(evt){
                 if(evt){
@@ -243,42 +229,41 @@ import {mapActions} from 'vuex';
                 formdata.append('data',JSON.stringify(item));
                 SubGrupos().post("/",formdata).then((response) => {
                     console.log(response);
+                    this.dialog = false;
                     this.exito = 'Se creo el subgrupo '+item.nombre+' exitosamente.';
                     this.subgrupos.push(response.data.data);
                     this.setSnackbar(true);
-                    this.close();
                 }).catch(e => {
                     console.log(e);
+                    this.dialog = false;
                     this.error = 'No se pudo crear el subgrupo '+item.nombre;
                     this.setSnackbar(true);
-                    this.close();
                 });
             },
             updateSubgrupos(item){
                 const aux = item.grupo;
                 delete item.grupo;
-                SubGrupos().post(`/${item.id}`,{data:item}).then((response) => {
-                    console.log(response);
+                SubGrupos().post(`/${item.id}`,{data:item}).then(() => {
                     item.grupo = aux;
+                    this.dialog = false;
                     Object.assign(this.subgrupos[this.editIndex],item);
                     this.editIndex = -1;
                     this.exito = 'Se actualizo el subgrupo '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
-                    this.close();
                 }).catch(e => {
                     console.log(e);
+                    this.dialog = false;
                     this.error = 'No se pudo actualizar el subgrupo '+item.nombre+'.';
                     this.setSnackbar(true);
-                    this.close();
                 });
             },
             deleteSubgrupos(item){
                 SubGrupos().delete(`/${item.id}`).then((response) => {
                     console.log(response);
-                    this.exito = 'Se elimino el subgrupo '+item.nombre+' exitosamente.';
-                    this.setSnackbar(true);
                     const index = this.subgrupos.indexOf(item);
                     this.subgrupos.splice(index,1);
+                    this.exito = 'Se elimino el subgrupo '+item.nombre+' exitosamente.';
+                    this.setSnackbar(true);
                 }).catch(e => {
                     console.log(e);
                     this.error = 'No se pudo eliminar el Grupo '+item.nombre+'.';
@@ -296,21 +281,10 @@ import {mapActions} from 'vuex';
                 }
             },
             editedItem(item){
-                this.error = null;
-                this.exito = null;
                 this.dialog = true;
                 this.editIndex = this.subgrupos.indexOf(item);
                 this.editItem = Object.assign({},item);
                 this.showImage=this.ruta+this.editItem.imagen;
-            },
-            close(){
-                this.loading = false;
-                this.dialog = false;
-                setTimeout(() => {
-                    this.editIndex = -1;
-                    this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage=this.ruta+'default.png';
-                },300);
             },
             deleteItem(item){
                 this.error = null;

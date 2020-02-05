@@ -3,10 +3,9 @@
         <v-toolbar flat color="#fff">
             <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="dialog=!dialog">
                 Nuevo
-                <v-icon dark class="ml-2">
-                    add_circle
-                </v-icon>
+                <v-icon dark class="ml-2">add_circle</v-icon>
             </v-btn>
+            <v-spacer></v-spacer>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="search"
@@ -19,12 +18,7 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table
-            :headers="headers"
-            :items="conceptos"
-            class="elevation-0"
-            :search="search"
-        >
+        <v-data-table :headers="headers" :items="conceptos" class="elevation-0" :search="search">
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
                 <v-icon small @click="deleteItem(item)">delete</v-icon>
@@ -36,9 +30,7 @@
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="close">
-                        cancel
-                    </v-icon>
+                    <v-icon @click="close">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -89,6 +81,7 @@
                                                 </v-col>
                                                 <v-col cols="12" md="12" sm="12">
                                                     <v-select 
+                                                        v-model="selectTipo"
                                                         :items="tipos"
                                                         label="Tipo de concepto"
                                                         hide-details
@@ -102,6 +95,7 @@
                                                 </v-col>
                                                 <v-col cols="12" md="12" sm="12">
                                                     <v-select 
+                                                        v-model="selectEmpresa"
                                                         :items="empresas"
                                                         label="Empresa"
                                                         hide-details
@@ -152,6 +146,7 @@
                                                 </v-col>
                                                 <v-col cols="12" md="4" sm="12">
                                                     <v-select 
+                                                        v-model="selectGrupo"
                                                         :items="grupos"
                                                         label="Grupo"
                                                         hide-details
@@ -165,6 +160,7 @@
                                                 </v-col>
                                                 <v-col cols="12" md="4" sm="12">
                                                     <v-select 
+                                                        v-model="selectSubgrupo"
                                                         :items="subgruposSelect"
                                                         label="Subgrupo"
                                                         hide-details
@@ -179,6 +175,7 @@
                                                 </v-col>
                                                 <v-col cols="12" md="4" sm="12">
                                                     <v-select 
+                                                        v-model="selectMarca"
                                                         :items="marcas"
                                                         label="Marca"
                                                         hide-details
@@ -186,7 +183,6 @@
                                                         dense
                                                         color="#005598"
                                                         outlined
-                                                        :rules="[required('Marca')]"
                                                         @change="changeMarca($event)"
                                                     />
                                                 </v-col>
@@ -230,7 +226,29 @@
                                                 type="number"
                                                 outlined
                                                 disabled
-                                                single-line
+                                            />
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="12">
+                                            <v-text-field 
+                                                dense
+                                                color="#005598"
+                                                v-model="editItem.costo_mayor"
+                                                label="Costo"
+                                                type="number"
+                                                outlined
+                                                :rules="[required('Costo')]"
+                                            />
+                                        </v-col>
+                                        <v-col cols="12" md="6" sm="12">
+                                            <v-text-field 
+                                                dense
+                                                color="#005598"
+                                                prefix="%"
+                                                v-model="editItem.utilidad_a"
+                                                label="Utilidad"
+                                                type="number"
+                                                outlined
+                                                :rules="[required('Utilidad')]"
                                             />
                                         </v-col>
                                     </v-row>
@@ -246,7 +264,6 @@
                                                 label="Existencia Minima"
                                                 type="number"
                                                 outlined
-                                                single-line
                                             />
                                         </v-col>
                                         <v-col cols="12" md="6" sm="12">
@@ -257,7 +274,6 @@
                                                 label="Existencia Maxima"
                                                 type="number"
                                                 outlined
-                                                single-line
                                             />
                                         </v-col>
                                     </v-row>
@@ -290,6 +306,11 @@ import {mapActions} from 'vuex';
         },
         data() {
             return {
+                selectTipo:null,
+                selectEmpresa:null,
+                selectGrupo:null,
+                selectSubgrupo:null,
+                selectMarca:null,
                 ruta:null,
                 disabled:true,
                 valid:false,
@@ -339,6 +360,7 @@ import {mapActions} from 'vuex';
                     "tipos_conceptos_id": 0,
                     "ubicacion_id": 0,
                     "costo": null,
+                    "costo_mayor":null,
                     "fecha_at": "2019-07-11T04",
                     "fecha_in": "2019-08-13T04",
                     "fecha_uc": "2019-08-12T04",
@@ -346,9 +368,10 @@ import {mapActions} from 'vuex';
                     "subgrupos_id": null,
                     "marcas_id":null,
                     "precio_a": null,
+                    "imagen":"default.png",
                     "precio_dolar": null,
                     "utilidad": null,
-                    "utilidad_a": "0.00",
+                    "utilidad_a": null,
                     "utilidad_dolar": "0",
                     "costo_dolar": "0.00",
                     "visible_pv": 1,
@@ -356,7 +379,7 @@ import {mapActions} from 'vuex';
                     "iva": 1,
                 },
                 defaultItem:{
-                    "empresa_id": 0,
+                   "empresa_id": 0,
                     "codigo": "",
                     "referencia": "",
                     "nombre": "",
@@ -366,6 +389,7 @@ import {mapActions} from 'vuex';
                     "tipos_conceptos_id": 0,
                     "ubicacion_id": 0,
                     "costo": null,
+                    "costo_mayor":null,
                     "fecha_at": "2019-07-11T04",
                     "fecha_in": "2019-08-13T04",
                     "fecha_uc": "2019-08-12T04",
@@ -375,7 +399,7 @@ import {mapActions} from 'vuex';
                     "precio_a": null,
                     "precio_dolar": null,
                     "utilidad": null,
-                    "utilidad_a": "0.00",
+                    "utilidad_a": null,
                     "utilidad_dolar": "0",
                     "costo_dolar": "0.00",
                     "visible_pv": 1,
@@ -422,51 +446,38 @@ import {mapActions} from 'vuex';
             },
             getMarcas(){
                 Marcas().get("/").then((response) => {
-                    this.marcas = response.data.data;
-                    for (let i = 0; i < this.marcas.length; i++) {
-                        this.marcas[i].text = this.marcas[i].nombre;
-                    }
+                    this.marcas = response.data.data.filter(a=> a.text=a.nombre);
                 }).catch(e => {
                     console.log(e);
                 });
             },
             getEmpresa(){
                 Empresa().get("/").then((response)  => {
-                    this.empresas = response.data.data;
-                    for (let i = 0; i < this.empresas.length; i++) {
-                        this.empresas[i].text = this.empresas[i].nombre_comercial;
-                    }
+                    this.empresas = response.data.data.filter(a=> a.text=a.nombre_comercial);
                 }).catch(e => {
                     console.log(e);
                 });
             },
             getGrupos(){
                 Grupos().get("/").then((response) => {
-                    this.grupos = response.data.data;
-                    for (let i = 0; i < this.grupos.length; i++) {
-                        this.grupos[i].text = this.grupos[i].nombre;
-                    }
+                    this.grupos = response.data.data.filter(a=> a.text=a.nombre);
                 }).catch(e => {
                     console.log(e);
                 })
             },
             getSubgrupos(){
                 SubGrupos().get("/").then((response) => {
-                    this.subgrupos = response.data.data
-                    for (let i = 0; i < this.subgrupos.length; i++) {
-                       this.subgrupos[i].text = this.subgrupos[i].nombre;
-                    }
+                    this.subgrupos = response.data.data.filter(a=> a.text=a.nombre);
                 }).catch(e => {
                     console.log(e);
                 });
             },
             deleteConceptos(item){
-                Conceptos().delete(`/${item.id}`).then((response)  => {
-                    console.log(response);
-                    this.exito = "Se elimino el concepto exitosamente.";
-                    this.setSnackbar(true);
+                Conceptos().delete(`/${item.id}`).then(() => {
                     const index = this.conceptos.indexOf(item);
                     this.conceptos.splice(index,1);
+                    this.exito = "Se elimino el concepto exitosamente.";
+                    this.setSnackbar(true);
                 }).catch(e  => {
                     console.log(e);
                     this.error = "No se pudo eliminar este concepto";
@@ -479,39 +490,35 @@ import {mapActions} from 'vuex';
                 formdata.append('data',JSON.stringify(item));
 
                 Conceptos().post("/",formdata).then((response) => {
-                    console.log(response.data.data);
+                    this.conceptos.push(response.data.data);
+                    response.data.data.tipos_conceptos_id !== 1 ? this.postMovimientoDeposito(response.data.data.id):null;
+                    this.close();
                     this.exito = "Se creo exitosamente";
                     this.setSnackbar(true);
-                    this.conceptos.push(response.data.data);
-                    this.close();
-                    if(response.data.data.tipos_conceptos_id !== 1){
-                        this.postMovimientoDeposito(response.data.data.id);
-                    }
                 }).catch(e => {
                     console.log(e);
+                    this.close();
                     this.error = "No se pudo crear este concepto";
                     this.setSnackbar(true);
-                    this.loading = false;
                 });
             },
             updateConceptos(item){
-                delete item.imagen;
+                //delete item.imagen;
                 //let formdata = new FormData();
                 //formdata.append('image',this.imagen);
                 //formdata.append('data',JSON.stringify(item));
 
-                Conceptos().post("/",{data:item}).then((response) => {
-                    this.exito = "Se actualizo exitosamente";
-                    this.setSnackbar(true);
+                Conceptos().post("/",{data:item}).then(() => {
                     Object.assign(this.conceptos[this.editIndex],item);
                     this.editIndex = -1;
                     this.close();
-                    console.log(response);
+                    this.exito = "Se actualizo exitosamente";
+                    this.setSnackbar(true);
                 }).catch(e => {
                     console.log(e);
+                    this.close();
                     this.error = "No se pudo actualizar este concepto";
                     this.setSnackbar(true);
-                    this.close();
                 });
             },
             deleteItem(item){
@@ -520,16 +527,16 @@ import {mapActions} from 'vuex';
                 confirm('¿Esta seguro de eliminar este Producto?') && this.deleteConceptos(item);
             },
             editedItem(item){
-                this.error = null;
-                this.exito = null;
-                this.dialog = true;
                 this.editIndex = this.conceptos.indexOf(item);
                 this.editItem = Object.assign({},item);
                 this.showImage=this.ruta+this.editItem.imagen;
+                this.changes();
+                this.dialog=true;
             },
             close(){
-                this.dialog = false;
-                this.loading = false;
+                this.dialog=false;
+                this.loading=false;
+                this.nulos();
                 setTimeout(() => {
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
@@ -561,48 +568,41 @@ import {mapActions} from 'vuex';
             },
             changeGrupo(evt){
                 this.subgruposSelect = [];
-                for (let i = 0; i < this.grupos.length; i++){
-                    if(this.grupos[i].text == evt){
-                        this.editItem.grupos_id = this.grupos[i].id;
-                        for (let e = 0; e < this.subgrupos.length; e++) {
-                            if(this.subgrupos[e].grupos_id == this.grupos[i].id){
-                                this.subgruposSelect.push(this.subgrupos[e]);
-                            }
-                        }
-                    }
-                }
+                this.grupos.filter(a=> a.text==evt ? this.editItem.grupos_id=a.id:null);
+                this.subgrupos.filter(a=> a.grupos_id==this.editItem.grupos_id ? this.subgruposSelect.push(a):null);
             },
             changeSubGrupo(evt){
-                for (let i = 0; i < this.subgruposSelect.length; i++) {
-                    if(this.subgruposSelect[i].text == evt){
-                        this.editItem.subgrupos_id = this.subgruposSelect[i].id;
-                    }
-                }
+                this.subgruposSelect.filter(a=> a.text==evt ? this.editItem.subgrupos_id=a.id:null);
             },
             changeMarca(evt){
-                for (let i = 0; i < this.marcas.length; i++) {
-                    if(this.marcas[i].text == evt){
-                        this.editItem.marcas_id = this.marcas[i].id;
-                    }
-                }
+                this.marcas.filter(a=> a.text==evt ? this.editItem.marcas_id=a.id:null);
             },
             changeTipo(evt){
-                for (let i = 0; i < this.tipos.length; i++) {
-                    if(this.tipos[i].text == evt){
-                        this.editItem.tipos_conceptos_id = this.tipos[i].id
-                    }
-                }
+                this.tipos.filter(a=> a.text==evt ? this.editItem.tipos_conceptos_id=a.id:null);
             },
             changeEmpresa(evt){
-                for (let i = 0; i < this.empresas.length; i++) {
-                    if(this.empresas[i].text == evt){
-                        this.editItem.empresa_id=this.empresas[i].id;
-                    }
-                }
+                this.empresas.filter(a=> a.text==evt ? this.editItem.empresa_id=a.id:null);
             },
             changePrecio(evt){
                 this.editItem.precio_dolar = Number.parseFloat(evt)/75000;
+            },
+            changes(){
+                this.empresas.filter(a=> a.id==this.editItem.empresa_id ? this.selectEmpresa=a.text:null);
+                this.tipos.filter(a=> a.id==this.editItem.tipos_conceptos_id ? this.selectTipo=a.text:null);
+                this.grupos.filter(a=> a.id==this.editItem.grupos_id ? this.selectGrupo=a.text:null);
+                this.subgrupos.filter(a=> a.id==this.editItem.subgrupos_id ? this.selectSubgrupo=a.text:null);
+                this.marcas.filter(a=> a.id==this.editItem.marcas_id ? this.selectMarca=a.text:null);
+                this.subgruposSelect = [];
+                this.subgrupos.filter(a=> a.grupos_id==this.editItem.grupos_id ? this.subgruposSelect.push(a):null);
+            },
+            nulos(){
+                this.selectTipo=null;
+                this.selectEmpresa=null;
+                this.selectGrupo=null;
+                this.selectSubgrupo=null;
+                this.selectMarca=null;
             }
+
         },
     }
 </script>

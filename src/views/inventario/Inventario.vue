@@ -46,7 +46,7 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
-                    <TablePrueba v-if="opc==1"/>
+                    <TableGrupos v-if="opc==1"/>
                     <TableSubGrupos v-else-if="opc==2"/>
                     <TableConceptos v-else-if="opc==3"/>
                     <TableExistencias v-else-if="opc==4"/>
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import TablePrueba from '@/components/VistasInventario/TablasInventario/TablePrueba';
+import TableGrupos from '@/components/VistasInventario/TablasInventario/TableGrupos';
 import TableSubGrupos from '@/components/VistasInventario/TablasInventario/TableSubGrupos';
 import TableEmpresa from '@/components/VistasInventario/TablasInventario/TableEmpresa';
 import TableConceptos from '@/components/VistasInventario/TablasInventario/TableConceptos';
@@ -70,7 +70,7 @@ import TableUnidades from '@/components/VistasInventario/TablasInventario/TableU
 
     export default {
         components:{
-            TablePrueba,
+            TableGrupos,
             TableSubGrupos,
             TableEmpresa,
             TableConceptos,

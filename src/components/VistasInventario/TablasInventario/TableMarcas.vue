@@ -3,9 +3,7 @@
         <v-toolbar flat color="#fff">
             <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="dialog=!dialog">
                 Nuevo
-                <v-icon dark class="ml-2">
-                    add_circle
-                </v-icon>
+                <v-icon dark class="ml-2">add_circle</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
             <v-text-field
@@ -19,12 +17,7 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table
-            :headers="headers"
-            :items="marcas"
-            class="elevation-0"
-            :search="search"
-        >
+        <v-data-table :headers="headers" :items="marcas" class="elevation-0" :search="search">
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
                 <v-icon small @click="deleteItem(item)">delete</v-icon>
@@ -36,9 +29,7 @@
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="close">
-                        cancel
-                    </v-icon>
+                    <v-icon @click="dialog=!dialog">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -76,7 +67,6 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-
         <Snackbar :error="error" :exito="exito" />
     </v-container>
 </template>
@@ -123,10 +113,20 @@ import {mapActions} from 'vuex';
                 return this.editIndex == -1 ? 'Agregar':'Editar';
             }
         },
+        watch: {
+            dialog(){
+                if(!this.dialog){
+                    this.loading = false;
+                    setTimeout(() => { 
+                        this.editIndex = -1;
+                        this.editItem = Object.assign({},this.defaultItem);
+                    },300);    
+                }
+            }
+        },
         methods:{
             ...mapActions(['setSnackbar']),
             
-            //LLAMADAS A LA API
             getMarcas(){
                 Marcas().get("/").then((response) => {
                     this.marcas = response.data.data;
@@ -135,8 +135,7 @@ import {mapActions} from 'vuex';
                 });
             },
             deleteMarca(item){
-                Marcas().delete(`/${item.id}`).then((response) => {
-                    console.log(response);
+                Marcas().delete(`/${item.id}`).then(() => {
                     const index = this.marcas.indexOf(item);
                     this.marcas.splice(index,1);
                     this.exito = 'Se elimino la Marca '+item.nombre+' exitosamente.';
@@ -150,15 +149,15 @@ import {mapActions} from 'vuex';
             postMarcas(item){
                 Marcas().post("/",{data:item}).then((response) => {
                     console.log(response);
-                    this.exito = 'Se creo la Marca '+item.nombre+' exitosamente.';
+                    this.dialog=false;
                     this.marcas.push(item);
+                    this.exito = 'Se creo la Marca '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
-                    this.close();
                 }).catch(e => {
                     console.log(e);
+                    this.dialog=false;
                     this.error = 'No se pudo crear la Marca '+item.nombre+'.';
                     this.setSnackbar(true);
-                    this.close();
                 });
             },
             updateMarca(item){
@@ -166,24 +165,15 @@ import {mapActions} from 'vuex';
                     console.log(response);
                     Object.assign(this.marcas[this.editIndex],item);
                     this.editIndex = -1;
+                    this.dialog=false;
                     this.exito = 'Se actualizo la Marca '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
-                    this.close();
                 }).catch(e => {
                     console.log(e);
+                    this.dialog=false;
                     this.error = 'No se pudo actualizar la Marca '+item.nombre+'.';
                     this.setSnackbar(true);
-                    this.close();
                 });
-            },
-
-            close(){
-                this.loading = false;
-                this.dialog = false;
-                setTimeout(() => { 
-                    this.editIndex = -1;
-                    this.editItem = Object.assign({},this.defaultItem);
-                },300);               
             },
             deleteItem(item){
                 this.error = null;
@@ -191,8 +181,6 @@ import {mapActions} from 'vuex';
                 confirm('¿Esta seguro de eliminar esta Marca?') && this.deleteMarca(item);
             },
             editedItem(item){
-                this.error = null;
-                this.exito = null;
                 this.dialog = true;
                 this.editIndex = this.marcas.indexOf(item);
                 this.editItem = Object.assign({},item);

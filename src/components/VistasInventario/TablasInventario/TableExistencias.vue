@@ -13,12 +13,7 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table
-            :headers="headers"
-            :items="conceptos"
-            class="elevation-0"
-            :search="search"
-        >
+        <v-data-table :headers="headers" :items="conceptos" class="elevation-0" :search="search">
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItemSum(item)">add</v-icon>
                 <v-icon small class="mr-2" @click="editedItemRest(item)">remove</v-icon>
@@ -30,9 +25,7 @@
                 <v-card-title class="color">
                     Actualizar
                     <v-spacer></v-spacer>
-                    <v-icon @click="close">
-                        cancel
-                    </v-icon>
+                    <v-icon @click="close">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -105,7 +98,6 @@ import {mapActions} from 'vuex';
         },
         data(){
             return {
-                ...validations,
                 nota:'',
                 error:null,
                 exito:null,
@@ -117,6 +109,7 @@ import {mapActions} from 'vuex';
                 existencia:0,
                 id:0,
                 add:0,
+                ...validations,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
                     { text: 'Nombre',sortable: true, value: 'nombre' },
@@ -135,14 +128,23 @@ import {mapActions} from 'vuex';
         mounted() {
             this.getConceptos();
         },
+        watch: {
+            dialog(){
+                if(!this.dialog){
+                    this.loading=false;
+                    this.existencia=0;  
+                    this.add = 0;      
+                    this.editItem.existencia = 0;   
+                    this.nota='';  
+                }
+            }
+        },
         methods: {
             ...mapActions(['setSnackbar']),
 
             getConceptos(){
                 Conceptos().get("/").then((response) => {
-                    for (let i = 0; i < response.data.data.length; i++) {
-                        this.getConceptosExistencia(response.data.data[i]);
-                    }
+                    response.data.data.filter(a=> this.getConceptosExistencia(a));
                 }).catch(e => {
                     console.log(e);
                 });
@@ -193,14 +195,6 @@ import {mapActions} from 'vuex';
                 this.id = item.id;
                 this.dialog = true;
                 this.add=1;
-            },
-            close(){
-                this.dialog = false;
-                this.loading=false;
-                this.existencia=0;  
-                this.add = 0;      
-                this.editItem.existencia = 0;   
-                this.nota='';  
             },
             save(item){
                 this.loading = true;

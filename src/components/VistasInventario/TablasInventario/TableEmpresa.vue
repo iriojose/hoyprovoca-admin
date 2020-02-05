@@ -302,6 +302,19 @@ import Snackbar from '@/components/helpers/Snackbar';
                 return this.editIndex == -1 ? 'Agregar':'Editar';
             }
         },
+        watch: {
+            dialog(){
+                if(!this.dialog){
+                    this.loading = false;
+                    setTimeout(() => {
+                        this.editIndex = -1;
+                        this.editItem = Object.assign({},this.defaultItem);
+                        this.showImage=this.ruta+'default.png';
+                        this.imagen=null;
+                    },300);
+                }
+            }
+        },
         methods: {
             ...mapActions(['setSnackbar']),
 
@@ -331,28 +344,28 @@ import Snackbar from '@/components/helpers/Snackbar';
                     this.empresas.push(item);
                     this.exito = "Se creo la empresa exitosamente";
                     this.setSnackbar(true);
-                    this.close();
+                    this.dialog=false;
                 }).catch(e => {
                     console.log(e);
+                    this.dialog=false;
                     this.error = "No se pudo crear la Empresa";
                     this.setSnackbar(true);
-                    this.loading =false;
                 });
             },
             updateEmpresas(item){
                 item.fecha_registro = '2019-02-22T03';
                 Empresa().post(`/${item.id}`,{data:item}).then((response) => {
                     console.log(response);
+                    this.dialog=false;
                     Object.assign(this.empresas[this.editIndex],item);
                     this.editIndex = -1;
                     this.exito = "Se actualizo "+ item.nombre_comercial +" exitosamente";
                     this.setSnackbar(true);
-                    this.close();
                 }).catch(e => {
                     console.log(e);
+                    this.dialog=false;
                     this.error = "No se pudo Actualizar "+ item.nombre_comercial;
                     this.setSnackbar(true);
-                    this.loading = false;
                 });
             },
             deleteItem(item){
@@ -364,7 +377,6 @@ import Snackbar from '@/components/helpers/Snackbar';
                 this.loading = true;
                 this.error = null;
                 this.exito = null;
-                
                 if(this.editIndex > -1){
                     this.updateEmpresas(item);
                 }else{
@@ -372,20 +384,10 @@ import Snackbar from '@/components/helpers/Snackbar';
                 }
             },
             editedItem(item){
-                this.error = null;
-                this.exito = null;
                 this.dialog = true;
                 this.editIndex = this.empresas.indexOf(item);
                 this.editItem = Object.assign({},item);
-                //this.showImage=this.ruta+this.editItem.logo;
-            },
-            close(){
-                this.dialog = false;
-                setTimeout(() => {
-                    this.editIndex = -1;
-                    this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage=this.ruta+'default.png';
-                },300);
+                this.showImage=this.ruta+this.editItem.logo;
             },
             procesoImg(evt){
                 if(evt){
