@@ -40,6 +40,8 @@
                         <div class="title font-weight-bold" v-show="opc==3">Productos</div>
                         <div class="title font-weight-bold" v-show="opc==4">Existencias</div>
                         <div class="title font-weight-bold" v-show="opc==5">Empresas</div>
+                        <div class="title font-weight-bold" v-show="opc==6">Marcas</div>
+                        <div class="title font-weight-bold" v-show="opc==7">Unidades</div>
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-divider></v-divider>
@@ -49,6 +51,8 @@
                     <TableConceptos v-else-if="opc==3"/>
                     <TableExistencias v-else-if="opc==4"/>
                     <TableEmpresa v-else-if="opc==5"/>
+                    <TableMarcas v-else-if="opc==6"/>
+                    <TableUnidades v-else-if="opc==7"/>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -61,6 +65,8 @@ import TableSubGrupos from '@/components/VistasInventario/TablasInventario/Table
 import TableEmpresa from '@/components/VistasInventario/TablasInventario/TableEmpresa';
 import TableConceptos from '@/components/VistasInventario/TablasInventario/TableConceptos';
 import TableExistencias from '@/components/VistasInventario/TablasInventario/TableExistencias';
+import TableMarcas from '@/components/VistasInventario/TablasInventario/TableMarcas';
+import TableUnidades from '@/components/VistasInventario/TablasInventario/TableUnidades';
 
     export default {
         components:{
@@ -68,7 +74,9 @@ import TableExistencias from '@/components/VistasInventario/TablasInventario/Tab
             TableSubGrupos,
             TableEmpresa,
             TableConceptos,
-            TableExistencias
+            TableExistencias,
+            TableMarcas,
+            TableUnidades
         },
         data() {
             return {
@@ -79,7 +87,9 @@ import TableExistencias from '@/components/VistasInventario/TablasInventario/Tab
                     {text:'SubGrupos',icon:'group_work',color:'#C2185B'},
                     {text:'Productos',icon:'fastfood',color:'#D32F2F'},
                     {text:'Existencias',icon:'hourglass_empty',color:'#1976D2'},
-                    {text:'Empresas',icon:'business',color:'#303F9F'}
+                    {text:'Empresas',icon:'business',color:'#303F9F'},
+                    {text:'Marcas',icon:'grade',color:'#00796B'},
+                    {text:'Unidades',icon:'grain',color:'#388E3C'}
                 ]
             }
         },

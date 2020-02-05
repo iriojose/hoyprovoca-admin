@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-toolbar flat color="#fff">
-            <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="close">
+            <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="dialog = !dialog">
                 Nuevo
                 <v-icon dark class="ml-2">
                     add_circle
@@ -299,6 +299,7 @@ import {mapActions} from 'vuex';
                 this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
             },
             close(){
+                this.loading = false;
                 this.dialog = false;
                 setTimeout(() => {
                     this.editIndex = -1;

@@ -21,7 +21,7 @@
         </v-toolbar>
         <v-data-table
             :headers="headers"
-            :items="grupos"
+            :items="marcas"
             class="elevation-0"
             :search="search"
         >
@@ -42,26 +42,8 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
-                    <v-form v-model="valid" @submit.prevent="" class="px-5">
+                    <v-form v-model="valid" @submit.prevent="" class="pa-5">
                         <v-row>
-                            <v-col cols="12" md="12" sm="12">
-                                <v-card width="100%" height="170" class="pa-2" elevation="0">
-                                    <v-img height="150" width="100%" contain :src="showImage" />
-                                </v-card>
-                            </v-col>
-                            <v-col cols="12" md="12" sm="12">
-                                <v-file-input
-                                    :rules="rules"
-                                    accept="image/png, image/jpeg"
-                                    placeholder="Seleccionar imagen"
-                                    prepend-icon="mdi-camera"
-                                    label="Imagen Grupo"
-                                    dense
-                                    @change="procesoImg($event)"
-                                    color="#005598"
-                                    v-model="imagen"
-                                ></v-file-input>
-                            </v-col>
                             <v-col cols="12" md="12" sm="12">
                                 <v-text-field
                                     label="Nombre"
@@ -95,60 +77,46 @@
             </v-card>
         </v-dialog>
 
-        <Snackbar :exito="exito" :error="error" />
+        <Snackbar :error="error" :exito="exito" />
     </v-container>
 </template>
 
 <script>
-import Snackbar from '@/components/helpers/Snackbar';
-import Grupos from '@/services/Grupos';
-import {mapActions} from 'vuex';
+import Marcas from '@/services/Marcas';
 import validations from '@/validations/validations';
+import Snackbar from '@/components/helpers/Snackbar';
+import {mapActions} from 'vuex';
 
     export default {
         components:{
-            Snackbar,
+            Snackbar
         },
         data() {
             return {
-                loading:false,
-                exito:null,
-                error:null,
                 dialog:false,
-                editIndex:-1,
-                valid:false,
                 search:'',
-                imagen:null,
-                grupos:[],
+                valid:false,
+                loading:false,
+                error:null,
+                exito:null,
+                editIndex:-1,
+                marcas:[],
                 ...validations,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
                     { text: 'Nombre',sortable: true, value: 'nombre' },
-                    { text: 'Visualizar', value: 'visualizar' },
-                    { text: 'posicion', value: 'posicion' },
-                    { text: 'Imagen', value: 'imagen' },
                     { text: 'Acciones', value: 'action', sortable: false },
-                ],
-                rules: [
-                    value => !value || value.size < 2000000 || 'Debe pesar menos de 2 MB!',
                 ],
                 editItem:{
                     nombre:'',
-                    visualizar:1,
-                    posicion:1,
-                    imagen:'default.png',
                 },
                 defaultItem:{
                     nombre:'',
-                    visualizar:1,
-                    posicion:1,
-                    imagen:'default.png',
                 },
-                showImage:'http://192.168.0.253:81/api/images/default.png',
             }
         },
         mounted() {
-            this.getGrupos();
+            this.getMarcas();
         },
         computed: {
             title(){
@@ -157,110 +125,88 @@ import validations from '@/validations/validations';
         },
         methods:{
             ...mapActions(['setSnackbar']),
-
+            
             //LLAMADAS A LA API
-            getGrupos(){
-                Grupos().get("/").then((response) => {
-                    this.grupos = response.data.data;
+            getMarcas(){
+                Marcas().get("/").then((response) => {
+                    this.marcas = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            deleteGrupos(item){
-                Grupos().delete(`/${item.id}`).then((response) => {
+            deleteMarca(item){
+                Marcas().delete(`/${item.id}`).then((response) => {
                     console.log(response);
-                    const index = this.grupos.indexOf(item);
-                    this.grupos.splice(index,1);
-                    this.exito = 'Se elimino el grupo '+item.nombre+' exitosamente.';
+                    const index = this.marcas.indexOf(item);
+                    this.marcas.splice(index,1);
+                    this.exito = 'Se elimino la Marca '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
                 }).catch(e => {
                     console.log(e);
-                    this.error = 'No se pudo eliminar el Grupo '+item.nombre+'.';
+                    this.error = 'No se pudo eliminar la Marca '+item.nombre+'.';
                     this.setSnackbar(true);
                 });
             },
-            postGrupos(item){
-                let formdata = new FormData();
-                formdata.append('image',this.imagen);
-                formdata.append('data',JSON.stringify(item));
-                Grupos().post("/",formdata).then((response) => {
+            postMarcas(item){
+                Marcas().post("/",{data:item}).then((response) => {
                     console.log(response);
-                    this.exito = 'Se creo el grupo '+item.nombre+' exitosamente.';
-                    this.grupos.push(response.data.data);
+                    this.exito = 'Se creo la Marca '+item.nombre+' exitosamente.';
+                    this.marcas.push(item);
                     this.setSnackbar(true);
                     this.close();
                 }).catch(e => {
                     console.log(e);
-                    this.error = 'No se pudo crear el grupo '+item.nombre;
-                    this.close();
+                    this.error = 'No se pudo crear la Marca '+item.nombre+'.';
                     this.setSnackbar(true);
+                    this.close();
                 });
             },
-            updateGrupos(item){
-                Grupos().post(`/${item.id}`,{data:item}).then((response) => {
+            updateMarca(item){
+                Marcas().post(`/${item.id}`,{data:item}).then((response) => {
                     console.log(response);
-                    Object.assign(this.grupos[this.editIndex],item);
+                    Object.assign(this.marcas[this.editIndex],item);
                     this.editIndex = -1;
-                    this.exito = 'Se actualizo el grupo '+item.nombre+' exitosamente.';
+                    this.exito = 'Se actualizo la Marca '+item.nombre+' exitosamente.';
                     this.setSnackbar(true);
                     this.close();
                 }).catch(e => {
                     console.log(e);
-                    this.error = 'No se pudo actualizar el grupo '+item.nombre+'.';
+                    this.error = 'No se pudo actualizar la Marca '+item.nombre+'.';
                     this.setSnackbar(true);
                     this.close();
                 });
             },
-            save(item){
-                this.loading = true;
-                this.error = null;
-                this.exito = null;
-                if(this.editIndex > -1){
-                    this.updateGrupos(item);
-                }else{
-                    this.postGrupos(item);
-                }
-            },
-            editedItem(item){
-                this.error = null;
-                this.exito = null;
-                this.dialog = true;
-                this.editIndex = this.grupos.indexOf(item);
-                this.editItem = Object.assign({},item);
-                this.showImage ='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
-            },
+
             close(){
                 this.loading = false;
                 this.dialog = false;
                 setTimeout(() => { 
                     this.editIndex = -1;
                     this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage='http://192.168.0.253:81/api/images/default.png';
                 },300);               
             },
             deleteItem(item){
                 this.error = null;
                 this.exito = null;
-                confirm('¿Esta seguro de eliminar este Grupo?') && this.deleteGrupos(item);
+                confirm('¿Esta seguro de eliminar esta Marca?') && this.deleteMarca(item);
             },
-            procesoImg(evt){
-                if(evt){
-                    var reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.showImage = e.target.result;
-                        this.imagen = evt;
-                    }
-                    reader.readAsDataURL(evt);
+            editedItem(item){
+                this.error = null;
+                this.exito = null;
+                this.dialog = true;
+                this.editIndex = this.marcas.indexOf(item);
+                this.editItem = Object.assign({},item);
+            },
+            save(item){
+                this.loading = true;
+                this.error = null;
+                this.exito = null;
+                if(this.editIndex > -1){
+                    this.updateMarca(item);
                 }else{
-                    this.showImage='http://192.168.0.253:81/api/images/'+this.editItem.imagen;
+                    this.postMarcas(item);
                 }
             },
         }
     }
 </script>
-
-<style scope>
-    .color{
-        background: #eee;
-    }
-</style>

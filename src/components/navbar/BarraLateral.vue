@@ -46,7 +46,7 @@ import {mapState, mapActions} from 'vuex';
                     {icon:"supervisor_account",text:"Clientes",path:"/clientes"},
                     {icon:"business",text:"Empresas",path:"/empresas"},
                     {icon:"shopping_basket",text:"Pedidos",path:"/pedidos"},
-                    {icon:"bar_chart",text:"Estadisticas",path:"/estadisticas"},
+                    {icon:"insert_chart",text:"Estadisticas",path:"/estadisticas"},
                     {icon:"notifications",text:"Notificaciones",path:"/notificaciones"}
                 ]
             }

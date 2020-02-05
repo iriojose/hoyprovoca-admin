@@ -20,7 +20,8 @@
             :search="search"
         >
             <template v-slot:item.action="{ item }">
-                <v-icon small class="mr-2" @click="editedItem(item)">add</v-icon>
+                <v-icon small class="mr-2" @click="editedItemSum(item)">add</v-icon>
+                <v-icon small class="mr-2" @click="editedItemRest(item)">remove</v-icon>
             </template>
         </v-data-table>
         
@@ -60,6 +61,14 @@
                                     outlined
                                 />
                             </v-col>
+                            <v-col cols="12" md="12" sm="12" v-if="add == 1">
+                                <v-textarea 
+                                    label="Nota"
+                                    filled
+                                    color="#005598"
+                                    v-model="nota"
+                                />
+                            </v-col>
                             <v-col cols="12" md="12" sm="12">
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
@@ -97,6 +106,7 @@ import {mapActions} from 'vuex';
         data(){
             return {
                 ...validations,
+                nota:'',
                 error:null,
                 exito:null,
                 search:'',
@@ -106,6 +116,7 @@ import {mapActions} from 'vuex';
                 conceptos:[],
                 existencia:0,
                 id:0,
+                add:0,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
                     { text: 'Nombre',sortable: true, value: 'nombre' },
@@ -145,7 +156,12 @@ import {mapActions} from 'vuex';
                 });
             },
             updateMovimientoDeposito(item){
-                const aux = Number.parseInt(item.existencia) + Number.parseInt(this.existencia);
+                let aux=0;
+                if(this.add == 1 ){
+                    aux = Number.parseInt(this.existencia) - Number.parseInt(item.existencia);
+                }else{
+                    aux = Number.parseInt(item.existencia) + Number.parseInt(this.existencia);
+                }
                 Movimiento_deposito().post(`/${this.id}`,{data:{existencia:aux}}).then((response) => {
                     console.log(response);
                     this.updateLocal(this.id,aux);
@@ -166,16 +182,28 @@ import {mapActions} from 'vuex';
                     }
                 }
             },
-            editedItem(item){
+            editedItemSum(item){
                 this.existencia=item.existencia;
                 this.id = item.id;
                 this.dialog = true;
+                this.add=2;
+            },
+            editedItemRest(item){
+                this.existencia=item.existencia;
+                this.id = item.id;
+                this.dialog = true;
+                this.add=1;
             },
             close(){
                 this.dialog = false;
-                this.existencia=0;             
+                this.loading=false;
+                this.existencia=0;  
+                this.add = 0;      
+                this.editItem.existencia = 0;   
+                this.nota='';  
             },
             save(item){
+                this.loading = true;
                 this.error = null;
                 this.exito = null;
                 this.updateMovimientoDeposito(item);
