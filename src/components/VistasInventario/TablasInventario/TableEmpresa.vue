@@ -31,14 +31,12 @@
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="900" @MouseEvent="close">
+        <v-dialog v-model="dialog" width="900">
             <v-card>
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="close">
-                        cancel
-                    </v-icon>
+                    <v-icon @click="dialog=!dialog">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>

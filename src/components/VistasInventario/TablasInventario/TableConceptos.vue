@@ -453,7 +453,7 @@ import {mapActions} from 'vuex';
             },
             getEmpresa(){
                 Empresa().get("/").then((response)  => {
-                    this.empresas = response.data.data.filter(a=> a.text=a.nombre_comercial);
+                    this.empresas = response.data.data.filter(a=> a.text=a.nombre);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -463,7 +463,7 @@ import {mapActions} from 'vuex';
                     this.grupos = response.data.data.filter(a=> a.text=a.nombre);
                 }).catch(e => {
                     console.log(e);
-                })
+                });
             },
             getSubgrupos(){
                 SubGrupos().get("/").then((response) => {
