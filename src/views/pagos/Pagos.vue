@@ -1,6 +1,6 @@
 <template>
     <div>
-        notificaciones
+        pagos
     </div>
 </template>
 

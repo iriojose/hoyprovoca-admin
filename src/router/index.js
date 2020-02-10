@@ -12,7 +12,7 @@ import Clientes from '../views/clientes/Clientes';
 import Empresas from '../views/empresas/Empresas';
 import Pedidos from '../views/pedidos/Pedidos';
 import Estadisticas from '../views/estadisticas/Estadisticas';
-import Notificaciones from '../views/notificaciones/Notificaciones';
+import Pagos from '../views/pagos/Pagos';
 
 Vue.use(VueRouter);
 
@@ -57,9 +57,9 @@ const routes = [
         component:Estadisticas
       },
       {
-        path:'notificaciones',
-        name:'notificaciones',
-        component:Notificaciones
+        path:'pagos',
+        name:'pagos',
+        component:Pagos
       }
     ]
   },

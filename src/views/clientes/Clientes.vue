@@ -20,7 +20,7 @@
                     <template v-slot:item.action="{ item }">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on }">
-                                <v-icon v-on="on" small class="mr-2" @click="call(item)"> 
+                                <v-icon v-on="on" small class="mr-2" @click="pedidosUsuario(item)"> 
                                     shop
                                 </v-icon>
                             </template>
@@ -29,7 +29,7 @@
 
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on }">
-                                <v-icon v-on="on" small class="mr-2" @click="call(item)"> 
+                                <v-icon v-on="on" small class="mr-2" @click="perfilUsuario(item)"> 
                                     account_circle
                                 </v-icon>
                             </template>
@@ -39,18 +39,49 @@
                 </v-data-table>
             </v-card-text>
         </v-card>
+
+        <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition">
+            <v-card width="100%" height="100%">
+                <v-card-title class="color">
+                    <v-btn icon @click="dialog=false">
+                        <v-icon color="#005598" x-large>
+                            keyboard_arrow_left
+                        </v-icon>
+                    </v-btn>
+                    <v-spacer></v-spacer>
+                    <div class="title font-weight-bold" v-show="opc==1">Pedidos</div>
+                    <div class="title font-weight-bold" v-show="opc==2">Perfil</div>
+                    <v-spacer></v-spacer>
+                </v-card-title>
+                <v-divider></v-divider>
+
+                <v-card-text>
+                    <PedidosUsuario v-if="opc==1" :usuario="usuario"/>
+                    <PerfilUsuario v-else-if="opc==2" :usuario="usuario"/>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
 <script>
 //import Usuario from '@/services/Usuario';
+import PedidosUsuario from '@/components/vistaClientes/PedidosUsuario';
+import PerfilUsuario from '@/components/vistaClientes/PerfilUsuario';
 
     export default {
+        components:{
+            PerfilUsuario,
+            PedidosUsuario
+        },
         data(){
             return {
+                opc:0,
+                usuario:null,
+                dialog:false,
                 clientes: [
                     {
-                        id:1,
+                        id:16,
                         nombre:'Irio',
                         apellido:'Gómez',
                         email:'iriojgomezv@gmail.com',
@@ -76,8 +107,15 @@
                 });
             }*/
 
-            call(item){
-                console.log(item);
+            pedidosUsuario(item){
+                this.opc = 1;
+                this.usuario = item;
+                this.dialog = true;
+            },
+            perfilUsuario(item){
+                this.opc = 2;
+                this.usuario = item;
+                this.dialog = true;
             }
         }
     }
