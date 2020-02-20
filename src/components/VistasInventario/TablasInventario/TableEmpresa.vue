@@ -27,7 +27,8 @@
         >
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
-                <v-icon small @click="deleteItem(item)">delete</v-icon>
+                <v-icon small class="mr-2" @click="deleteItem(item)">delete</v-icon>
+                <v-icon small @click="pedidosEmpresa(item)">shop</v-icon>
             </template>
         </v-data-table>
 
@@ -231,6 +232,7 @@ import Snackbar from '@/components/helpers/Snackbar';
             return {
                 ruta:null,
                 search:'',
+                pedidos:[],
                 valid:false,
                 loading:false,
                 exito:null,
@@ -366,6 +368,13 @@ import Snackbar from '@/components/helpers/Snackbar';
                     this.setSnackbar(true);
                 });
             },
+            pedidosEmpresas(item){
+                Empresa().get(`/${item.id}/pedidos`).then((response) => {
+                    this.pedidos = response.data.data;
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             deleteItem(item){
                 this.error = null;
                 this.exito = null;
@@ -386,6 +395,9 @@ import Snackbar from '@/components/helpers/Snackbar';
                 this.editIndex = this.empresas.indexOf(item);
                 this.editItem = Object.assign({},item);
                 this.showImage=this.ruta+this.editItem.logo;
+            },
+            pedidosEmpresa(item){
+                this.pedidosEmpresas(item);
             },
             procesoImg(evt){
                 if(evt){

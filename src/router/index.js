@@ -14,6 +14,8 @@ import Pedidos from '../views/pedidos/Pedidos';
 import Estadisticas from '../views/estadisticas/Estadisticas';
 import Pagos from '../views/pagos/Pagos';
 
+import NuevaFactura from '../views/pagos/NuevaFactura';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -80,6 +82,11 @@ const routes = [
     path:"/notAuthorized",
     name:"notAuthorized",
     component:NotAuthorized
+  },
+  {
+    path:'/nuevaFactura',
+    name:'nuevaFactura',
+    component:NuevaFactura
   }
 ];
 

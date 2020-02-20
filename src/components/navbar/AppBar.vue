@@ -6,6 +6,12 @@
     >
         <v-app-bar-nav-icon v-if="$vuetify.breakpoint.smAndDown" @click="change"></v-app-bar-nav-icon>
 
+        <v-btn @click="back" icon v-if="validacion()">
+            <v-icon>
+                arrow_back_ios
+            </v-icon>
+        </v-btn>
+
         <v-toolbar-title class="ml-10" v-if="!$vuetify.breakpoint.smAndDown">
             Administrador
         </v-toolbar-title>
@@ -49,6 +55,9 @@ import Usuario from '@/services/Usuario';
         },
         methods: {
             ...mapActions(['setBarraLateral','logout','setDataUsuario']),
+            back(){
+                router.go(-1);
+            },
 
             log(){
                 this.logout();
@@ -67,6 +76,26 @@ import Usuario from '@/services/Usuario';
                 }).catch(e => {
                     console.log(e);
                 });
+            },
+
+            validacion(){
+                if(this.$route.path == '/dashboard'){
+                    return false;
+                }else if(this.$route.path == '/pagos'){
+                    return false;
+                }else if(this.$route.path == '/Inventario'){
+                    return false;
+                }else if(this.$route.path == '/clientes'){
+                    return false;
+                }else if(this.$route.path == '/empresas'){
+                    return false;
+                }else if(this.$route.path == '/pedidos'){
+                    return false;
+                }else if(this.$route.path == '/estadisticas'){
+                    return false;
+                }else{
+                    return true;
+                }
             }
         },
         computed: {

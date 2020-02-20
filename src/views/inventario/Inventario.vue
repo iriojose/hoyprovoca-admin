@@ -38,10 +38,9 @@
                         <div class="title font-weight-bold" v-show="opc==1">Grupos</div>
                         <div class="title font-weight-bold" v-show="opc==2">SubGrupos</div>
                         <div class="title font-weight-bold" v-show="opc==3">Productos</div>
-                        <div class="title font-weight-bold" v-show="opc==4">Existencias</div>
-                        <div class="title font-weight-bold" v-show="opc==5">Empresas</div>
-                        <div class="title font-weight-bold" v-show="opc==6">Marcas</div>
-                        <div class="title font-weight-bold" v-show="opc==7">Unidades</div>
+                        <div class="title font-weight-bold" v-show="opc==4">Cargos</div>
+                        <div class="title font-weight-bold" v-show="opc==5">Marcas</div>
+                        <div class="title font-weight-bold" v-show="opc==6">Unidades</div>
                     <v-spacer></v-spacer>
                 </v-card-title>
                 <v-divider></v-divider>
@@ -50,9 +49,8 @@
                     <TableSubGrupos v-else-if="opc==2"/>
                     <TableConceptos v-else-if="opc==3"/>
                     <TableExistencias v-else-if="opc==4"/>
-                    <TableEmpresa v-else-if="opc==5"/>
-                    <TableMarcas v-else-if="opc==6"/>
-                    <TableUnidades v-else-if="opc==7"/>
+                    <TableMarcas v-else-if="opc==5"/>
+                    <TableUnidades v-else-if="opc==6"/>
                 </v-card-text>
             </v-card>
         </v-dialog>
@@ -62,7 +60,6 @@
 <script>
 import TableGrupos from '@/components/VistasInventario/TablasInventario/TableGrupos';
 import TableSubGrupos from '@/components/VistasInventario/TablasInventario/TableSubGrupos';
-import TableEmpresa from '@/components/VistasInventario/TablasInventario/TableEmpresa';
 import TableConceptos from '@/components/VistasInventario/TablasInventario/TableConceptos';
 import TableExistencias from '@/components/VistasInventario/TablasInventario/TableExistencias';
 import TableMarcas from '@/components/VistasInventario/TablasInventario/TableMarcas';
@@ -72,7 +69,6 @@ import TableUnidades from '@/components/VistasInventario/TablasInventario/TableU
         components:{
             TableGrupos,
             TableSubGrupos,
-            TableEmpresa,
             TableConceptos,
             TableExistencias,
             TableMarcas,
@@ -86,10 +82,10 @@ import TableUnidades from '@/components/VistasInventario/TablasInventario/TableU
                     {text:'Grupos',icon:'group',color:'#7B1FA2'},
                     {text:'SubGrupos',icon:'group_work',color:'#C2185B'},
                     {text:'Productos',icon:'fastfood',color:'#D32F2F'},
-                    {text:'Existencias',icon:'hourglass_empty',color:'#1976D2'},
-                    {text:'Empresas',icon:'business',color:'#303F9F'},
-                    {text:'Marcas',icon:'grade',color:'#00796B'},
-                    {text:'Unidades',icon:'grain',color:'#388E3C'}
+                    {text:'Cargos',icon:'move_to_inbox',color:'#1976D2'},
+                    {text:'Marcas',icon:'grade',color:'#303F9F'},
+                    {text:'Unidades',icon:'grain',color:'#00796B'},
+                    {text:'Ajuste de precios',icon:'monetization_on',color:'#388E3C'}
                 ]
             }
         },

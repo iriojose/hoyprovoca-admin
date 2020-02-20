@@ -23,7 +23,9 @@ import router from '@/router';
             Footer
         },
         mounted() {
-            router.push("/dashboard");
+            if(this.$route.path == '/'){
+                router.push("/dashboard");
+            }
         },
     }
 </script>

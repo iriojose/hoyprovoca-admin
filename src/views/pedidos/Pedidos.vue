@@ -53,15 +53,18 @@
 
 <script>
 import Pedidos from '@/services/Pedidos';
+import Empresa from '@/services/Empresa';
 
     export default {
         data() {
             return {
+                empresas:[],
                 pedidos:[],
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
                     { text: 'Estado', value: 'estado' },
                     { text: 'Estatus', value: 'rest_estatus_id' },
+                    { text: 'Empresa', value: 'empresa' },
                     { text: 'Detalles', value: 'items' },
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
@@ -71,16 +74,29 @@ import Pedidos from '@/services/Pedidos';
             this.getPedidos();
         },
         methods:{
-            getPedidos(){
-                Pedidos().get("/?&after-rest_estatus_id=2&before-rest_estatus_id=7").then((response) => {
-                    console.log(response);
-                    this.pedidos = response.data.data;
-                    for (let i = 0; i < this.pedidos.length; i++) {
-                        this.pedidos[i].items = this.pedidos[i].detalles.length
-                    }
+            getEmpresas(pedidos){
+                Empresa().get("/").then((response) =>  {
+                    this.procees(pedidos,response.data.data);
                 }).catch(e => {
                     console.log(e);
                 });
+            },
+            getPedidos(){
+                Pedidos().get("/?&after-rest_estatus_id=2&before-rest_estatus_id=7").then((response) => {
+                    console.log(response);
+                    response.data.data;
+                    for (let i = 0; i < response.data.data.length; i++) {
+                        response.data.data[i].items = response.data.data[i].detalles.length
+                    }
+                    this.getEmpresas(response.data.data);
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            procees(pedidos,empresas){
+               pedidos.filter(a=> empresas.filter(b=> a.empresa_id==b.id ? a.empresa=b.nombre_comercial:null));
+               this.empresas = empresas;
+               this.pedidos = pedidos;
             },
             call(item){
                 console.log(item);
