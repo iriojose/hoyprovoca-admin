@@ -44,19 +44,57 @@
                                     Datos de la Factura
                                 </v-card-title>
                             </v-card>
+                            <v-row class="px-2">
+                                <v-col cols="12" md="4" sm="12">
+                                    <v-text-field
+                                        color="#005598"
+                                        label="Rif / Cedula" 
+                                        outlined
+                                        dense
+                                        v-model="factura.numero_fiscal"
+                                    />
+                                </v-col>
+                            </v-row>
                         </v-col>
                         <v-col cols="12" md="4" sm="12">
-
+                            
                         </v-col>
                     </v-row>
 
                     <v-row>
                         <v-col cols="12" md="12" sm="12">
+                            <v-card elevation="0" height="45" width="100%">
+                                <v-card-title>
+                                    Productos
+                                </v-card-title>
+                            </v-card>
+                            <v-row class="px-2">
+                                <v-col cols="12" md="3" sm="12">
+                                    <v-text-field
+                                        color="#005598"
+                                        label="codigo" 
+                                        outlined
+                                        dense
+                                        v-model="codigo"
+                                        @change="searchConceptos($event)"
+                                    />
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                    
+                    <v-row>
+                        <v-col cols="12" md="12" sm="12">
                             <v-data-table
                                 :headers="headers"
-                                :items="desserts"
+                                :items="detalles"
                                 class="elevation-0"
-                            ></v-data-table>
+                                no-data-text="No se encontraron resultados..."
+                            >
+                                <template v-slot:item.action="{ item }">
+                                    <v-icon small @click="del(item)">delete</v-icon>
+                                </template>
+                            </v-data-table>
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -84,6 +122,19 @@
                 </v-card-actions>
             </v-card>
         </v-form>
+
+        <v-dialog v-model="dialog" width="800" class="pa-5">
+            <v-data-table
+                :headers="headers"
+                :items="conceptos"
+                class="elevation-0"
+                no-data-text="No se encontraron resultados..."
+            >
+                <template v-slot:item.action="{ item }">
+                    <v-icon small @click="push(item)">add</v-icon>
+                </template>
+            </v-data-table>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -97,26 +148,28 @@ import validations from '@/validations/validations';
         data() {
             return {
                 ...validations,
+                dialog:false,
                 valid:false,
                 loading:false,
+                codigo:'',
                 conceptos:[],
                 tarifas:[
                     {text:'Tarifa A'},{text:'Tarifa B'},{text:'Tarifa C'}
                 ],
                 factura:{
-                    numero_factura:'',
+                    numero_factura:'0000255',
                     numero_fiscal:'',
                     subtotal:'',
                     subtotal_dolar:''
                 },
                 detalles:[],
                 headers: [
-                    { text: 'Dessert (100g serving)',align: 'left',sortable: false,value: 'name',},
-                    { text: 'Calories', value: 'calories' },
-                    { text: 'Fat (g)', value: 'fat' },
-                    { text: 'Carbs (g)', value: 'carbs' },
-                    { text: 'Protein (g)', value: 'protein' },
-                    { text: 'Iron (%)', value: 'iron' },
+                    { text: 'id',align: 'left',value: 'id',},
+                    { text: 'Codigo', value: 'codigo' },
+                    { text: 'Referencia', value: 'referencia' },
+                    { text: 'Nombre', value: 'nombre' },
+                    { text: 'Precio', value: 'precio_a' },
+                    { text: 'Acciones', value: 'action', sortable: false},
                 ],
             }
         },
@@ -134,12 +187,22 @@ import validations from '@/validations/validations';
                     this.loading = false;
                 });
             },
-            searchConceptos(codigo,nombre){
-                Conceptos().get(`/?nombre=${nombre},codigo=${codigo}`).then((response) => {
+            searchConceptos(codigo){
+                Conceptos().get(`/?codigo=${codigo}`).then((response) => {
+                    console.log(response);
                     this.conceptos = response.data.data;
+                    this.dialog = true;
                 }).catch(e => {
                     console.log(e);
+                    this.dialog = true;
                 });
+            },
+            push(item){
+                this.detalles.push(item);
+            },
+            del(item){
+                const index = this.detalles.indexOf(item);
+                this.detalles.splice(index,1);
             }
         },
     }
