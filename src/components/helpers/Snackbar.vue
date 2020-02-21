@@ -3,6 +3,8 @@
         v-model="snackbars" 
         :color="!error == '' || !error == null ? '#C62828':'#2E7D32'" 
         right
+        top
+        class="mt-12"
         :timeout="2000"
     >
         <div v-if="!error == '' || !error == null">

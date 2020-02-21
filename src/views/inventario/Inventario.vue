@@ -48,7 +48,7 @@
                     <TableGrupos v-if="opc==1"/>
                     <TableSubGrupos v-else-if="opc==2"/>
                     <TableConceptos v-else-if="opc==3"/>
-                    <TableExistencias v-else-if="opc==4"/>
+                    <TableCargos v-else-if="opc==4"/>
                     <TableMarcas v-else-if="opc==5"/>
                     <TableUnidades v-else-if="opc==6"/>
                 </v-card-text>
@@ -61,18 +61,18 @@
 import TableGrupos from '@/components/VistasInventario/TablasInventario/TableGrupos';
 import TableSubGrupos from '@/components/VistasInventario/TablasInventario/TableSubGrupos';
 import TableConceptos from '@/components/VistasInventario/TablasInventario/TableConceptos';
-import TableExistencias from '@/components/VistasInventario/TablasInventario/TableExistencias';
 import TableMarcas from '@/components/VistasInventario/TablasInventario/TableMarcas';
 import TableUnidades from '@/components/VistasInventario/TablasInventario/TableUnidades';
+import TableCargos from '@/components/VistasInventario/TablasInventario/TableCargos';
 
     export default {
         components:{
             TableGrupos,
             TableSubGrupos,
             TableConceptos,
-            TableExistencias,
             TableMarcas,
-            TableUnidades
+            TableUnidades,
+            TableCargos
         },
         data() {
             return {

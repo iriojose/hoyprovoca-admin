@@ -91,6 +91,7 @@ import Conceptos from '@/services/Conceptos';
 import Movimiento_deposito from '@/services/Movimiento_deposito';
 import Snackbar from '@/components/helpers/Snackbar';
 import {mapActions} from 'vuex';
+import Cargos from '@/services/Cargos';
 
     export default {
         components:{
@@ -105,19 +106,13 @@ import {mapActions} from 'vuex';
                 valid:false,
                 dialog:false,
                 loading:false,
-                conceptos:[],
-                existencia:0,
-                id:0,
-                add:0,
+                cargos:[],
                 ...validations,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
-                    { text: 'Nombre',sortable: true, value: 'nombre' },
-                    { text: 'Codigo',sortable: true, value: 'codigo' },
-                    { text: 'Referencia',sortable: true, value: 'referencia' },
-                    { text: 'Existencia minima',sortable: true, value: 'existencia_minima' },
-                    { text: 'Existencia maxima',sortable: true, value: 'existencia_maxima' },
-                    { text: 'Existencia',sortable: true, value: 'existencia' },
+                    { text: 'Fecha',sortable: true, value: 'fecha_at'},
+                    { text: 'Concepto',sortable: true, value: 'conceptos_id' },
+                    { text: 'Usuario',sortable: true, value: 'usuarios_id' },
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
                 editItem:{
@@ -132,23 +127,35 @@ import {mapActions} from 'vuex';
             dialog(){
                 if(!this.dialog){
                     this.loading=false;
-                    this.existencia=0;  
-                    this.add = 0;      
-                    this.editItem.existencia = 0;   
-                    this.nota='';  
                 }
             }
         },
         methods: {
             ...mapActions(['setSnackbar']),
-
-            getConceptos(){
-                Conceptos().get("/").then((response) => {
-                    response.data.data.filter(a=> this.getConceptosExistencia(a));
-                }).catch(e => {
+            //new code
+            getCargos(){
+                Cargos().get("/").then((response)  => {
+                    this.cargos = response.data.data;
+                }).catch(e  => {
                     console.log(e);
                 });
             },
+            postCargos(){
+                Cargos().post("/",{data:this.cargo}).then((response)  => {
+                    console.log(response.data);
+                    this.exito= "Se creo el cargo exitosamente.";
+                    this.setSnackbar(true);
+                    this.dialog=false;
+                }).catch(e  => {
+                    console.log(e);
+                    this.error = "No se pudo crear el cargo.";
+                    this.setSnackbar(true);
+                    this.dialog=false;
+                });
+            },
+            
+            //old code
+            
             getConceptosExistencia(item){
                 Conceptos().get(`/${item.id}/depositos`).then((response) => {
                     item.existencia = response.data.data[0].existencia;

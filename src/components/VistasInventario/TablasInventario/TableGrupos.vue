@@ -17,19 +17,21 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table :headers="headers" :items="grupos" class="elevation-0" :search="search">
+        <v-data-table 
+            :loading="loading && '#005598'" loading-text="Loading... Please wait" :headers="headers" :items="grupos" class="elevation-0" :search="search"
+        >
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
                 <v-icon small @click="deleteItem(item)">delete</v-icon>
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="400">
+        <v-dialog v-model="dialog" width="400" :persistent="loading">
             <v-card width="100%">
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="dialog=!dialog">cancel</v-icon>
+                    <v-icon @click="dialog=!dialog" :disabled="loading">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -48,6 +50,7 @@
                                     prepend-icon="mdi-camera"
                                     label="Imagen Grupo"
                                     dense
+                                    :disabled="loading"
                                     @change="procesoImg($event)"
                                     color="#005598"
                                     v-model="imagen"
@@ -59,6 +62,7 @@
                                     v-model="editItem.nombre"
                                     type="text"
                                     clearable
+                                    :disabled="loading"
                                     outlined
                                     color="#005598"
                                     dense
@@ -77,6 +81,11 @@
                                         @click="save(editItem)"
                                     >
                                         Enviar
+                                        <template v-slot:loader>
+                                            <span class="custom-loader">
+                                                <v-icon>cached</v-icon>
+                                            </span>
+                                        </template> 
                                     </v-btn>
                                 </v-card-actions>
                             </v-col>
@@ -103,7 +112,7 @@ import validations from '@/validations/validations';
         data() {
             return {
                 ruta:null,
-                loading:false,
+                loading:true,
                 exito:null,
                 error:null,
                 dialog:false,
@@ -115,11 +124,11 @@ import validations from '@/validations/validations';
                 grupos:[],
                 ...validations,
                 headers: [
-                    { text: 'Id',align: 'left',sortable: true,value:'id',},
-                    { text: 'Nombre',sortable: true, value: 'nombre' },
-                    { text: 'Visualizar', value: 'visualizar' },
-                    { text: 'posicion', value: 'posicion' },
-                    { text: 'Imagen', value: 'imagen' },
+                    { text: 'Id',align: 'left',sortable: true,value:'id'},
+                    { text: 'Nombre',sortable: true, value: 'nombre'},
+                    { text: 'Visualizar', value: 'visualizar'},
+                    { text: 'posicion', value: 'posicion'},
+                    { text: 'Imagen', value: 'imagen'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
                 rules: [
@@ -169,8 +178,10 @@ import validations from '@/validations/validations';
             getGrupos(){
                 Grupos().get("/").then((response) => {
                     this.grupos = response.data.data;
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
+                    this.loading = false;
                 });
             },
             deleteGrupos(item){
@@ -257,5 +268,41 @@ import validations from '@/validations/validations';
 <style scope>
     .color{
         background: #eee;
+    }
+    .custom-loader {
+        animation: loader 1s infinite;
+        display: flex;
+    }
+    @-moz-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-o-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

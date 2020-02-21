@@ -15,6 +15,7 @@ import Estadisticas from '../views/estadisticas/Estadisticas';
 import Pagos from '../views/pagos/Pagos';
 
 import NuevaFactura from '../views/pagos/NuevaFactura';
+import NuevoCargo from '../views/inventario/NuevoCargo';
 
 Vue.use(VueRouter);
 
@@ -87,6 +88,11 @@ const routes = [
     path:'/nuevaFactura',
     name:'nuevaFactura',
     component:NuevaFactura
+  },
+  {
+    path:'/nuevoCargo',
+    name:'nuevoCargo',
+    component:NuevoCargo
   }
 ];
 

@@ -17,19 +17,19 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table :headers="headers" :items="subgrupos" class="elevation-0" :search="search">
+        <v-data-table :loading="loading && '#005598'" loading-text="Loading... Please wait" :headers="headers" :items="subgrupos" class="elevation-0" :search="search">
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
                 <v-icon small @click="deleteItem(item)">delete</v-icon>
             </template>
         </v-data-table>
 
-        <v-dialog v-model="dialog" width="400">
+        <v-dialog v-model="dialog" width="400" :persistent="loading">
             <v-card width="100%" height="600">
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="dialog=!dialog">cancel</v-icon>
+                    <v-icon @click="dialog=!dialog" :disabled="loading">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -91,6 +91,11 @@
                                         @click="save(editItem)"
                                     >
                                         Enviar
+                                        <template v-slot:loader>
+                                            <span class="custom-loader">
+                                                <v-icon>cached</v-icon>
+                                            </span>
+                                        </template> 
                                     </v-btn>
                                 </v-card-actions>
                             </v-col>
@@ -125,7 +130,7 @@ import {mapActions} from 'vuex';
                 error:null,
                 valid:false,
                 dialog:false,
-                loading:false,
+                loading:true,
                 editIndex:-1,
                 search:'',
                 subgrupos:[],
@@ -192,13 +197,16 @@ import {mapActions} from 'vuex';
                     this.getGrupos(response.data.data);
                 }).catch(e => {
                     console.log(e);
+                    this.loading = false;
                 });
             },
             getGrupos(subgrupos){
                 Grupos().get("/").then((response) => {
                     this.refactor(subgrupos,response.data.data);
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
+                    this.loading = false;
                 });
             },
             refactor(subgrupos,grupos){
@@ -298,5 +306,41 @@ import {mapActions} from 'vuex';
 <style scope>
     .color{
         background: #eee;
+    }
+    .custom-loader {
+        animation: loader 1s infinite;
+        display: flex;
+    }
+    @-moz-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-o-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>
