@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="mb-12">
         <v-row justify="center" align="center">
             <v-col cols="12" md="6" lg="4" sm="12" v-for="(stat,i) in stats" :key="i">
                 <v-card :color="stat.color" elevation="10" height="150" width="100%">

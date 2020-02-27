@@ -143,8 +143,8 @@ import {mapActions} from 'vuex';
                     { text: 'Costo' , sortable:true, value:'ultimo_costo'},
                     { text: 'Costo' , sortable:true, value:'costo_mayor'},
                 ],
-                cargo:{
-                    //fecha_at:new Date().toLocaleString(),
+                cargo:{ 
+                    fecha_at:new Date().toLocaleString(),
                     conceptos_id:0,
                     depositos_id:1,
                     cantidad:0,

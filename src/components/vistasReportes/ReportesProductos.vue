@@ -9,10 +9,8 @@
                 no-results-text="No se encontraron resultados" 
                 class="elevation-0" 
                 :search="search">
-        </v-data-table>
+            </v-data-table>
         </div>
-
-        <img :src="output">
 
         <v-toolbar color="#eee" elevation="0" class="mb-12">
             <v-spacer></v-spacer>
@@ -39,11 +37,9 @@ import autoTable from 'jspdf-autotable';
         data() {
             return {
                 conceptos:[],
-                output:null,
                 search:'',
                 loading:true,
                 headers: [
-                    { text: 'Id',align: 'left',sortable: true,value:'id',},
                     { text: 'Codigo', value: 'codigo' },
                     { text: 'Referencia', value: 'referencia' },
                     { text: 'Nombre',sortable: true, value: 'nombre' },
@@ -56,8 +52,6 @@ import autoTable from 'jspdf-autotable';
         },
         mounted(){
             this.getConceptos();
-            var fecha = this.dia+'/'+this.mes+'/'+this.año;
-            console.log(fecha);
         },
         methods:{
             getConceptos(){
@@ -72,7 +66,6 @@ import autoTable from 'jspdf-autotable';
             exportPdf(){
                 var vm = this
                 var fecha = new Date().toLocaleString();
-                console.log(fecha);
 
                 var columns = [
                     { title: 'Codigo', dataKey: 'codigo' },
@@ -90,7 +83,3 @@ import autoTable from 'jspdf-autotable';
         }        
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
