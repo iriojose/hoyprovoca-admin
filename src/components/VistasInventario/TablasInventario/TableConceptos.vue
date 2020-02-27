@@ -95,16 +95,20 @@
                                                 </v-col>
                                                 <v-col cols="12" md="12" sm="12">
                                                     <v-select 
-                                                        v-model="selectEmpresa"
-                                                        :items="empresas"
-                                                        label="Empresa"
-                                                        hide-details
-                                                        hide-selected
                                                         dense
+                                                        :items="empresas"
                                                         color="#005598"
+                                                        item-text="nombre_comercial"
+                                                        v-model="selectEmpresa"
+                                                        return-object
+                                                        label="Empresa"
+                                                        chips
+                                                        small-chips
+                                                        hide-details
+                                                        @change="changeEmpresa($event)"
+                                                        hide-selected
                                                         outlined
                                                         :rules="[required('Empresa')]"
-                                                        @change="changeEmpresa($event)"
                                                     />
                                                 </v-col>
                                             </v-row>
@@ -175,15 +179,20 @@
                                                 </v-col>
                                                 <v-col cols="12" md="4" sm="12">
                                                     <v-select 
-                                                        v-model="selectMarca"
-                                                        :items="marcas"
-                                                        label="Marca"
-                                                        hide-details
-                                                        hide-selected
                                                         dense
+                                                        :items="marcas"
                                                         color="#005598"
+                                                        item-text="nombre"
+                                                        v-model="selectMarca"
+                                                        return-object
+                                                        label="Marca"
+                                                        chips
+                                                        small-chips
+                                                        hide-details
+                                                        @input="changeMarca($event)"
+                                                        hide-selected
                                                         outlined
-                                                        @change="changeMarca($event)"
+                                                        :rules="[required('Marca')]"
                                                     />
                                                 </v-col>
                                                 <v-col cols="12" md="8" :offset="$vuetify.breakpoint.smAndDown ? null:2" sm="12">
@@ -446,14 +455,14 @@ import {mapActions} from 'vuex';
             },
             getMarcas(){
                 Marcas().get("/").then((response) => {
-                    this.marcas = response.data.data.filter(a=> a.text=a.nombre);
+                    this.marcas = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
             getEmpresa(){
                 Empresa().get("/").then((response)  => {
-                    this.empresas = response.data.data.filter(a=> a.text=a.nombre);
+                    this.empresas = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });

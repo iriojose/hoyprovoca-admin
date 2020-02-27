@@ -6,6 +6,7 @@
                     :items="grupos"
                     label="Grupo"
                     dense
+                    v-model="selectGrupo"
                     color="#005598"
                     hide-details
                     chips
@@ -20,8 +21,10 @@
             <v-col cols="12" md="3" sm="12">
                 <v-select
                     dense
-                    :items="subgrupos"
+                    :disabled="selectGrupo == null ? true:false"
+                    :items="subgruposSeleccionados"
                     color="#005598"
+                    v-model="selectSubgrupo"
                     item-text="nombre"
                     return-object
                     chips
@@ -39,6 +42,7 @@
                     :items="marcas"
                     color="#005598"
                     item-text="nombre"
+                    v-model="selectMarca"
                     return-object
                     label="Marca"
                     chips
@@ -85,10 +89,13 @@ import autoTable from 'jspdf-autotable';
                 loading:true,
                 grupos:[],
                 subgrupos:[],
-                selectSubgrupos:[],
                 marcas:[],
                 conceptos:[],
                 filtrado:[],
+                subgruposSeleccionados:[],
+                selectGrupo:null,
+                selectSubgrupo:null,
+                selectMarca:null,
                 headers: [
                     { text: 'Codigo', value: 'codigo' },
                     { text: 'Referencia', value: 'referencia' },
@@ -109,8 +116,6 @@ import autoTable from 'jspdf-autotable';
             getConceptos(){
                 Conceptos().get("/").then((response) => {
                     this.conceptos = response.data.data;
-                    this.filtrado = response.data.data;
-                    this.loading = false;
                     this.getGrupos();
                 }).catch(e => {
                     console.log(e);
@@ -120,8 +125,8 @@ import autoTable from 'jspdf-autotable';
             getGrupos(){
                 Grupos().get("/").then((response) => {
                     this.grupos = response.data.data;
-                    this.filtrado=this.conceptos.filter(a=>this.grupos.filter(b=>a.grupos_id==b.id ? a.grupos=b.nombre:a.grupos=''));
-                    console.log(this.filtrado);
+                    this.conceptos.filter(a => this.grupos.filter(b => a.grupos_id==b.id ? a.grupo=b.nombre:null));
+                    console.log(this.conceptos);
                     this.getSubgrupos();
                 }).catch(e => {
                     console.log(e);
@@ -130,7 +135,7 @@ import autoTable from 'jspdf-autotable';
             getSubgrupos(){
                 SubGrupos().get("/").then((response) => {
                     this.subgrupos = response.data.data;
-                    this.subgrupos.filter(a => a.text = a.nombre);
+                    this.conceptos.filter(a => this.subgrupos.filter(b => a.subgrupos_id==b.id ? a.subgrupo=b.nombre:null));
                     this.getMarcas();
                 }).catch(e => {
                     console.log(e);
@@ -139,13 +144,17 @@ import autoTable from 'jspdf-autotable';
             getMarcas(){
                 Marcas().get("/").then((response) => {
                     this.marcas = response.data.data;
-                    this.marcas.filter(a => a.text = a.nombre);
+                    this.conceptos.filter(a => this.marcas.filter(b => a.marcas_id==b.id ? a.marcas=b.nombre:null));
+                    this.filtrado = this.conceptos;
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
                 });
+
             },
             filGrupos(evt){
                 this.filtrado = this.conceptos.filter(a=>a.grupos_id==evt.id);
+                this.subgruposSeleccionados = this.subgrupos.filter(a => a.grupos_id == evt.id);
             },  
             filSubgrupos(evt){
                 this.filtrado = this.conceptos.filter(a=>a.subgrupos_id==evt.id);
