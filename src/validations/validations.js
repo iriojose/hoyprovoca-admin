@@ -2,6 +2,10 @@ let required = (properType) => {
     return v => v && v.length > 0 || `Debe ingresar un ${properType}`
 }
 
+let requiredObject = (properType)  => {
+    return v => v && v !== null || `Debe ingresar un objeto ${properType}`
+}
+
 let minLength = (properType,minLength) => {
     return v => v && v.length >= minLength || `${properType} debe tener al menos ${minLength}`
 }
@@ -49,6 +53,7 @@ let positivo = (properType) => {
 
 export default{
     required,
+    requiredObject,
     minLength,
     maxLength,
     emailFormat,

@@ -18,7 +18,16 @@
                 dense
             />
         </v-toolbar>
-        <v-data-table :headers="headers" :items="conceptos" class="elevation-0" :search="search">
+        <v-data-table 
+            :headers="headers" 
+            :items="conceptos" 
+            class="elevation-0" 
+            :search="search"
+            :loading="loading && '#005598'" 
+            loading-text="Loading... please wait" 
+            no-results-text="No se encontraron resultados..."
+            no-data-text="No se encontraron resultados..."
+        >
             <template v-slot:item.action="{ item }">
                 <v-icon small class="mr-2" @click="editedItem(item)">edit</v-icon>
                 <v-icon small @click="deleteItem(item)">delete</v-icon>
@@ -30,7 +39,7 @@
                 <v-card-title class="color">
                     {{title}}
                     <v-spacer></v-spacer>
-                    <v-icon @click="close">cancel</v-icon>
+                    <v-icon @click="dialog=!dialog">cancel</v-icon>
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
@@ -45,6 +54,11 @@
                                 color="#005598"
                             >
                                 Enviar
+                                <template v-slot:loader>
+                                    <span class="custom-loader">
+                                        <v-icon light>cached</v-icon>
+                                    </span>
+                                </template> 
                             </v-btn>
                         </v-col>
                         <v-stepper non-linear class="elevation-0">
@@ -57,6 +71,7 @@
                             </v-stepper-header>
 
                             <v-stepper-items class="elevation-0">
+                                <!-- Datos basicos del conceptos -->
                                 <v-stepper-content step="1">
                                     <v-row>
                                         <v-col cols="12" md="3" sm="12">
@@ -84,12 +99,15 @@
                                                         v-model="selectTipo"
                                                         :items="tipos"
                                                         label="Tipo de concepto"
-                                                        hide-details
                                                         hide-selected
                                                         dense
+                                                        return-object
                                                         color="#005598"
+                                                        chips
+                                                        hide-details
+                                                        small-chips
                                                         outlined
-                                                        :rules="[required('Tipo')]"
+                                                        :rules="[requiredObject('Tipo')]"
                                                         @change="changeTipo($event)"
                                                     />
                                                 </v-col>
@@ -103,8 +121,8 @@
                                                         return-object
                                                         label="Empresa"
                                                         chips
-                                                        small-chips
                                                         hide-details
+                                                        small-chips
                                                         @change="changeEmpresa($event)"
                                                         hide-selected
                                                         outlined
@@ -156,9 +174,13 @@
                                                         hide-details
                                                         hide-selected
                                                         dense
+                                                        return-object
+                                                        item-text="nombre"
                                                         color="#005598"
                                                         outlined
-                                                        :rules="[required('Grupo')]"
+                                                        chips
+                                                        small-chips
+                                                        :rules="[requiredObject('Grupo')]"
                                                         @change="changeGrupo($event)"
                                                     />
                                                 </v-col>
@@ -171,9 +193,13 @@
                                                         hide-selected
                                                         :disabled="subgruposSelect.length > 0 ? false:true"
                                                         dense
+                                                        return-object
+                                                        item-text="nombre"
                                                         color="#005598"
+                                                        chips
+                                                        small-chips
                                                         outlined
-                                                        :rules="[required('Subgrupo')]"
+                                                        :rules="[requiredObject('Subgrupo')]"
                                                         @change="changeSubGrupo($event)"
                                                     />
                                                 </v-col>
@@ -193,7 +219,7 @@
                                                         hide-selected
                                                         outlined
                                                         :rules="[requiredObject('Marca')]"
-                                                    />
+                                                />
                                                 </v-col>
                                                 <v-col cols="12" md="8" :offset="$vuetify.breakpoint.smAndDown ? null:2" sm="12">
                                                     <v-textarea 
@@ -211,6 +237,7 @@
                                     </v-row>
                                 </v-stepper-content>
 
+                                <!-- Costos del concepto-->
                                 <v-stepper-content step="2">
                                     <v-row justify="center" align="center">
                                         <v-col cols="12" md="6" sm="12">
@@ -263,6 +290,7 @@
                                     </v-row>
                                 </v-stepper-content>
 
+                                <!-- Existencia minima y maxima -->
                                 <v-stepper-content step="3">
                                     <v-row justify="center" align="center">
                                         <v-col cols="12" md="6" sm="12">
@@ -293,21 +321,22 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+
         <Snackbar :error="error" :exito="exito" />
     </v-container>
 </template>
 
 <script>
+import Conceptos from '@/services/Conceptos';
+import Grupos from '@/services/Grupos';
+import SubGrupos from '@/services/SubGrupos';
+import Empresa from '@/services/Empresa';
+import validations from '@/validations/validations';
+import Snackbar from '@/components/helpers/Snackbar';
+import {mapActions} from 'vuex';
+import Marcas from '@/services/Marcas';
 import url from '@/services/ruta';
 import MovimientoDeposito from '@/services/Movimiento_deposito';
-import Conceptos from '@/services/Conceptos';
-import Empresa from '@/services/Empresa';
-import Grupos from '@/services/Grupos';
-import Marcas from '@/services/Marcas';
-import SubGrupos from '@/services/SubGrupos';
-import Snackbar from '@/components/helpers/Snackbar';
-import validations from '@/validations/validations';
-import {mapActions} from 'vuex';
 
     export default {
         components:{
@@ -315,28 +344,31 @@ import {mapActions} from 'vuex';
         },
         data() {
             return {
+                //selects
                 selectTipo:null,
                 selectEmpresa:null,
                 selectGrupo:null,
                 selectSubgrupo:null,
                 selectMarca:null,
-                ruta:null,
-                disabled:true,
-                valid:false,
-                dialog:false,
-                loading:false,
+                //data global
+                search:'',
                 error:null,
                 exito:null,
-                search:'',
+                ruta:null,
+                valid:false,
+                disabled:false,
+                dialog:false,
+                loading:true,
                 showImage:null,
                 imagen:null,
                 editIndex: -1,
+                //arrays
                 conceptos:[],
                 grupos:[],
-                marcas:[],
-                subgruposSelect:[],
                 subgrupos:[],
+                subgruposSelect:[],
                 empresas:[],
+                marcas:[],
                 ...validations,
                 headers: [
                     { text: 'Id',align: 'left',sortable: true,value:'id',},
@@ -358,6 +390,7 @@ import {mapActions} from 'vuex';
                     {id:4,text:'Compuesto',disabled:true},
                     {id:5,text:'Emsamblado',disabled:true}
                 ],
+                //objeto del concepto a crear/modificar
                 editItem:{
                     "empresa_id": 0,
                     "codigo": "",
@@ -431,57 +464,107 @@ import {mapActions} from 'vuex';
                 return this.editIndex == -1 ? 'Agregar':'Editar';
             }
         },
+        watch: {
+            dialog(){
+                if(!this.dialog){
+                    this.loading=false;
+                    this.nulos();
+                    setTimeout(() => {
+                        this.editIndex = -1;
+                        this.editItem = Object.assign({},this.defaultItem);
+                        this.showImage=this.ruta+'default.png';
+                    },300);
+                }
+            }
+        },
         methods: {
             ...mapActions(['setSnackbar']),
-        
-            getConceptos(){
+
+            //llamadas get hacia la api
+            getConceptos(){//trae conceptos
                 Conceptos().get("/").then((response) => {
                     this.conceptos = response.data.data;
-                }).catch(e => {
+                    this.loading = false;//luego de cargar los conceptos
+                }).catch(e =>{
                     console.log(e);
+                    this.loading = false;
                 });
             },
-            postMovimientoDeposito(id){
-                let data ={
-                    depositos_id:1,
-                    conceptos_id:id,
-                    existencia:0
-                }
-                MovimientoDeposito().post("/",{data:data}).then((response) => {
-                    console.log(response);
-                }).catch(e => {
-                    console.log(e);
-                })
-            },
-            getMarcas(){
+            getMarcas(){//trae marcas
                 Marcas().get("/").then((response) => {
                     this.marcas = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getEmpresa(){
+            getEmpresa(){//trae a las empresas
                 Empresa().get("/").then((response)  => {
                     this.empresas = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getGrupos(){
+            getGrupos(){//trae grupos
                 Grupos().get("/").then((response) => {
-                    this.grupos = response.data.data.filter(a=> a.text=a.nombre);
+                    this.grupos = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getSubgrupos(){
+            getSubgrupos(){//trae subgrupos
                 SubGrupos().get("/").then((response) => {
-                    this.subgrupos = response.data.data.filter(a=> a.text=a.nombre);
+                    this.subgrupos = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            deleteConceptos(item){
+            //llamadas post a la api
+            postMovimientoDeposito(id){//se crea el movimiento de deposito luego de crearse el concepto (no apto para servicio)
+                let data ={depositos_id:1, conceptos_id:id, existencia:0}
+                MovimientoDeposito().post("/",{data:data}).then((response) => {
+                    console.log(response);
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            postConceptos(item){//crea el concepto
+                let formdata = new FormData();
+                formdata.append('image',this.imagen);
+                formdata.append('data',JSON.stringify(item));
+
+                Conceptos().post("/",formdata).then((response) => {
+                    this.conceptos.push(response.data.data);
+                    //response.data.data.tipos_conceptos_id !== 1 ? this.postMovimientoDeposito(response.data.data.id):null;
+                    this.dialog=false;
+                    this.exito = "Se creo exitosamente.";
+                    this.setSnackbar(true);
+                }).catch(()=> {
+                    this.dialog=false;
+                    this.error = "No se pudo crear este concepto.";
+                    this.setSnackbar(true);
+                    
+                });
+            },
+            updateConceptos(item){//actualiza el concepto seleccionado
+                //delete item.imagen;
+                //let formdata = new FormData();
+                //formdata.append('image',this.imagen);
+                //formdata.append('data',JSON.stringify(item));
+                //se usara cuando se agregue imagen a el update
+
+                Conceptos().post("/",{data:item}).then(() => {
+                    Object.assign(this.conceptos[this.editIndex],item);
+                    this.editIndex = -1;
+                    this.dialog=false;
+                    this.exito = "Se actualizo exitosamente";
+                    this.setSnackbar(true);
+                }).catch(() => {
+                    this.dialog=false;
+                    this.error = "No se pudo actualizar este concepto";
+                    this.setSnackbar(true);
+                });
+            },
+            deleteConceptos(item){//elimina el concepto
                 Conceptos().delete(`/${item.id}`).then(() => {
                     const index = this.conceptos.indexOf(item);
                     this.conceptos.splice(index,1);
@@ -490,43 +573,6 @@ import {mapActions} from 'vuex';
                 }).catch(e  => {
                     console.log(e);
                     this.error = "No se pudo eliminar este concepto";
-                    this.setSnackbar(true);
-                });
-            },
-            postConceptos(item){
-                let formdata = new FormData();
-                formdata.append('image',this.imagen);
-                formdata.append('data',JSON.stringify(item));
-
-                Conceptos().post("/",formdata).then((response) => {
-                    this.conceptos.push(response.data.data);
-                    response.data.data.tipos_conceptos_id !== 1 ? this.postMovimientoDeposito(response.data.data.id):null;
-                    this.close();
-                    this.exito = "Se creo exitosamente";
-                    this.setSnackbar(true);
-                }).catch(e => {
-                    console.log(e);
-                    this.close();
-                    this.error = "No se pudo crear este concepto";
-                    this.setSnackbar(true);
-                });
-            },
-            updateConceptos(item){
-                //delete item.imagen;
-                //let formdata = new FormData();
-                //formdata.append('image',this.imagen);
-                //formdata.append('data',JSON.stringify(item));
-
-                Conceptos().post("/",{data:item}).then(() => {
-                    Object.assign(this.conceptos[this.editIndex],item);
-                    this.editIndex = -1;
-                    this.close();
-                    this.exito = "Se actualizo exitosamente";
-                    this.setSnackbar(true);
-                }).catch(e => {
-                    console.log(e);
-                    this.close();
-                    this.error = "No se pudo actualizar este concepto";
                     this.setSnackbar(true);
                 });
             },
@@ -542,16 +588,6 @@ import {mapActions} from 'vuex';
                 this.changes();
                 this.dialog=true;
             },
-            close(){
-                this.dialog=false;
-                this.loading=false;
-                this.nulos();
-                setTimeout(() => {
-                    this.editIndex = -1;
-                    this.editItem = Object.assign({},this.defaultItem);
-                    this.showImage=this.ruta+'default.png';
-                },300);
-            },
             save(item){
                 this.loading = true;
                 this.error = null;
@@ -561,6 +597,35 @@ import {mapActions} from 'vuex';
                 }else{
                     this.postConceptos(item);
                 }
+            },
+            changeGrupo(evt){
+                this.subgruposSelect = [];
+                this.grupos.filter(a=> a.id==evt.id ? this.editItem.grupos_id=a.id:null);
+                this.subgrupos.filter(a=> a.grupos_id==this.editItem.grupos_id ? this.subgruposSelect.push(a):null);
+            },
+            changeSubGrupo(evt){
+                this.subgruposSelect.filter(a=> a.id==evt.id ? this.editItem.subgrupos_id=a.id:null);
+            },
+            changeMarca(evt){
+                this.marcas.filter(a=> a.id==evt.id ? this.editItem.marcas_id=a.id:null);
+            },
+            changeTipo(evt){
+                this.tipos.filter(a=> a.id==evt.id ? this.editItem.tipos_conceptos_id=a.id:null);
+            },
+            changeEmpresa(evt){
+                this.empresas.filter(a=> a.id==evt.id ? this.editItem.empresa_id=a.id:null);
+            },
+            changePrecio(evt){
+                this.editItem.precio_dolar = Number.parseFloat(evt)/75000;
+            },
+            changes(){
+                this.empresas.filter(a=> a.id==this.editItem.empresa_id ? this.selectEmpresa=a:null);
+                this.tipos.filter(a=> a.id==this.editItem.tipos_conceptos_id ? this.selectTipo=a:null);
+                this.grupos.filter(a=> a.id==this.editItem.grupos_id ? this.selectGrupo=a:null);
+                this.subgrupos.filter(a=> a.id==this.editItem.subgrupos_id ? this.selectSubgrupo=a:null);
+                this.marcas.filter(a=> a.id==this.editItem.marcas_id ? this.selectMarca=a:null);
+                this.subgruposSelect = [];
+                this.subgrupos.filter(a=> a.grupos_id==this.editItem.grupos_id ? this.subgruposSelect.push(a):null);
             },
             procesoImg(evt){
                 if(evt){
@@ -575,35 +640,6 @@ import {mapActions} from 'vuex';
                     this.showImage=this.ruta+'default.png';
                 }
             },
-            changeGrupo(evt){
-                this.subgruposSelect = [];
-                this.grupos.filter(a=> a.text==evt ? this.editItem.grupos_id=a.id:null);
-                this.subgrupos.filter(a=> a.grupos_id==this.editItem.grupos_id ? this.subgruposSelect.push(a):null);
-            },
-            changeSubGrupo(evt){
-                this.subgruposSelect.filter(a=> a.text==evt ? this.editItem.subgrupos_id=a.id:null);
-            },
-            changeMarca(evt){
-                this.marcas.filter(a=> a.text==evt ? this.editItem.marcas_id=a.id:null);
-            },
-            changeTipo(evt){
-                this.tipos.filter(a=> a.text==evt ? this.editItem.tipos_conceptos_id=a.id:null);
-            },
-            changeEmpresa(evt){
-                this.empresas.filter(a=> a.text==evt ? this.editItem.empresa_id=a.id:null);
-            },
-            changePrecio(evt){
-                this.editItem.precio_dolar = Number.parseFloat(evt)/75000;
-            },
-            changes(){
-                this.empresas.filter(a=> a.id==this.editItem.empresa_id ? this.selectEmpresa=a.text:null);
-                this.tipos.filter(a=> a.id==this.editItem.tipos_conceptos_id ? this.selectTipo=a.text:null);
-                this.grupos.filter(a=> a.id==this.editItem.grupos_id ? this.selectGrupo=a.text:null);
-                this.subgrupos.filter(a=> a.id==this.editItem.subgrupos_id ? this.selectSubgrupo=a.text:null);
-                this.marcas.filter(a=> a.id==this.editItem.marcas_id ? this.selectMarca=a.text:null);
-                this.subgruposSelect = [];
-                this.subgrupos.filter(a=> a.grupos_id==this.editItem.grupos_id ? this.subgruposSelect.push(a):null);
-            },
             nulos(){
                 this.selectTipo=null;
                 this.selectEmpresa=null;
@@ -611,13 +647,45 @@ import {mapActions} from 'vuex';
                 this.selectSubgrupo=null;
                 this.selectMarca=null;
             }
-
         },
     }
 </script>
 
 <style scope>
-    .color{
-        background: #eee;
+    .custom-loader {
+        animation: loader 1s infinite;
+        display: flex;
+    }
+    @-moz-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @-o-keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    @keyframes loader {
+        from {
+            transform: rotate(0);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>
