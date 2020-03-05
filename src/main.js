@@ -5,7 +5,9 @@ import store from "./store";
 import vuetify from './plugins/vuetify';
 import "@mdi/font/css/materialdesignicons.css";
 import Croppa from 'vue-croppa'
+import VueHead from 'vue-head'
 
+Vue.use(VueHead);
 Vue.use(Croppa);
 
 Vue.config.productionTip = false;

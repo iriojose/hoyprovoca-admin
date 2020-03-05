@@ -1,159 +1,85 @@
 <template>
-    <v-form v-model="valid" class="center" @submit.prevent="">
-        <v-row justify="center" align="center">
-            <v-col cols="12" md="10" sm="12">
-                <v-text-field
-                    label="Usuario/Email"
-                    v-model="data.usuario"
-                    :disabled="loading"
-                    type="text"
-                    clearable
-                    outlined
-                    prepend-inner-icon="email"
-                    color="#005598"
-                    dense
-                    counter="50"
-                    :rules="[required('Usuario/Email'), maxLength('Usuario/Email',50)]"
-                />       
-            </v-col>
-            <v-col cols="12" md="10" sm="12">
-                <v-text-field
-                    v-model="data.password"
-                    label="Password"
-                    :disabled="loading"
-                    counter="true"
-                    :type="showPassword ? 'text' : 'password' "
-                    :rules="[required('password'), minLength('password',8)]"
-                    @click:append="showPassword = !showPassword"
-                    :append-icon="showPassword ?  'visibility' : 'visibility_off'"
-                    :prepend-inner-icon="showPassword ?  'lock_open' : 'lock'"
-                    outlined
-                    color="#005598"
-                    dense
-                />
-            </v-col>
-            <v-col cols="12" sm="12" md="12">
-                <v-btn 
-                    block 
-                    type="submit" 
-                    :disabled="!valid || loading" 
-                    color="#005598" 
-                    :dark="valid && !loading"
-                    :loading="loading"
-                    @click="login"
-                >
-                    Enviar
-                    <template v-slot:loader>
-                        <span class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                        </span>
-                    </template>
-                </v-btn>
-            </v-col>
-        </v-row>
-
-        <v-snackbar v-model="snackbar" :color="error ? '#C62828':'#2E7D32'" right>
-            <div v-if="error">
-                <v-icon dark>
-                    cancel
-                </v-icon>
-                {{error}}
-            </div>
-            <div v-else>
-                <v-icon dark>
-                    check_circle
-                </v-icon>
-                Se ha logueado exitosamente.
-            </div>
-        </v-snackbar>
-    </v-form>   
+    <v-form v-model="valid" class="mx-5">
+        <v-text-field
+            label="Usuario/Email"
+            single-line
+            v-model="data.user"
+            type="email"
+            outlined
+            color="#005598"
+            flat
+            dense
+            :rules="[required('Usuario/Email'), maxLength('Usuario/Email',50)]"
+        />
+        <v-text-field
+            v-model="data.password"
+            single-line
+            label="Introduzca su contraseña"
+            type="password"
+            :rules="[required('password'), minLength('password',8)]"
+            outlined
+            color="#005598"
+            dense
+            flat
+        />
+        <v-hover v-slot:default="{hover}" open-delay="200">
+            <v-btn 
+                block 
+                type="submit" 
+                class="text-capitalize mt-5"
+                :disabled="!valid || loading" 
+                color="#005598" 
+                :dark="valid && !loading"
+                :loading="loading"
+                :elevation="hover ? 5:0"
+                @click="login()"
+            >
+                Iniciar Sesión
+            </v-btn>
+        </v-hover>
+    </v-form>
 </template>
 
 <script>
-import validations from '@/validations/validations';
-import Usuario from '@/services/Usuario';
-import {mapActions} from 'vuex';
+import Auth from '@/services/Auth';
+import validations from "@/validations/validations";
 import router from '@/router';
+import {mapActions} from 'vuex';
 
-    export default {
+    export default {    
         data() {
             return {
-                data:{
-                    usuario: "",
-                    password: "",
-                },
                 valid:false,
                 loading:false,
                 showPassword:false,
                 snackbar:false,
-                error:null,
                 ...validations,
+                data:{
+                    user:'',
+                    password:''
+                }
             }
         },
-        methods: {
-            ...mapActions(['setLogin']),
+        methods:{
+            ...mapActions(['logged']),
 
             login(){
-                this.loading=true;
-                Usuario().post("/login",{data:this.data}).then((response) => {
-                    this.snackbar=true;
+                this.loading = true;
+                Auth().post("/login",{data:this.data}).then((response) => {
                     console.log(response);
-                    if(response == undefined){
-                        this.error="Usuario y/o contraseña incorrecta.";
-                    }else{
-                        this.setLogin(response.data);
-                        setTimeout(() => {
-                            this.error=null;
-                            this.loading=false;
-                            router.push('/');
-                        },2000);
-                    }
-                }).catch(e => {
                     this.snackbar=true;
-                    this.loading=false;
-                    this.error="Usuario y/o contraseña incorrecta.";
+                    this.logged(response.data.token);
+                    setTimeout(() => {
+                        this.error=null;
+                        this.loading=false;
+                        router.push('/');
+                    },1000);
+                }).catch(e => {
                     console.log(e);
+                    this.loading = false;
+                    this.snackbar=true;
                 });
             }
-        },
+        }
     }
 </script>
-
-<style scoped>
-    .custom-loader {
-        animation: loader 1s infinite;
-        display: flex;
-    }
-    @-moz-keyframes loader {
-        from {
-            transform: rotate(0);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-    @-webkit-keyframes loader {
-        from {
-            transform: rotate(0);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-    @-o-keyframes loader {
-        from {
-            transform: rotate(0);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-    @keyframes loader {
-        from {
-            transform: rotate(0);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-</style>
