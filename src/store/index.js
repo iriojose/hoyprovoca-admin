@@ -5,82 +5,49 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        barraLateral:true,
-        dialogEmpresa:false,
-        dialogInventario:false,
-        snackbar:false,
-        inventario:{},
         user:{
-            logged:false,
-            token:null
-        }
+            token:null,
+            data:{},
+            loggedIn:false
+        },
+        snackbar:false,
+        drawer:true,
     },
     mutations: {
+        SET_DRAWER(state,val){
+            val ? state.drawer = true:state.drawer = false;
+        },
         SET_SNACKBAR(state,val){
-            if(val){
-                state.snackbar = true;
-            }else{
-                state.snackbar = false;
-            }
+            val ? state.snackbar = true:state.snackbar = false;
         },
-        SET_INVENTARIO(state,val){
-            state.inventario = val;
+        //autenticacion
+        SET_LOGGED(state,val){//logea al usuario
+            let data = {};
+            data.loggedIn = true;
+            data.token = val.token;
+            data.data = val.data;
+            state.user = data;
+            window.localStorage.setItem('token',val.token);
         },
-        SET_DIALOG_INVENTARIO(state,val){
-            if(val){
-                state.dialogInventario = true;
-            }else{
-                state.dialogInventario = false;
-            }
-        },
-        SET_BARRALATERAL(state,val){
-            if(val){
-                state.barraLateral = true;
-            }else{
-                state.barraLateral = false;
-            }
-        },
-        SET_DIALOGEMPRESA(state,val){
-            if(val){
-                state.dialogEmpresa = true;
-            }else{
-                state.dialogEmpresa = false;
-            }
-        },
-        SET_LOGGED(state,value) {
-            state.user.logged = true;
-            state.user.token=value;
-            window.localStorage.setItem('token',value);
-        },
-        LOGOUT(state){
-            state.user.logged=false;
-            window.localStorage.setItem('token',"");
+        LOGOUT(state){//cierra la sesion
+            state.user.token=null;
+            state.user.data={};
+            state.user.loggedIn=false;
+            window.localStorage.setItem('token',"");//se elimina el token del storage
         },
     },
     actions: {
         setSnackbar({commit},val){
             commit('SET_SNACKBAR',val);
         },
-        setBarraLateral({commit},val){
-            commit('SET_BARRALATERAL',val);
+        setDrawer({commit},val){
+            commit('SET_DRAWER',val);
         },
-        setDialogEmpresa({commit},val){
-            commit('SET_DIALOGEMPRESA',val);
-        },
-        setInventario({commit},val){
-            commit('SET_INVENTARIO',val);
-        },
-        setDialogInventario({commit},val){
-            commit('SET_DIALOG_INVENTARIO',val);
-        },
-        setLogin({commit},val){
-            commit('SET_LOGIN',val);
+        logged({commit},val){
+            commit('SET_LOGGED',val);
         },
         logout({commit}){
-            commit("LOGOUT");
-        },
-        logged({commit},value){
-            commit("SET_LOGGED",value);
+            commit('LOGOUT');
         },
     },
     modules: {

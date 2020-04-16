@@ -1,38 +1,65 @@
 <template>
-   <v-app style="background-color:#eee;">
-      <v-content>
-          <transition name="fade">
-              <router-view/>
-          </transition>  
-      </v-content>
+    <v-app style="background-color:#f7f7f7;">
+        <AppBar v-if="ruta()" />
+        <transition name="fade">
+            <router-view/>
+        </transition>  
     </v-app>
 </template>
 
 <script>
-  export default {
-      name: 'App',
-  }
+import AppBar from '@/components/navbar/AppBar';
+
+    export default {
+        name: 'App',
+        components:{
+            AppBar
+        },
+        methods:{
+            ruta(){
+                if(
+                    this.$route.name == 'login' || 
+                    this.$route.name == 'forgot' ||
+                    this.$route.name == 'notauthorized' ||
+                    this.$route.name == 'notfound'
+                ){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        }
+    }
 </script>
 
 <style>
     .fade-enter-active, .fade-leave-active {
-      transition: opacity .5s;
+        transition: opacity .5s;
     }
-
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-      opacity: 0;
+    .fade-enter, .fade-leave-to{
+        opacity: 0;
     }
-
-    body::-webkit-scrollbar{
-      width:8px;
+    ::-webkit-scrollbar {
+        width: 8px;     
+        height: 8px;   
     }
-
-    body::-webkit-scrollbar-track{
-      -webkit-box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+    ::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 12px;
     }
-
-    body::-webkit-scrollbar-thumb{
-      background-color: darkgrey;
-      outline: 1px solid slategray;
+    ::-webkit-scrollbar-thumb:hover {
+        background: #b3b3b3;
+        box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb:active {
+        background-color: #999999;
+    }
+    ::-webkit-scrollbar-track {
+        background: #fff;
+        border-radius: 12px;
+    }
+    ::-webkit-scrollbar-track:hover,
+    ::-webkit-scrollbar-track:active {
+        background: #fff;
     }
 </style>

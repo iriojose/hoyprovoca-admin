@@ -1,111 +1,64 @@
 <template>
-    <v-app-bar app dark color="#005598">
-        <v-app-bar-nav-icon v-if="$vuetify.breakpoint.smAndDown" @click="change"></v-app-bar-nav-icon>
+    <div>
+        <BarraLateral />
 
-        <v-btn @click="back" icon v-if="validacion()">
-            <v-icon>
-                arrow_back_ios
-            </v-icon>
-        </v-btn>
+        <v-app-bar app color="#f7f7f7" elevation="0">
+            <v-btn fab class="mx-3" small elevation="2" @click="change">
+                <v-icon v-if="drawer">
+                    mdi-dots-vertical
+                </v-icon>
+                <v-icon v-else>
+                    mdi-view-dashboard
+                </v-icon>
+            </v-btn>
 
-        <v-toolbar-title class="ml-10" v-if="!$vuetify.breakpoint.smAndDown">
-            Administrador
-        </v-toolbar-title>
+            <v-toolbar-title class="cursor">
+                <v-img 
+                    contain 
+                    height="100"
+                    width="150"  
+                    :src="require('@/assets/logoaftim2.png')"
+                />
+            </v-toolbar-title>
 
-        <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
 
-        <v-menu offset-y open-on-hover v-if="usuario !== null">
-            <template v-slot:activator="{ on }">
-                <v-avatar size="35" v-on="on" :class="on ? 'elevation-4':null">
-                    <v-img :src="ruta+usuario.fotografia"></v-img>
-                </v-avatar>
-            </template>
-            <v-slide-y-transition>
-                <v-list dense class="mt-2">
-                    <v-list-item class="caption">
-                        <v-list-item-content>Notificaciones</v-list-item-content>
-                        <v-list-item-icon><v-icon>notifications</v-icon></v-list-item-icon>
-                    </v-list-item>
-                    <v-list-item class="caption">
-                        <v-list-item-content>Perfil</v-list-item-content>
-                        <v-list-item-icon><v-icon>person_pin</v-icon></v-list-item-icon>
-                    </v-list-item>
-                    <v-list-item @click="log" class="caption">
-                        <v-list-item-content>Logout</v-list-item-content>
-                        <v-list-item-icon><v-icon>power_settings_new</v-icon></v-list-item-icon>
-                    </v-list-item>
-                </v-list>
-            </v-slide-y-transition>
-        </v-menu>
-    </v-app-bar>
+            <v-badge color="#005598" dot class="mx-3" bordered overlap>
+                <v-icon>
+                    mdi-bell
+                </v-icon>
+            </v-badge>
+
+            <Perfil />
+        </v-app-bar>
+    </div>
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex';
-import router from '@/router';
-import Auth from '@/services/Auth';
-import url from '@/services/ruta';
+import Perfil from './Perfil';
+import BarraLateral from './BarraLateral';
+import {mapState,mapActions} from 'vuex';
 
     export default {
-        data() {
-            return {
-                usuario:null,
-                ruta:null
-            }
-        },
-        mounted() {
-            this.ruta = url;
-            if(this.user.token !== null){
-                this.getUsuario();
-            }else{
-                this.log();
-            }
-        },
-        methods: {
-            ...mapActions(['setBarraLateral','logout','setDataUsuario']),
-            back(){
-                router.go(-1);
-            },
-            log(){
-                this.logout();
-                router.push("/login");
-            },
-            change(){
-                if(this.barraLateral){
-                    this.setBarraLateral(false);
-                }else{
-                    this.setBarraLateral(true);
-                }
-            },
-            getUsuario(){
-                Auth().post("/sesion",{token:this.user.token}).then((response) => {
-                    this.usuario = response.data.data;
-                }).catch(e => {
-                    console.log(e);
-                });
-            },
-            validacion(){
-                if(this.$route.path == '/dashboard'){
-                    return false;
-                }else if(this.$route.path == '/pagos'){
-                    return false;
-                }else if(this.$route.path == '/Inventario'){
-                    return false;
-                }else if(this.$route.path == '/clientes'){
-                    return false;
-                }else if(this.$route.path == '/empresas'){
-                    return false;
-                }else if(this.$route.path == '/pedidos'){
-                    return false;
-                }else if(this.$route.path == '/estadisticas'){
-                    return false;
-                }else{
-                    return true;
-                }
-            }
+        components:{
+            Perfil,
+            BarraLateral
         },
         computed: {
-            ...mapState(['barraLateral','user']),
+            ...mapState(['drawer'])
         },
+        methods:{
+            ...mapActions(['setDrawer']),
+
+            change(){
+                this.drawer ? this.setDrawer(false):this.setDrawer(true);
+            },
+        }
     }
 </script>
+
+<style lang="css" scoped>
+    .cursor{
+        cursor:pointer;
+    }
+</style>

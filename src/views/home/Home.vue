@@ -1,32 +1,55 @@
 <template>
-    <div>
-        <AppBar />
-        <BarraLateral />
-        
-        <v-container>
-            <router-view/>
-        </v-container>
-        <Footer />
+    <div v-if="$vuetify.breakpoint.smAndDown" class="mx-2 bottom">
+        <router-view/>
+
+        <div v-if="$route.name == 'home'">
+            <Dashboard />
+        </div>
+    </div>
+    <div v-else :class="drawer ? 'top left bottom':'top right bottom'">
+        <router-view/>
+
+        <div v-if="$route.name == 'home'">
+            <Dashboard />
+        </div>
     </div>
 </template>
 
 <script>
-import AppBar from '@/components/navbar/AppBar';
-import Footer from '@/components/footer/Footer';
-import BarraLateral from '@/components/navbar/BarraLateral';
-import router from '@/router';
+import Dashboard from '@/components/dashboard/Dashboard';
+import {mapState} from 'vuex';
 
     export default {
         components:{
-            AppBar,
-            BarraLateral,
-            Footer
+            Dashboard
         },
-        mounted() {
-            if(this.$route.path == '/'){
-                router.push("/dashboard");
+        computed: {
+            ...mapState(['drawer'])
+        },
+        head:{
+            title(){
+                return {
+                    inner:'Dashboard',
+                    separator:' ',
+                    complement: ' '
+                }
             }
         },
     }
 </script>
 
+<style lang="scss" scope>
+    .top{
+        margin-top:70px;
+        margin-right:20px;
+    }
+    .left{
+        margin-left:300px;
+    }
+    .right{
+        margin-left:20px;
+    }
+    .bottom{
+        margin-bottom:200px;
+    }
+</style>

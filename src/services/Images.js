@@ -3,7 +3,7 @@ import variables from './variables_globales';
 
 export default () => {
     return axios.create({
-        baseURL:`http://${variables.data}/api/grupos`,
+        baseURL:`http://${variables.imagen}/gallery`,
         withCredentials:false,
         headers:{
             Accept:'application/json',

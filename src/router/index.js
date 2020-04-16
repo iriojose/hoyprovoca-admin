@@ -1,131 +1,109 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
-//import store from '../store';
+import Router from "vue-router";
+import store from '@/store';
 
-import Home from "../views/home/Home.vue";
-import Login from '../views/auth/Login';
-import NotFound from '../views/errors/NotFound';
-import NotAuthorized from '../views/errors/NotAuthorized';
-import Dashboard from '../views/dashboard/Dashboard';
-import Inventario from '../views/inventario/Inventario';
-import Clientes from '../views/clientes/Clientes';
-import Empresas from '../views/empresas/Empresas';
-import Pedidos from '../views/pedidos/Pedidos';
-import Estadisticas from '../views/estadisticas/Estadisticas';
-import Pagos from '../views/pagos/Pagos';
+import Home from "@/views/home/Home";
+import Login from '@/views/auth/Login';
+import Forgot from '@/views/auth/Forgot';
+import Usuarios from '@/views/usuarios/Usuarios';
+import Empresas from '@/views/empresas/Empresas';
+import Grupos from '@/views/inventario/Grupos';
 
-import NuevaFactura from '../views/pagos/NuevaFactura';
-import NuevoCargo from '../views/inventario/NuevoCargo';
+Vue.use(Router);
 
-Vue.use(VueRouter);
+const router = new Router({
+    mode: "history",
+	base:'/',
+	routes:[
+		{
+			path: "/",
+			name: "home",
+			component: Home,
+			meta:{
+                auth:true
+            },
+            children:[
+                {
+                    path:'usuarios',
+                    name:"usuarios",
+                    component:Usuarios,
+                    meta:{
+                        auth:true
+                    },
+                },
+                {
+                    path:'empresas',
+                    name:"empresas",
+                    component:Empresas,
+                    meta:{
+                        auth:true
+                    },
+                },
+                {
+                    path:'grupos',
+                    name:"grupos",
+                    component:Grupos,
+                    meta:{
+                        auth:true
+                    },
+                }
+            ]
 
-const routes = [
-  {
-    path: "/",
-    name: "home",
-    component: Home,
-    meta:{
-      auth:true
+		},
+		{
+			path: "/login",
+			name: "login",
+			component: Login,
+			meta:{
+                auth:false
+            }
+        },
+        {
+			path: "/forgot",
+			name: "forgot",
+			component: Forgot,
+			meta:{
+                auth:false
+            }
+		},
+	],
+	linkActiveClass: 'router-link-active', 
+    linkExactActiveClass: 'router-link-exact-active', 
+    scrollBehavior (to, from, savedPosition) {
+        if (savedPosition) {
+            return savedPosition
+        } else {
+            return { x: 0, y: 0 }
+        }
     },
-
-    children:[
-      {
-        path:'dashboard',
-        name:'dashboard',
-        component:Dashboard
-      },
-      {
-        path:'inventario',
-        name:'Inventario',
-        component:Inventario
-      },
-      {
-        path:'clientes',
-        name:'clientes',
-        component:Clientes
-      },
-      {
-        path:'empresas',
-        name:'empresas',
-        component:Empresas
-      },
-      {
-        path:'pedidos',
-        name:'pedidos',
-        component:Pedidos
-      },
-      {
-        path:'estadisticas',
-        name:'estadisticas',
-        component:Estadisticas
-      },
-      {
-        path:'pagos',
-        name:'pagos',
-        component:Pagos
-      }
-    ]
-  },
-  {
-    path:"/login",
-    name:"login",
-    component:Login,
-    meta:{
-      auth:false
-    }
-  },
-  {
-    path:"*",
-    name:"notFound",
-    component:NotFound
-  },
-  {
-    path:"/notAuthorized",
-    name:"notAuthorized",
-    component:NotAuthorized
-  },
-  {
-    path:'/nuevaFactura',
-    name:'nuevaFactura',
-    component:NuevaFactura
-  },
-  {
-    path:'/nuevoCargo',
-    name:'nuevoCargo',
-    component:NuevoCargo
-  }
-];
-
-const router = new VueRouter({
-  routes,
-  mode: "history",
-  base: '/',
-  linkActiveClass: 'router-link-active', 
-  linkExactActiveClass: 'router-link-exact-active', 
-  scrollBehavior(to, from, savedPosition){
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { x: 0, y: 0 }
-    }
-  },
-  parseQuery: q => q, 
-  fallback: true,
+    parseQuery: q => q,
+    fallback: true,
 });
 
+router.beforeEach((to,from,next) => {
+    let user = store.state.user.loggedIn;
 
-/*router.beforeEach((to, from, next) => {
-  let user = store.state.user.logged;
-
-  if(to.meta.auth){
-    if(user){
-      next();
+    if(to.meta.auth){
+        if(user){
+            next();
+        }else{
+            next({name:'login'});
+        }
     }else{
-      next({name:'notAuthorized'});
+        if(to.name == 'login' && user){
+            next({name:'home'});
+        }else if(to.name == 'login' && user){
+            next({name:'home'});
+        }else if(to.name == 'register' && user){
+            next({name:'home'});
+        }else if(to.name == 'resetPassword' && user){
+            next({name:'home'});
+        }else if(to.name == 'forgot' && user){
+            next({name:'home'});
+        }else{
+            next();
+        }
     }
-  }else{
-    next({name:'login'});
-  }
-});*/
+});
 
 export default router;

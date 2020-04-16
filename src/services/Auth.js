@@ -1,15 +1,14 @@
 import axios from 'axios';
-import header from './header';
-import autorizacion from './autorizacion';
+import variables from './variables_globales';
 
 export default () => {
     return axios.create({
-        baseURL:`http://${autorizacion}/`,
+        baseURL:`http://${variables.auth}/auth`,
         withCredentials:false,
         headers:{
             Accept:'application/json',
             'Content-Type':'application/json',
-            "x-access-control":header
+            "x-access-control":variables.header
         }
     });
 };
