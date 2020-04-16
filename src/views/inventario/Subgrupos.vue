@@ -147,6 +147,7 @@ import router from '@/router';
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
                     { text: 'Nombre',sortable: true, value: 'nombre'},
+                    { text: 'Grupo', value: 'adm_grupos_id'},
                     { text: 'Visualizar', value: 'visualizar'},
                     { text: 'posicion', value: 'posicion'},
                     { text: 'Acciones', value: 'action', sortable: false },

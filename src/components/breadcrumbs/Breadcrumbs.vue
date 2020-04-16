@@ -29,3 +29,9 @@ import router from '@/router';
         },
     }
 </script>
+
+<style lang="scss" scoped>
+    .pointer{
+        cursor:pointer;
+    }
+</style>
