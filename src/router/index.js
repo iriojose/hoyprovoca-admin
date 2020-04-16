@@ -8,6 +8,11 @@ import Forgot from '@/views/auth/Forgot';
 import Usuarios from '@/views/usuarios/Usuarios';
 import Empresas from '@/views/empresas/Empresas';
 import Grupos from '@/views/inventario/Grupos';
+import Subgrupos from '@/views/inventario/Subgrupos';
+import Productos from '@/views/inventario/Productos';
+import NewGrupo from '@/views/inventario/NewGrupo';
+import NewSubgrupo from '@/views/inventario/NewSubgrupo';
+import NewProducto from '@/views/inventario/NewProducto';
 
 Vue.use(Router);
 
@@ -46,7 +51,56 @@ const router = new Router({
                     meta:{
                         auth:true
                     },
-                }
+
+                    children:[
+                        {
+                            path:'new',
+                            name:"nuevogrupo",
+                            component:NewGrupo,
+                            meta:{
+                                auth:true
+                            },
+                        }
+                    ]
+                },
+                {
+                    path:'subgrupos',
+                    name:"subgrupos",
+                    component:Subgrupos,
+                    meta:{
+                        auth:true
+                    },
+
+                    children:[
+                        {
+                            path:'new',
+                            name:"nuevosubgrupo",
+                            component:NewSubgrupo,
+                            meta:{
+                                auth:true
+                            },
+                        }
+                    ]
+                },
+                {
+                    path:'productos',
+                    name:"productos",
+                    component:Productos,
+                    meta:{
+                        auth:true
+                    },
+
+                    children:[
+                        {
+                            path:'new',
+                            name:"nuevoproducto",
+                            component:NewProducto,
+                            meta:{
+                                auth:true
+                            },
+                        }
+                    ]
+                },
             ]
 
 		},

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card width="100%" v-if="$route.name == 'grupos'">
+        <v-card width="100%" v-if="$route.name == 'subgrupos'">
             <v-toolbar flat color="#fff">
                 <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="push">
                     Nuevo
@@ -8,11 +8,11 @@
                 </v-btn>
 
                 <v-btn 
-                    @click="getGrupos()" 
+                    @click="getSubgrupos()" 
                     dark 
                     class="mb-2 mx-2 text-capitalize caption" 
                     color="#005598"
-                    :disabled="grupos.length == total || loading ? true:false"
+                    :disabled="subgrupos.length == total || loading ? true:false"
                 >
                     Ver más 
                     <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
@@ -33,7 +33,7 @@
                 :loading="loading && '#005598'" 
                 loading-text="Loading... Please wait" 
                 :headers="headers" 
-                :items="grupos" 
+                :items="subgrupos" 
                 class="elevation-0" 
                 :search="search"
             >   
@@ -67,7 +67,7 @@
                                             class="text-capitalize"
                                             block
                                             :loading="loading2"
-                                            @click="deleteGrupo()"
+                                            @click="deleteSubgrupo()"
                                         >
                                             Sí, seguro
                                         </v-btn>
@@ -118,9 +118,10 @@
 </template>
 
 <script>
-import Grupos from '@/services/Grupos';
-import variables from '@/services/variables_globales';
+import SubGrupos from '@/services/SubGrupos';
+//import Grupos from '@/services/Grupos';
 import Conceptos from '@/services/Conceptos';
+import variables from '@/services/variables_globales';
 import LoaderRect from '@/components/loaders/LoaderRect';
 import router from '@/router';
 
@@ -130,17 +131,19 @@ import router from '@/router';
         },
         data() {
             return {
+                //banderas
                 ...variables,
-                offset:0,
-                eliminado:false,
-                valor:null,
-                total:0,
-                bandera:null,
-                search:'',
-                dialog:false,
-                loading2:false,
                 loading:true,
-                grupos:[],
+                loading2:false,
+                dialog:false,
+                eliminado:false,
+                offset:0,
+                //para validar
+                search:'',
+                total:0,
+                valor:null,
+                item:null,
+                subgrupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
                     { text: 'Nombre',sortable: true, value: 'nombre'},
@@ -151,7 +154,7 @@ import router from '@/router';
             }
         },
         mounted() {
-            this.getGrupos();
+            this.getSubgrupos();
         },
         watch:{
             dialog(){
@@ -163,35 +166,35 @@ import router from '@/router';
                 },500);
             }
         },
-        methods: {
+        methods:{
             push(){
-                router.push("/grupos/new");
+                router.push("/subgrupos/new");
             },
-            getGrupos(){
+            getSubgrupos(){
                 this.loading=true;
-                Grupos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
+                SubGrupos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
                     this.total= response.data.totalCount;
-                    response.data.data.filter(a => this.grupos.push(a));
+                    response.data.data.filter(a => this.subgrupos.push(a));
                     this.loading=false;
                     this.offset+=50;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            deleteGrupo(){
+            deleteSubgrupo(){
                 this.eliminado = false;
                 this.loading2=true;
-                Grupos().delete(`/${this.bandera.id}`).then(() => {
+                SubGrupos().delete(`/${this.item.id}`).then(() => {
                     this.loading2=false;
                     this.eliminado = true;
-                    const index = this.grupos.indexOf(this.bandera);
-                    this.grupos.splice(index,1);
+                    const index = this.subgrupos.indexOf(this.item);
+                    this.subgrupos.splice(index,1);
                 }).catch(e => {
                     console.log(e);
                 });
             },
             getConcepto(item){
-                Conceptos().get(`/?limit=1&adm_grupos_id=${item.id}`).then((response) => {
+                Conceptos().get(`/?limit=1&adm_subgrupos_id=${item.id}`).then((response) => {
                     this.valor = response.data.data;
                     this.loading2 = false;
                 }).catch(e => {
@@ -199,11 +202,11 @@ import router from '@/router';
                 });
             },
             deleteItem(item){
-                this.bandera=item;
+                this.item=item;
                 this.dialog = true;
                 this.loading2 = true;
                 this.getConcepto(item);
             }
-        },
+        }
     }
 </script>

@@ -24,7 +24,7 @@
                                 label="Correo electronico"
                                 single-line
                                 solo
-                                append-icon="email"
+                                append-icon="mdi-at"
                                 dense
                                 color="#005598"
                                 v-model="email"
@@ -37,7 +37,7 @@
                                 label="Codigo"
                                 single-line
                                 solo
-                                append-icon="lock"
+                                append-icon="mdi-lock"
                                 dense
                                 color="#005598"
                                 :disabled="loading"
@@ -85,8 +85,8 @@
                                 :type="showPassword ? 'text' : 'password'"
                                 :rules="[required('Contraseña'), minLength('Contraseña',8)]"
                                 @click:append="showPassword = !showPassword"
-                                :append-icon="showPassword ?  'visibility' : 'visibility_off'"
-                                :prepend-inner-icon="showPassword ?  'lock_open' : 'lock'"
+                                :append-icon="showPassword ?  'mdi-eye' : 'mdi-eye-off'"
+                                :prepend-inner-icon="showPassword ?  'mdi-lock-open-variant' : 'mdi-lock'"
                                 solo
                                 color="#005598"
                                 dense
@@ -98,7 +98,7 @@
                                 single-line
                                 type="password"
                                 :rules="[required('Contraseña'),passwordConfirmationRule()]"
-                                prepend-inner-icon="lock"
+                                prepend-inner-icon="mdi-lock"
                                 solo
                                 color="#005598"
                                 dense
@@ -179,34 +179,33 @@ import Snackbar from '@/components/snackbars/Snackbar';
             sendMail(){
                 this.loading = true;
                 Auth().post("/sendmail",{data:{user:this.email}}).then(() => {
-                    this.mensajeSnackbar("#388E3C","Codigo enviado exitosamente.","done");
+                    this.mensajeSnackbar("#388E3C","Codigo enviado exitosamente.","mdi-check-outline");
                     this.send = true;
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar("#D32F2F","Ooops, Error al intentar enviar el codigo.","error");
+                    this.mensajeSnackbar("#D32F2F","Ooops, Error al intentar enviar el codigo.","mdi-alert-octagon");
                 });
             },
             validCode(){
                 this.loading = true;
                 Auth().post("/validcode",{data:{user:this.email,hash:this.codigo}}).then(() => {
-                    console.log(response);
-                    this.mensajeSnackbar("#388E3C","Codigo validado exitosamente.","done");
+                    this.mensajeSnackbar("#388E3C","Codigo validado exitosamente.","mdi-check-outline");
                     this.validcode=true;
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar("#D32F2F","Ooops, Error al validar el codigo.","error");
+                    this.mensajeSnackbar("#D32F2F","Ooops, Error al validar el codigo.","mdi-alert-octagon");
                 });
             },
             reset(){
                 this.loading = true;
                 Auth().post("/resetpassword",{data:{user:this.email,password:this.contraseña}}).then(() => {
-                    this.mensajeSnackbar("#388E3C","Contraseña cambiada.","done");
+                    this.mensajeSnackbar("#388E3C","Contraseña cambiada.","mdi-check-outline");
                     setTimeout(() => {
                         this.push();
                     },1000);
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar("#D32F2F","Ooops, Error al resetear contraseña.","error");
+                    this.mensajeSnackbar("#D32F2F","Ooops, Error al resetear contraseña.","mdi-alert-octagon");
                 });
             }
         },

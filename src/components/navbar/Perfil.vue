@@ -22,7 +22,7 @@
                         </v-list-item-avatar>
                         <v-list-item-content>
                             <v-list-item-title v-text="user.data.nombre+' '+user.data.apellido"></v-list-item-title>
-                            <v-list-item-subtitle>Cliente</v-list-item-subtitle>
+                            <v-list-item-subtitle>Super usuario</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -31,7 +31,7 @@
                     <v-hover v-slot:default="{hover}">
                         <v-list-item to="/account/profile">   
                             <v-list-item-icon>
-                                <v-icon :color="hover ? '#005598':null">settings</v-icon>
+                                <v-icon :color="hover ? '#005598':null">mdi-cogs</v-icon>
                             </v-list-item-icon>
                             <v-list-item-title>
                                 Ajustes
@@ -41,7 +41,7 @@
                     <v-hover v-slot:default="{hover}">
                         <v-list-item @click="logOut()">   
                             <v-list-item-icon>
-                                <v-icon :color="hover ? '#005598':null">exit_to_app</v-icon>
+                                <v-icon :color="hover ? '#005598':null">mdi-exit-to-app</v-icon>
                             </v-list-item-icon>
                             <v-list-item-title>
                                 Cerrar sesión

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="$vuetify.breakpoint.smAndDown" class="mx-2 bottom">
+    <div v-if="$vuetify.breakpoint.smAndDown" class="mx-2 bottom top2">
         <router-view/>
 
         <div v-if="$route.name == 'home'">
@@ -48,6 +48,9 @@ import {mapState} from 'vuex';
     }
     .right{
         margin-left:20px;
+    }
+    .top2{
+        margin-top:70px;
     }
     .bottom{
         margin-bottom:200px;
