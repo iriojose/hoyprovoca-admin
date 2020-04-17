@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-row justify="center" align="center" class="mt-8 mb-5">
-            <v-img contain width="100" height="30" :src="require('@/assets/logoaftim2.png')"></v-img>
+            <v-img contain width="100" height="50" :src="require('@/assets/logo2.png')"></v-img>
         </v-row>
 
         <v-row justify="center" align="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-5':null">
@@ -9,9 +9,9 @@
                 <v-img contain width="100%" height="300" :src="require('@/assets/dashboard.svg')"></v-img>
             </v-col>
 
-            <v-col cols="12" md="4" sm="10" class="mt-10">
+            <v-col cols="12" md="4" sm="10" class="mt-5">
                 <v-card width="100%" height="400" elevation="5" class="py-5">
-                    <div class="text-center my-5 font-weight-black subtitle-1">Iniciar sesión en Aftim</div>
+                    <div class="text-center my-5 font-weight-black subtitle-1">Iniciar sesión</div>
                     
                     <v-card-text>
                         <FormLogin />
@@ -54,7 +54,7 @@ import router from '@/router';
             }
         },
         methods: {
-            push(){ router.push('/forgot') }
+            push(){ router.push('/forgot') },
         },
     }
 </script>

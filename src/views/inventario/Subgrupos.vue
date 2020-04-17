@@ -92,21 +92,21 @@
                             </v-row>
                         </div>
                         <div v-if="!loading2 && valor" class="py-12 text-center title font-weight-bold">
-                            No se puede eliminar este Grupo.
-                            <div>
+                            <div class="mb-3">
                                 <v-icon size="50" color="#D32F2F">
                                     mdi-alert-octagon
                                 </v-icon>
                             </div>
+                            No se puede eliminar este Grupo.
                         </div>
 
                         <div v-if="eliminado" class="py-12 text-center title font-weight-bold">
-                            Se elimino el Grupo exitosamente.
-                            <div>
+                            <div class="mb-3">
                                 <v-icon size="50" color="#388E3C">
                                     mdi-checkbox-marked-circle-outline
                                 </v-icon>
                             </div>
+                            Se elimino el Grupo exitosamente.
                         </div>
                     </v-row>
                 </v-card-text>

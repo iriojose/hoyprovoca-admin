@@ -14,8 +14,23 @@ export default {
     components: {
         apexcharts: VueApexCharts
     },
+    props:{
+        pedidos:{
+            type:Array,
+            default:() => ([])
+        }
+    },
+    mounted(){//toISOString().substr(0, 10);
+        this.mes = new Date().getMonth();
+        console.log(this.mes);
+    },
     data(){
         return {
+            mes:null,
+            meses:[
+                {text:'Ene'},{text:'Feb'},{text:'Mar'},{text:'Abr'},{text:'May'},{text:'Jun'},
+                {text:'Jul'},{text:'Ago'},{text:'Sep'},{text:'Oct'},{text:'Nov'},{text:'Dic'}
+            ],
             chartOptions: {
                 chart: {
                     id: "barChart",
@@ -36,7 +51,7 @@ export default {
                     }
                 },
                 xaxis: {
-                    categories: ['Oct', 'Nov', 'Dic', 'Ene', 'Feb']
+                    categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May']
                 },
                 theme: {
                     mode: 'light', 

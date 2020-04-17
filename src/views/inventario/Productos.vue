@@ -57,6 +57,7 @@
 import Conceptos from '@/services/Conceptos';
 import router from '@/router';
 import variables from '@/services/variables_globales';
+import accounting from 'accounting';
 
     export default {
         data(){
@@ -78,6 +79,7 @@ import variables from '@/services/variables_globales';
                     { text: 'Codigo', value: 'codigo'},
                     { text: 'Referencia', value: 'referencia'},
                     { text: 'Precio', value: 'precio_a'},
+                    { text: 'Existencia', value: 'existencias[0].existencia'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
@@ -103,6 +105,7 @@ import variables from '@/services/variables_globales';
                 this.loading=true;
                 Conceptos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
                     this.total= response.data.totalCount;
+                    response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
                     response.data.data.filter(a => this.conceptos.push(a));
                     this.loading=false;
                     this.offset+=50;

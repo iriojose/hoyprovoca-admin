@@ -1,7 +1,16 @@
 <template>
     <div>
+        <v-toolbar color="#f7f7f7" elevation="0" class="px-12">
+            <v-hover v-slot:default="{hover}">
+                <v-btn fab :elevation="hover ? 2:0" @click="push">
+                    <v-icon>mdi-arrow-left</v-icon>
+                </v-btn>
+            </v-hover>
+            <v-spacer></v-spacer>
+        </v-toolbar>
+
         <v-row justify="center" align="center" class="mt-8 mb-5">
-            <v-img contain width="100" height="30" :src="require('@/assets/logoaftim2.png')"></v-img>
+            <v-img contain width="100" height="50" :src="require('@/assets/logo2.png')"></v-img>
         </v-row>
 
         <v-row justify="center" align="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-5':null">

@@ -43,7 +43,7 @@
                     </v-avatar>
                 </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2">mdi-border-color</v-icon>
+                    <v-icon small class="mr-2" @click="editar(item)" >mdi-border-color</v-icon>
                     <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
             </v-data-table>
@@ -52,21 +52,27 @@
         <v-dialog v-model="dialog" width="400" class="py-12" transition="dialog-bottom-transition">
             <v-card height="215">
                 <v-card-text>
-                    <v-row justify="center" align="center"> 
+                    <v-row justify="center" align="center">
                         <LoaderRect v-if="loading2" class="py-12" />
-                        <div v-if="!loading2 && valor == null && !eliminado" class="text-center title font-weight-bold py-12">
+
+                        <div v-if="!loading2 && valor" class="py-12 text-center title font-weight-bold">
+                            <div class="mb-3"><v-icon size="50" color="#D32F2F">mdi-alert-octagon</v-icon></div>
+                            No se puede eliminar este Grupo.
+                        </div>
+
+                        <div v-if="eliminado" class="py-12 text-center title font-weight-bold">
+                            <div class="mb-3"><v-icon size="50" color="#388E3C">mdi-checkbox-marked-circle-outline</v-icon></div>
+                            Se elimino el Grupo exitosamente.
+                        </div>
+
+                        <div v-if="!loading2 && valor == null && !eliminado" class="text-center subtitle-1 font-weight-bold py-12">
                             ¿Seguro que quiere eliminar este Grupo? 
-                            <v-row justify="space-around">
+                            <v-row justify="space-around" class="mt-4">
                                 <div>
                                     <v-hover v-slot:default="{hover}">
                                         <v-btn 
-                                            :elevation="hover ? 3:1" 
-                                            :text="hover ? false:true" 
-                                            :color="hover ? '#005598':null"
-                                            :dark="hover ? true:false"
-                                            class="text-capitalize"
-                                            block
-                                            :loading="loading2"
+                                            :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                                            :dark="hover ? true:false" class="text-capitalize"
                                             @click="deleteGrupo()"
                                         >
                                             Sí, seguro
@@ -77,12 +83,8 @@
                                 <div>
                                     <v-hover v-slot:default="{hover}">
                                         <v-btn 
-                                            :elevation="hover ? 3:1" 
-                                            :text="hover ? false:true" 
-                                            :color="hover ? '#005598':null"
-                                            :dark="hover ? true:false"
-                                            class="text-capitalize"
-                                            block
+                                            :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                                            :dark="hover ? true:false" class="text-capitalize"
                                             @click="dialog = !dialog"
                                         >
                                             No, volver
@@ -90,23 +92,6 @@
                                     </v-hover>
                                 </div>
                             </v-row>
-                        </div>
-                        <div v-if="!loading2 && valor" class="py-12 text-center title font-weight-bold">
-                            No se puede eliminar este Grupo.
-                            <div>
-                                <v-icon size="50" color="#D32F2F">
-                                    mdi-alert-octagon
-                                </v-icon>
-                            </div>
-                        </div>
-
-                        <div v-if="eliminado" class="py-12 text-center title font-weight-bold">
-                            Se elimino el Grupo exitosamente.
-                            <div>
-                                <v-icon size="50" color="#388E3C">
-                                    mdi-checkbox-marked-circle-outline
-                                </v-icon>
-                            </div>
                         </div>
                     </v-row>
                 </v-card-text>
@@ -165,7 +150,7 @@ import router from '@/router';
         },
         methods: {
             push(){
-                router.push("/grupos/new");
+                router.push("/grupos/grupo");
             },
             getGrupos(){
                 this.loading=true;
@@ -203,6 +188,10 @@ import router from '@/router';
                 this.dialog = true;
                 this.loading2 = true;
                 this.getConcepto(item);
+            },
+            editar(item){
+                window.localStorage.setItem('editar',item.id);
+                router.push('/grupos/grupo');
             }
         },
     }

@@ -17,9 +17,9 @@
                             <v-img :src="image+user.data.fotografia"></v-img>
                         </v-list-item-avatar>
 
-                        <v-list-item-content class="white--text">
+                        <v-list-item-content class="white--text font-weight-bold">
                             <v-list-item-title>Super usuario</v-list-item-title>
-                            <v-list-item-subtitle class="white--text">{{user.data.nombre +' '+ user.data.apellido}}</v-list-item-subtitle>
+                            <v-list-item-subtitle class="white--text font-weight-bold">{{user.data.nombre +' '+ user.data.apellido}}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -32,13 +32,13 @@
                         :key="item.title" 
                         link 
                         :to="item.to"
-                        active-class="white--text color"
+                        active-class="white--text color font-weight-bold sombra"
                     >
                         <v-list-item-icon>
                             <v-icon dark>{{ item.icon }}</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title class="white--text">{{ item.title }}</v-list-item-title>
+                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -51,13 +51,13 @@
                         :key="item.title" 
                         link 
                         :to="item.to"
-                        active-class="white--text color"
+                        active-class="white--text color font-weight-bold sombra"
                     >
                         <v-list-item-icon>
                             <v-icon dark>{{ item.icon }}</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title class="white--text">{{ item.title }}</v-list-item-title>
+                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
@@ -112,5 +112,10 @@ import variables from '@/services/variables_globales';
     }
     .back{
         background: #fff;
+    }
+    .sombra{
+        -webkit-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
+        box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
     }
 </style>

@@ -39,7 +39,7 @@
                         :loading="loading"
                         color="#005598"
                         block
-                        @click="postGrupos()"
+                        @click="post()"
                         class="text-capitalize font-weight-bold white--text"
                     >
                         Guardar
@@ -77,7 +77,14 @@ import {mapActions} from 'vuex';
                 icon:'',
                 color:'',
                 mensaje:'',
+                id:null,
                 data:{
+                    nombre:'',
+                    imagen:'default.png',
+                    visualizar:0,
+                    posicion:0
+                },
+                default:{
                     nombre:'',
                     imagen:'default.png',
                     visualizar:0,
@@ -88,12 +95,21 @@ import {mapActions} from 'vuex';
                     { text: 'Nuevo', disabled: true },
                 ],
                 rules: [
-                    value => !value || value.size < 2000000 || 'Debe pesar menos de 2 MB!',
+                    value => !value || value.size < 3000000 || 'Debe pesar menos de 3 MB!',
                 ],
             }
         },
         mounted() {
-            this.showImage=this.image+'default.png'
+            this.setSnackbar(false);
+            this.id = window.localStorage.getItem('editar');
+            if(this.id !== 'null'){
+                this.getGrupo(this.id);
+            }else{
+                this.showImage=this.image+'default.png';
+            }
+        },
+        destroyed(){
+            window.localStorage.setItem('editar',null);
         },
         methods: {
             ...mapActions(['setSnackbar']),
@@ -118,11 +134,39 @@ import {mapActions} from 'vuex';
                     this.showImage=this.image+this.data.imagen;
                 }
             },
+            getGrupo(id){
+                this.loading = true;
+                Grupos().get(`/${id}`).then((response) => {
+                    this.data = Object.assign({},response.data.data);
+                    this.showImage=this.image+this.data.imagen;
+                    this.items[1].text="Editar"
+                    this.loading = false;
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            post(){
+                this.id ? this.updateGrupos(this.id):this.postGrupos();
+            },
             postGrupos(){
                 this.loading = true;
                 Grupos().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
                         this.postImagen(response.data.data.id);
+                    }else{
+                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo registrado exitosamente.');
+                        this.reset();
+                    }
+                }).catch(e => {
+                    console.log(e);
+                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                });
+            },
+            updateGrupos(id){
+                this.loading = true;
+                Grupos().post(`/${id}`,{data:this.data}).then(() => {
+                    if(this.imagen){
+                        this.postImagen(id);
                     }else{
                         this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo registrado exitosamente.');
                         this.reset();
@@ -145,9 +189,12 @@ import {mapActions} from 'vuex';
                 });
             },  
             reset(){
+                this.data = Object.assign({},this.default);
+                window.localStorage.setItem('editar',null);
                 this.showImage=this.image+'default.png';
                 this.imagen=null;
-                this.data.nombre='';
+                this.items[1].text="Nuevo"
+                this.id = null;
             }
         },
     }

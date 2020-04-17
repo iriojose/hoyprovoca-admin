@@ -12,6 +12,7 @@ export default new Vuex.Store({
         },
         snackbar:false,
         drawer:true,
+        editar:null,
     },
     mutations: {
         SET_DRAWER(state,val){
@@ -19,6 +20,9 @@ export default new Vuex.Store({
         },
         SET_SNACKBAR(state,val){
             val ? state.snackbar = true:state.snackbar = false;
+        },
+        SET_EDITAR(state,val){
+            state.editar = val;
         },
         //autenticacion
         SET_LOGGED(state,val){//logea al usuario
@@ -42,6 +46,9 @@ export default new Vuex.Store({
         },
         setDrawer({commit},val){
             commit('SET_DRAWER',val);
+        },
+        setEditar({commit},val){
+            commit('SET_EDITAR',val);
         },
         logged({commit},val){
             commit('SET_LOGGED',val);

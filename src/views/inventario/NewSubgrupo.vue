@@ -34,7 +34,7 @@
                         :rules="[required('Nombre'), maxLength('Nombre',20), minLength('Nombre',2)]"
                     />
 
-                    <v-dialog v-model="dialog" width="400">
+                    <v-dialog v-model="dialog" width="400" transition="dialog-bottom-transition">
                         <template v-slot:activator="{ on }">
                             <v-text-field
                                 v-on="on"

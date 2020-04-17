@@ -15,9 +15,9 @@
             <v-toolbar-title class="cursor">
                 <v-img 
                     contain 
-                    height="100"
-                    width="150"  
-                    :src="require('@/assets/logoaftim2.png')"
+                    height="60"
+                    width="120"  
+                    :src="require('@/assets/logo 3.png')"
                 />
             </v-toolbar-title>
 

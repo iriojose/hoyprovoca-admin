@@ -54,7 +54,7 @@ const router = new Router({
 
                     children:[
                         {
-                            path:'new',
+                            path:'grupo',
                             name:"nuevogrupo",
                             component:NewGrupo,
                             meta:{
