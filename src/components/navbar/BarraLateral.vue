@@ -13,7 +13,7 @@
             >
                 <v-list dense nav>
                     <v-list-item two-line>
-                        <v-list-item-avatar size="50">
+                        <v-list-item-avatar size="70">
                             <v-img :src="image+user.data.fotografia"></v-img>
                         </v-list-item-avatar>
 
@@ -44,23 +44,38 @@
                 </v-list>
 
                 <v-divider class="back"></v-divider>
-
-                <v-list dense nav>
-                    <v-list-item 
-                        v-for="item in inventario" 
-                        :key="item.title" 
-                        link 
-                        :to="item.to"
-                        active-class="white--text color font-weight-bold sombra"
-                    >
-                        <v-list-item-icon>
-                            <v-icon dark>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
+                
+                <v-expansion-panels accordion flat focusable>
+                    <v-expansion-panel class="back2" v-for="(valor,i) in valores" :key="i">
+                        <v-expansion-panel-header
+                            class="white--text font-weight-bold"
+                            disable-icon-rotate
+                        >
+                            {{valor.text}}
+                            <template v-slot:actions>
+                                <v-icon color="#fff">{{valor.icon}}</v-icon>
+                            </template>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-list dense nav>
+                                <v-list-item 
+                                    v-for="(item,e) in valor.items" 
+                                    :key="e" 
+                                    link 
+                                    :to="item.to"
+                                    active-class="white--text color font-weight-bold sombra"
+                                >
+                                    <v-list-item-icon>
+                                        <v-icon dark>{{ item.icon }}</v-icon>
+                                    </v-list-item-icon>
+                                    <v-list-item-content>
+                                        <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
+                                    </v-list-item-content>
+                                </v-list-item>
+                            </v-list>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
             </v-img>
         </v-navigation-drawer>
     </div>
@@ -80,13 +95,25 @@ import variables from '@/services/variables_globales';
                     { title: 'Usuarios', icon: 'mdi-account-circle',to:'/usuarios' },
                     { title: 'Pagos', icon: 'mdi-bank',to:'/pagos' },
                 ],
-                inventario: [
-                    { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
-                    { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
-                    { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
-                    { title: 'Marcas', icon: 'mdi-star-box',to:'/marcas' },
-                    { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
-                ],
+                valores:[
+                    {
+                        text:"Inventario", icon:"mdi-package",
+                        items:[
+                            { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
+                            { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
+                            { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
+                            //{ title: 'Marcas', icon: 'mdi-star-box',to:'/marcas' },
+                            { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
+                        ]
+                    },
+                    {
+                        text:"Perfil", icon:"mdi-account-box",
+                        items:[
+                            { title: 'Información', icon: 'mdi-account-circle',to:'/profile' },
+                            { title: 'Notificaciones', icon: 'mdi-bell',to:'/notificaciones' },
+                        ]
+                    }
+                ]
             }
         },
         computed:{
@@ -112,6 +139,9 @@ import variables from '@/services/variables_globales';
     }
     .back{
         background: #fff;
+    }
+    .back2{
+        background: transparent !important;
     }
     .sombra{
         -webkit-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
