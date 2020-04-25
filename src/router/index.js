@@ -9,11 +9,13 @@ import Usuarios from '@/views/usuarios/Usuarios';
 import Empresas from '@/views/empresas/Empresas';
 import Pagos from '@/views/pagos/Pagos';
 import Grupos from '@/views/inventario/Grupos';
+import Cargos from '@/views/inventario/Cargos';
 import Subgrupos from '@/views/inventario/Subgrupos';
 import Productos from '@/views/inventario/Productos';
 import NewGrupo from '@/views/inventario/NewGrupo';
 import NewSubgrupo from '@/views/inventario/NewSubgrupo';
 import NewProducto from '@/views/inventario/NewProducto';
+import NewCargo from '@/views/inventario/NewCargo';
 
 Vue.use(Router);
 
@@ -101,7 +103,7 @@ const router = new Router({
 
                     children:[
                         {
-                            path:'new',
+                            path:'producto',
                             name:"nuevoproducto",
                             component:NewProducto,
                             meta:{
@@ -110,6 +112,25 @@ const router = new Router({
                         }
                     ]
                 },
+                {
+                    path:'cargos',
+                    name:"cargos",
+                    component:Cargos,
+                    meta:{
+                        auth:true
+                    },
+
+                    children:[
+                        {
+                            path:'cargo',
+                            name:"nuevocargo",
+                            component:NewCargo,
+                            meta:{
+                                auth:true
+                            },
+                        }
+                    ]
+                }
             ]
 
 		},

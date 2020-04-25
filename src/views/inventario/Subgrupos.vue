@@ -115,7 +115,6 @@
 
 <script>
 import SubGrupos from '@/services/SubGrupos';
-//import Grupos from '@/services/Grupos';
 import Conceptos from '@/services/Conceptos';
 import variables from '@/services/variables_globales';
 import LoaderRect from '@/components/loaders/LoaderRect';
@@ -143,7 +142,6 @@ import router from '@/router';
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
                     { text: 'Nombre',sortable: true, value: 'nombre'},
-                    { text: 'Grupo', value: 'adm_grupos_id'},
                     { text: 'Visualizar', value: 'visualizar'},
                     { text: 'posicion', value: 'posicion'},
                     { text: 'Acciones', value: 'action', sortable: false },

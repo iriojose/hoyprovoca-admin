@@ -43,11 +43,60 @@
                     </v-avatar>
                 </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2">mdi-border-color</v-icon>
+                    <v-icon small class="mr-2" @click="editar(item)" >mdi-border-color</v-icon>
                     <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
             </v-data-table>
         </v-card>
+
+        <v-dialog v-model="dialog" width="400" class="py-12" transition="dialog-bottom-transition">
+            <v-card height="215">
+                <v-card-text>
+                    <v-row justify="center" align="center">
+                        <LoaderRect v-if="loading2" class="py-12" />
+
+                        <div v-if="!loading2 && valor" class="py-12 text-center title font-weight-bold">
+                            <div class="mb-3"><v-icon size="50" color="#D32F2F">mdi-alert-octagon</v-icon></div>
+                            No se puede eliminar este Producto.
+                        </div>
+
+                        <div v-if="eliminado" class="py-12 text-center title font-weight-bold">
+                            <div class="mb-3"><v-icon size="50" color="#388E3C">mdi-checkbox-marked-circle-outline</v-icon></div>
+                            Se elimino el Producto exitosamente.
+                        </div>
+
+                        <div v-if="!loading2 && valor == null && !eliminado" class="text-center subtitle-1 font-weight-bold py-12">
+                            ¿Seguro que quiere eliminar este Producto? 
+                            <v-row justify="space-around" class="mt-4">
+                                <div>
+                                    <v-hover v-slot:default="{hover}">
+                                        <v-btn 
+                                            :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                                            :dark="hover ? true:false" class="text-capitalize"
+                                            @click="deleteConceptos()"
+                                        >
+                                            Sí, seguro
+                                        </v-btn>
+                                    </v-hover>
+                                </div>
+
+                                <div>
+                                    <v-hover v-slot:default="{hover}">
+                                        <v-btn 
+                                            :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                                            :dark="hover ? true:false" class="text-capitalize"
+                                            @click="dialog = !dialog"
+                                        >
+                                            No, volver
+                                        </v-btn>
+                                    </v-hover>
+                                </div>
+                            </v-row>
+                        </div>
+                    </v-row>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
 
         <router-view/>
     </div>
@@ -55,12 +104,17 @@
 
 <script>
 import Empresa from '@/services/Empresa';
+import Conceptos from '@/services/Conceptos';
 import router from '@/router';
 import variables from '@/services/variables_globales';
 import accounting from 'accounting';
+import LoaderRect from '@/components/loaders/LoaderRect';
 import {mapState} from 'vuex';
 
     export default {
+        components:{
+            LoaderRect
+        },
         data(){
             return {
                 ...variables,
@@ -68,6 +122,7 @@ import {mapState} from 'vuex';
                 search:'',
                 eliminado:false,
                 valor:null,
+                bandera:null,
                 total:0,
                 item:null,
                 dialog:false,
@@ -99,10 +154,19 @@ import {mapState} from 'vuex';
                         this.eliminado=false;
                     } 
                 },500);
+            },
+            "$route"(){
+                if(this.$route.name == 'productos'){
+                    this.loading = true;
+                    this.conceptos = [];
+                    this.offset = 0;
+                    this.getConceptos();
+                }
             }
         },
         methods: {
             push(){
+                window.localStorage.removeItem('editar');
                 router.push("/productos/producto");
             },
             getConceptos(){
@@ -117,16 +181,33 @@ import {mapState} from 'vuex';
                     console.log(e);
                 });
             },
+            deleteConceptos(){
+                this.eliminado = false;
+                this.loading2=true;
+                Conceptos().delete(`/${this.bandera.id}`).then(() => {
+                    this.loading2=false;
+                    this.eliminado = true;
+                    const index = this.conceptos.indexOf(this.bandera);
+                    this.conceptos.splice(index,1);
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             deleteItem(item){
-                this.item=item;
+                this.bandera = item;
                 this.dialog = true;
                 this.loading2 = true;
-                //this.getConcepto(item);
+                if(item.existencias[0].existencia > 0){
+                    this.valor = item;
+                    this.loading2 = false;
+                }else{
+                    this.loading2 = false;
+                }
+            },
+            editar(item){
+                window.localStorage.setItem('editar',item.id);
+                router.push('/productos/producto');
             }
         },
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
