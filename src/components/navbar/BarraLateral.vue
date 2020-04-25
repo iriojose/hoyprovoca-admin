@@ -18,7 +18,8 @@
                         </v-list-item-avatar>
 
                         <v-list-item-content class="white--text font-weight-bold">
-                            <v-list-item-title>Super usuario</v-list-item-title>
+                            <v-list-item-title v-if="user.data.perfil_id==2">Super usuario</v-list-item-title>
+                            <v-list-item-title v-if="user.data.perfil_id==1">Administrador</v-list-item-title>
                             <v-list-item-subtitle class="white--text font-weight-bold">{{user.data.nombre +' '+ user.data.apellido}}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
@@ -26,9 +27,25 @@
 
                 <v-divider class="back"></v-divider>
 
-                <v-list dense nav>
+                <v-list dense nav v-if="user.data.adm_empresa_id == null">
                     <v-list-item 
                         v-for="item in items" 
+                        :key="item.title" 
+                        link 
+                        :to="item.to"
+                        active-class="white--text color font-weight-bold sombra"
+                    >
+                        <v-list-item-icon>
+                            <v-icon dark>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+                <v-list dense nav v-else>
+                    <v-list-item 
+                        v-for="item in items2" 
                         :key="item.title" 
                         link 
                         :to="item.to"
@@ -45,37 +62,39 @@
 
                 <v-divider class="back"></v-divider>
                 
-                <v-expansion-panels accordion flat focusable>
-                    <v-expansion-panel class="back2" v-for="(valor,i) in valores" :key="i">
-                        <v-expansion-panel-header
-                            class="white--text font-weight-bold"
-                            disable-icon-rotate
-                        >
-                            {{valor.text}}
-                            <template v-slot:actions>
-                                <v-icon color="#fff">{{valor.icon}}</v-icon>
-                            </template>
-                        </v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            <v-list dense nav>
-                                <v-list-item 
-                                    v-for="(item,e) in valor.items" 
-                                    :key="e" 
-                                    link 
-                                    :to="item.to"
-                                    active-class="white--text color font-weight-bold sombra"
-                                >
-                                    <v-list-item-icon>
-                                        <v-icon dark>{{ item.icon }}</v-icon>
-                                    </v-list-item-icon>
-                                    <v-list-item-content>
-                                        <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list-item>
-                            </v-list>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
-                </v-expansion-panels>
+                <v-list dense nav v-if="user.data.adm_empresa_id !== null">
+                    <v-list-item 
+                        v-for="(item,e) in items4" 
+                        :key="e" 
+                        link 
+                        :to="item.to"
+                        active-class="white--text color font-weight-bold sombra"
+                    >
+                        <v-list-item-icon>
+                            <v-icon dark>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+
+                <v-list dense nav v-else>
+                    <v-list-item 
+                        v-for="(item,e) in items3" 
+                        :key="e" 
+                        link 
+                        :to="item.to"
+                        active-class="white--text color font-weight-bold sombra"
+                    >
+                        <v-list-item-icon>
+                            <v-icon dark>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
             </v-img>
         </v-navigation-drawer>
     </div>
@@ -95,24 +114,19 @@ import variables from '@/services/variables_globales';
                     { title: 'Usuarios', icon: 'mdi-account-circle',to:'/usuarios' },
                     { title: 'Pagos', icon: 'mdi-bank',to:'/pagos' },
                 ],
-                valores:[
-                    {
-                        text:"Inventario", icon:"mdi-package",
-                        items:[
-                            { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
-                            { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
-                            { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
-                            //{ title: 'Marcas', icon: 'mdi-star-box',to:'/marcas' },
-                            { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
-                        ]
-                    },
-                    {
-                        text:"Perfil", icon:"mdi-account-box",
-                        items:[
-                            { title: 'Información', icon: 'mdi-account-circle',to:'/profile' },
-                            { title: 'Notificaciones', icon: 'mdi-bell',to:'/notificaciones' },
-                        ]
-                    }
+                items2:[
+                    { title: 'Dashboard', icon: 'mdi-view-dashboard',to:'/' },
+                ],
+                items3:[
+                    { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
+                    { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
+                ],
+                items4:[
+                    { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
+                    { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
+                    { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
+                    //{ title: 'Marcas', icon: 'mdi-star-box',to:'/marcas' },
+                    { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
                 ]
             }
         },

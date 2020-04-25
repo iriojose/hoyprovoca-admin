@@ -102,14 +102,14 @@ import {mapActions} from 'vuex';
         mounted() {
             this.setSnackbar(false);
             this.id = window.localStorage.getItem('editar');
-            if(this.id !== 'null'){
+            if(this.id){
                 this.getGrupo(this.id);
             }else{
                 this.showImage=this.image+'default.png';
             }
         },
         destroyed(){
-            window.localStorage.setItem('editar',null);
+            window.localStorage.removeItem('editar');
         },
         methods: {
             ...mapActions(['setSnackbar']),
@@ -146,7 +146,11 @@ import {mapActions} from 'vuex';
                 });
             },
             post(){
-                this.id ? this.updateGrupos(this.id):this.postGrupos();
+                if(this.id){
+                    this.updateGrupos(this.id);
+                }else{
+                    this.postGrupos();
+                }
             },
             postGrupos(){
                 this.loading = true;
@@ -168,7 +172,7 @@ import {mapActions} from 'vuex';
                     if(this.imagen){
                         this.postImagen(id);
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo registrado exitosamente.');
+                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo actualizado exitosamente.');
                         this.reset();
                     }
                 }).catch(e => {
@@ -185,12 +189,13 @@ import {mapActions} from 'vuex';
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.reset();
                 });
             },  
             reset(){
                 this.data = Object.assign({},this.default);
-                window.localStorage.setItem('editar',null);
+                window.localStorage.removeItem('editar');
                 this.showImage=this.image+'default.png';
                 this.imagen=null;
                 this.items[1].text="Nuevo"

@@ -13,6 +13,7 @@ export default new Vuex.Store({
         snackbar:false,
         drawer:true,
         editar:null,
+        series:[1,1,1]
     },
     mutations: {
         SET_DRAWER(state,val){
@@ -23,6 +24,9 @@ export default new Vuex.Store({
         },
         SET_EDITAR(state,val){
             state.editar = val;
+        },
+        SET_SERIES(state,val){
+            state.series = val;
         },
         //autenticacion
         SET_LOGGED(state,val){//logea al usuario
@@ -49,6 +53,9 @@ export default new Vuex.Store({
         },
         setEditar({commit},val){
             commit('SET_EDITAR',val);
+        },
+        setSeries({commit},val){
+            commit('SET_SERIES',val);
         },
         logged({commit},val){
             commit('SET_LOGGED',val);

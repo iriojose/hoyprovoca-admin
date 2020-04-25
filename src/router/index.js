@@ -7,6 +7,7 @@ import Login from '@/views/auth/Login';
 import Forgot from '@/views/auth/Forgot';
 import Usuarios from '@/views/usuarios/Usuarios';
 import Empresas from '@/views/empresas/Empresas';
+import Pagos from '@/views/pagos/Pagos';
 import Grupos from '@/views/inventario/Grupos';
 import Subgrupos from '@/views/inventario/Subgrupos';
 import Productos from '@/views/inventario/Productos';
@@ -32,6 +33,14 @@ const router = new Router({
                     path:'usuarios',
                     name:"usuarios",
                     component:Usuarios,
+                    meta:{
+                        auth:true
+                    },
+                },
+                {
+                    path:'pagos',
+                    name:"pagos",
+                    component:Pagos,
                     meta:{
                         auth:true
                     },
@@ -73,7 +82,7 @@ const router = new Router({
 
                     children:[
                         {
-                            path:'new',
+                            path:'subgrupo',
                             name:"nuevosubgrupo",
                             component:NewSubgrupo,
                             meta:{

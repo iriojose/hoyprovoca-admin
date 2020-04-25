@@ -146,10 +146,19 @@ import router from '@/router';
                         this.eliminado=false;
                     } 
                 },500);
+            },
+            "$route"(){
+                if(this.$route.name == 'grupos'){
+                    this.loading = true;
+                    this.grupos = [];
+                    this.offset = 0;
+                    this.getGrupos();
+                }
             }
         },
         methods: {
             push(){
+                window.localStorage.removeItem('editar');
                 router.push("/grupos/grupo");
             },
             getGrupos(){
@@ -184,7 +193,7 @@ import router from '@/router';
                 });
             },
             deleteItem(item){
-                this.bandera=item;
+                this.bandera = item;
                 this.dialog = true;
                 this.loading2 = true;
                 this.getConcepto(item);

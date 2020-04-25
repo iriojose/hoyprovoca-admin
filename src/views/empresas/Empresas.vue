@@ -5,7 +5,7 @@
                 <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="dialog=!dialog">
                     Nuevo
                     <v-icon dark class="ml-2">
-                        add_circle
+                        mdi-plus-box
                     </v-icon>
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -13,7 +13,7 @@
                     v-model="search"
                     label="Buscar"
                     single-line
-                    append-icon="search"
+                    append-icon="mdi-magnify"
                     type="text"
                     color="#005598"
                     hide-details

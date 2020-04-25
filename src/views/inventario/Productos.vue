@@ -54,10 +54,11 @@
 </template>
 
 <script>
-import Conceptos from '@/services/Conceptos';
+import Empresa from '@/services/Empresa';
 import router from '@/router';
 import variables from '@/services/variables_globales';
 import accounting from 'accounting';
+import {mapState} from 'vuex';
 
     export default {
         data(){
@@ -87,6 +88,9 @@ import accounting from 'accounting';
         mounted() {
             this.getConceptos();
         },
+        computed: {
+            ...mapState(['user'])
+        },
         watch:{
             dialog(){
                 setTimeout(()=> { 
@@ -99,11 +103,11 @@ import accounting from 'accounting';
         },
         methods: {
             push(){
-                router.push("/productos/new");
+                router.push("/productos/producto");
             },
             getConceptos(){
                 this.loading=true;
-                Conceptos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
+                Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&offset=${this.offset}`).then((response) => {
                     this.total= response.data.totalCount;
                     response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
                     response.data.data.filter(a => this.conceptos.push(a));

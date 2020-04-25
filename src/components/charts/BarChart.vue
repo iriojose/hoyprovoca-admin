@@ -10,6 +10,8 @@
 
 <script>
 import VueApexCharts from "vue-apexcharts";
+import Empresa from '@/services/Empresa';
+
 export default {
     components: {
         apexcharts: VueApexCharts
@@ -20,57 +22,52 @@ export default {
             default:() => ([])
         }
     },
-    mounted(){//toISOString().substr(0, 10);
-        this.mes = new Date().getMonth();
-        console.log(this.mes);
+    mounted() {
+        this.getEmpresas();
     },
     data(){
         return {
-            mes:null,
-            meses:[
-                {text:'Ene'},{text:'Feb'},{text:'Mar'},{text:'Abr'},{text:'May'},{text:'Jun'},
-                {text:'Jul'},{text:'Ago'},{text:'Sep'},{text:'Oct'},{text:'Nov'},{text:'Dic'}
-            ],
+            series: [{
+                data: [10,20,30,40,50]
+            }],
             chartOptions: {
                 chart: {
-                    id: "barChart",
-                    animations: {
-                        speed: 200
-                    }
+                    type: 'bar',
+                    height: 350
                 },
-                title: {
-                    text: 'Pedidos Completados',
-                    align: 'left'
+                plotOptions: {
+                    bar: {
+                        horizontal: true,
+                    }
                 },
                 dataLabels: {
                     enabled: false
                 },
-                plotOptions: {
-                    bar: {
-                        distributed: true
-                    }
-                },
                 xaxis: {
-                    categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May']
-                },
-                theme: {
-                    mode: 'light', 
-                    palette: 'palette2', 
-                    monochrome: {
-                        enabled: false,
-                        color: '#255aee',
-                        shadeTo: 'light',
-                        shadeIntensity: 0.65
-                    },
+                    categories: ['default','default2','default3','default4','default5'],
                 }
             },
-            series: [
-                {
-                    name: "Pedidos",
-                    data: [30, 40, 45, 30, 49]
-                }
-            ],
         };
+    },
+    methods: {
+        getEmpresas(){
+            Empresa().get("/?fields=id,nombre_comercial").then((response) => {
+                this.chartOptions.xaxis.categories = [];
+                response.data.data.filter(a => this.chartOptions.xaxis.categories.push(a.nombre_comercial));
+                for (let i = 0; i < response.data.data.length; i++) {
+                    this.getConceptos(response.data.data[i].id);
+                }
+            }).catch(e => {
+                console.log(e);
+            }); 
+        },
+        getConceptos(id){
+            Empresa().get(`/${id}/conceptos/?limit=1`).then((response) => {
+                this.series[0].data.push(response.data.totalCount);
+            }).catch(e => {
+                console.log(e);
+            })
+        }
     },
 };
 </script>

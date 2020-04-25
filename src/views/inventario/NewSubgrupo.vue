@@ -96,7 +96,7 @@
                         :loading="loading"
                         color="#005598"
                         block
-                        @click="postSubgrupos()"
+                        @click="post"
                         class="text-capitalize font-weight-bold white--text"
                     >
                         Guardar
@@ -153,6 +153,13 @@ import {mapActions} from 'vuex';
                     visualizar:0,
                     posicion:0
                 },
+                default:{
+                    nombre:'',
+                    adm_grupos_id:null,
+                    imagen:'default.png',
+                    visualizar:0,
+                    posicion:0
+                },
                 items: [
                     { text: 'Subgrupos', disabled: false},
                     { text: 'Nuevo', disabled: true },
@@ -164,8 +171,18 @@ import {mapActions} from 'vuex';
             }
         },
         mounted() {
-            this.showImage=this.image+'default.png'
+            this.setSnackbar(false);
+            this.id = window.localStorage.getItem('editar');
+            if(this.id){
+                this.items[1].text="Editar"
+                this.getSubgrupo(this.id);
+            }else{
+                this.showImage=this.image+'default.png';
+            }
             this.getGrupos();
+        },
+        destroyed(){
+            window.localStorage.removeItem('editar');
         },
         methods: {
             ...mapActions(['setSnackbar']),
@@ -195,6 +212,14 @@ import {mapActions} from 'vuex';
                 this.data.adm_grupos_id = item.id;
                 this.dialog = false;
             },
+            post(){
+                if(this.id){
+                    this.items[1].text="Editar"
+                    this.updateSubgrupos(this.id);
+                }else{
+                    this.postSubgrupos();
+                }
+            },
             postSubgrupos(){
                 this.loading = true;
                 SubGrupos().post("/",{data:this.data}).then((response) => {
@@ -204,6 +229,40 @@ import {mapActions} from 'vuex';
                         this.mensajeSnackbar('#388E3C','mdi-check-outline','Subgrupo registrado exitosamente.');
                         this.reset();
                     }
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            updateSubgrupos(id){
+                this.loading = true;
+                SubGrupos().post(`/${id}`,{data:this.data}).then(() => {
+                    if(this.imagen){
+                        this.postImagen(id);
+                    }else{
+                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo actualizado exitosamente.');
+                        this.reset();
+                    }
+                }).catch(e => {
+                    console.log(e);
+                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                });
+            },
+            getSubgrupo(id){
+                this.loading = true;
+                SubGrupos().get(`/${id}`).then((response) => {
+                    console.log(response);
+                    this.data = Object.assign({},response.data.data);
+                    this.showImage=this.image+this.data.imagen;
+                    this.getGrupo(response.data.data.adm_grupos_id);
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            getGrupo(id){
+                Grupos().get(`/${id}`).then((response) => {
+                    console.log(response);
+                    this.grupo = Object.assign({},response.data.data);
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
                 });
@@ -228,22 +287,19 @@ import {mapActions} from 'vuex';
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.reset();
                 });
             },  
             reset(){
+                this.data = Object.assign({},this.default);
+                window.localStorage.removeItem('editar');
                 this.showImage=this.image+'default.png';
                 this.imagen=null;
-                this.data.nombre='';
-                this.data.adm_grupos_id = null;
-                this.grupo.nombre='';
+                this.items[1].text="Nuevo"
+                this.id = null;
+                this.grupo.nombre = '';
             }
         },
     }
 </script>
-
-<style lang="scss" scoped>
-    .pointer{
-        cursor:pointer;
-    }
-</style>

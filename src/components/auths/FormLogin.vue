@@ -8,6 +8,7 @@
                 outlined
                 prepend-inner-icon="mdi-at"
                 color="#005598"
+                :disabled="loading"
                 dense
                 single-line
                 :rules="[required('Usuario / Correo'), maxLength('Usuario / Correo',100)]"
@@ -16,8 +17,9 @@
                 v-model="data.password"
                 label="Contraseña"
                 single-line
+                :disabled="loading"
                 :type="showPassword ? 'text' : 'password'"
-                :rules="[required('Contraseña'), minLength('Contraseña',8)]"
+                :rules="[required('Contraseña'), minLength('Contraseña',6)]"
                 @click:append="showPassword = !showPassword"
                 :append-icon="showPassword ?  'mdi-eye' : 'mdi-eye-off'"
                 :prepend-inner-icon="showPassword ?  'mdi-lock-open-variant' : 'mdi-lock'"
@@ -92,8 +94,12 @@ import router from '@/router';
             login(){
                 this.loading = true;
                 Auth().post("/login",{data:this.data}).then((response) =>{
-                    this.logged(response.data);
-                    this.success(response.data.data.nombre,response.data.data.apellido);
+                    if(response.data.data.perfil_id < 3){
+                        this.logged(response.data);
+                        this.success(response.data.data.nombre,response.data.data.apellido);
+                    }else{
+                        this.error();
+                    }
                 }).catch(e => {
                     console.log(e);
                     this.error();

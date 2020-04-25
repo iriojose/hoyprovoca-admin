@@ -43,7 +43,7 @@
                     </v-avatar>
                 </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2">mdi-border-color</v-icon>
+                    <v-icon small class="mr-2" @click="editar(item)">mdi-border-color</v-icon>
                     <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
                 </template>
             </v-data-table>
@@ -93,20 +93,16 @@
                         </div>
                         <div v-if="!loading2 && valor" class="py-12 text-center title font-weight-bold">
                             <div class="mb-3">
-                                <v-icon size="50" color="#D32F2F">
-                                    mdi-alert-octagon
-                                </v-icon>
+                                <v-icon size="50" color="#D32F2F">mdi-alert-octagon</v-icon>
                             </div>
-                            No se puede eliminar este Grupo.
+                            No se puede eliminar este Subgrupo.
                         </div>
 
                         <div v-if="eliminado" class="py-12 text-center title font-weight-bold">
                             <div class="mb-3">
-                                <v-icon size="50" color="#388E3C">
-                                    mdi-checkbox-marked-circle-outline
-                                </v-icon>
+                                <v-icon size="50" color="#388E3C">mdi-checkbox-marked-circle-outline</v-icon>
                             </div>
-                            Se elimino el Grupo exitosamente.
+                            Se elimino el Subgrupo exitosamente.
                         </div>
                     </v-row>
                 </v-card-text>
@@ -165,11 +161,20 @@ import router from '@/router';
                         this.eliminado=false;
                     } 
                 },500);
+            },
+            "$route"(){
+                if(this.$route.name == 'subgrupos'){
+                    this.loading = true;
+                    this.subgrupos = [];
+                    this.offset = 0;
+                    this.getSubgrupos();
+                }
             }
         },
         methods:{
             push(){
-                router.push("/subgrupos/new");
+                window.localStorage.removeItem('editar');
+                router.push("/subgrupos/subgrupo");
             },
             getSubgrupos(){
                 this.loading=true;
@@ -207,6 +212,10 @@ import router from '@/router';
                 this.dialog = true;
                 this.loading2 = true;
                 this.getConcepto(item);
+            },
+            editar(item){
+                window.localStorage.setItem('editar',item.id);
+                router.push('/subgrupos/subgrupo');
             }
         }
     }
