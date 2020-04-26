@@ -16,7 +16,7 @@
                         <v-list-item-avatar size="70">
                             <v-img :src="image+user.data.fotografia"></v-img>
                         </v-list-item-avatar>
-                        <v-avatar class="abs_center" size="35" style="z-index:2;" color="#F5F5F5">
+                        <v-avatar @click="open" class="abs_center" size="35" style="z-index:2;" color="#F5F5F5">
                             <v-icon style="font-size:21px;">mdi-camera</v-icon>
                         </v-avatar>
 
@@ -100,14 +100,20 @@
                 </v-list>
             </v-img>
         </v-navigation-drawer>
+
+        <ModalImagen />
     </div>
 </template>
 
 <script>
 import {mapState,mapActions} from 'vuex';
 import variables from '@/services/variables_globales';
+import ModalImagen from './ModalImagen';
 
     export default {
+        components:{
+            ModalImagen
+        },
         data() {
             return {
                 ...variables,
@@ -148,7 +154,10 @@ import variables from '@/services/variables_globales';
             }
         },
         methods:{
-            ...mapActions(['setDrawer']),
+            ...mapActions(['setDrawer','setModalImagen']),
+            open(){
+                this.setModalImagen(true);
+            }
         }
     }
 </script>

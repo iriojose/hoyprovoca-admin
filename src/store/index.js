@@ -11,6 +11,7 @@ export default new Vuex.Store({
             loggedIn:false
         },
         snackbar:false,
+        modalImagen:false,
         drawer:true,
         editar:null,
         series:[1,1,1]
@@ -21,6 +22,9 @@ export default new Vuex.Store({
         },
         SET_SNACKBAR(state,val){
             val ? state.snackbar = true:state.snackbar = false;
+        },
+        SET_MODAL_IMAGEN(state,val){
+            val ? state.modalImagen = true:state.modalImagen = false;
         },
         SET_EDITAR(state,val){
             state.editar = val;
@@ -56,6 +60,9 @@ export default new Vuex.Store({
         },
         setSeries({commit},val){
             commit('SET_SERIES',val);
+        },
+        setModalImagen({commit},val){
+            commit('SET_MODAL_IMAGEN',val);
         },
         logged({commit},val){
             commit('SET_LOGGED',val);
