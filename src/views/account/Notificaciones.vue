@@ -1,6 +1,8 @@
 <template>
     <div>
-        hola
+        <v-card width="100%" height="500">
+            notificaciones
+        </v-card>
     </div>
 </template>
 

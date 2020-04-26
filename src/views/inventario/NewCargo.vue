@@ -51,7 +51,7 @@
 <script>
 import Conceptos from '@/services/Conceptos';
 import Cargos from '@/services/Cargos';
-import Movimiento_deposito from '@/services/Movimiento_deposito';
+//import Movimiento_deposito from '@/services/Movimiento_deposito';
 import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
 import Snackbar from '@/components/snackbars/Snackbar';
 import {mapActions,mapState} from 'vuex';
@@ -129,11 +129,6 @@ import variables from '@/services/variables_globales';
                 }).catch(e => {
                     console.log(e);
                 });
-            },
-            postMovimiento(){
-                Movimiento_deposito().post("/",{data:this.movimiento}).then((response) => {
-
-                })
             },
             postCargos(){
                 Cargos().post("/",{data:this.data}).then(() => {

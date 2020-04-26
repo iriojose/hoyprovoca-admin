@@ -16,6 +16,8 @@ import NewGrupo from '@/views/inventario/NewGrupo';
 import NewSubgrupo from '@/views/inventario/NewSubgrupo';
 import NewProducto from '@/views/inventario/NewProducto';
 import NewCargo from '@/views/inventario/NewCargo';
+import Profile from '@/views/account/Profile';
+import Notificaciones from '@/views/account/Notificaciones' 
 
 Vue.use(Router);
 
@@ -51,6 +53,22 @@ const router = new Router({
                     path:'empresas',
                     name:"empresas",
                     component:Empresas,
+                    meta:{
+                        auth:true
+                    },
+                },
+                {
+                    path:'profile',
+                    name:"profile",
+                    component:Profile,
+                    meta:{
+                        auth:true
+                    },
+                },
+                {
+                    path:'notificaciones',
+                    name:"notificaciones",
+                    component:Notificaciones,
                     meta:{
                         auth:true
                     },

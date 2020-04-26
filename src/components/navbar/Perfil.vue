@@ -30,7 +30,7 @@
                 <v-divider></v-divider>
                 <v-list dense>
                     <v-hover v-slot:default="{hover}">
-                        <v-list-item to="/account/profile">   
+                        <v-list-item to="/profile">   
                             <v-list-item-icon>
                                 <v-icon :color="hover ? '#232323':null">mdi-cogs</v-icon>
                             </v-list-item-icon>

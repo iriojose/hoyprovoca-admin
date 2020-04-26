@@ -250,7 +250,6 @@ import {mapActions} from 'vuex';
             getSubgrupo(id){
                 this.loading = true;
                 SubGrupos().get(`/${id}`).then((response) => {
-                    console.log(response);
                     this.data = Object.assign({},response.data.data);
                     this.showImage=this.image+this.data.imagen;
                     this.getGrupo(response.data.data.adm_grupos_id);
@@ -260,7 +259,6 @@ import {mapActions} from 'vuex';
             },
             getGrupo(id){
                 Grupos().get(`/${id}`).then((response) => {
-                    console.log(response);
                     this.grupo = Object.assign({},response.data.data);
                     this.loading = false;
                 }).catch(e => {

@@ -23,11 +23,13 @@
 
             <v-spacer></v-spacer>
 
-            <v-badge color="#005598" dot class="mx-3" bordered overlap>
-                <v-icon>
-                    mdi-bell
-                </v-icon>
-            </v-badge>
+            <v-btn text fab to="/notificaciones" small>
+                <v-badge color="#005598" dot class="mx-3" bordered overlap>
+                    <v-icon>
+                        mdi-bell
+                    </v-icon>
+                </v-badge>
+            </v-btn>
 
             <Perfil />
         </v-app-bar>
