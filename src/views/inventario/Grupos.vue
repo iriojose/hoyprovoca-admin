@@ -136,7 +136,9 @@ import router from '@/router';
             }
         },
         mounted() {
-            this.getGrupos();
+            if(this.$route.name == 'grupos'){
+                this.getGrupos();
+            }
         },
         watch:{
             dialog(){

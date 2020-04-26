@@ -16,6 +16,9 @@
                         <v-list-item-avatar size="70">
                             <v-img :src="image+user.data.fotografia"></v-img>
                         </v-list-item-avatar>
+                        <v-avatar class="abs_center" size="35" style="z-index:2;" color="#F5F5F5">
+                            <v-icon style="font-size:21px;">mdi-camera</v-icon>
+                        </v-avatar>
 
                         <v-list-item-content class="white--text font-weight-bold">
                             <v-list-item-title v-if="user.data.perfil_id==2">Super usuario</v-list-item-title>
@@ -110,12 +113,16 @@ import variables from '@/services/variables_globales';
                 ...variables,
                 items: [
                     { title: 'Dashboard', icon: 'mdi-view-dashboard',to:'/' },
+                    { title: 'Perfil', icon: 'mdi-account',to:'/profile' },
+                    { title: 'Notificaciones', icon: 'mdi-bell',to:'/notificaciones' },
                     { title: 'Empresas', icon: 'mdi-domain',to:'/empresas' },
                     { title: 'Usuarios', icon: 'mdi-account-circle',to:'/usuarios' },
                     { title: 'Pagos', icon: 'mdi-bank',to:'/pagos' },
                 ],
                 items2:[
                     { title: 'Dashboard', icon: 'mdi-view-dashboard',to:'/' },
+                    { title: 'Perfil', icon: 'mdi-account',to:'/profile' },
+                    { title: 'Notificaciones', icon: 'mdi-bell',to:'/notificaciones' },
                 ],
                 items3:[
                     { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
@@ -125,7 +132,6 @@ import variables from '@/services/variables_globales';
                     { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
                     { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                     { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
-                    //{ title: 'Marcas', icon: 'mdi-star-box',to:'/marcas' },
                     { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
                 ]
             }
@@ -148,6 +154,15 @@ import variables from '@/services/variables_globales';
 </script>
 
 <style lang="scss" scoped>
+    .abs_center{
+        position: absolute;
+        top: 50px;
+        left: 50px;
+    }
+    .abs_center:hover{
+        cursor: pointer;
+        background: #ededed !important;
+    }
     .color{
         background: #17468b;
     }

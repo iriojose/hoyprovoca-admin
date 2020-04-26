@@ -35,13 +35,13 @@ export default new Vuex.Store({
             data.token = val.token;
             data.data = val.data;
             state.user = data;
-            window.localStorage.setItem('token',val.token);
+            window.localStorage.setItem('admin_token',val.token);
         },
         LOGOUT(state){//cierra la sesion
             state.user.token=null;
             state.user.data={};
             state.user.loggedIn=false;
-            window.localStorage.setItem('token',"");//se elimina el token del storage
+            window.localStorage.removeItem('admin_token');//se elimina el token del storage
         },
     },
     actions: {

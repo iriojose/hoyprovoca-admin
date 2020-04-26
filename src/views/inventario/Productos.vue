@@ -141,7 +141,9 @@ import {mapState} from 'vuex';
             }
         },
         mounted() {
-            this.getConceptos();
+            if(this.$route.name == 'productos'){
+                this.getConceptos();
+            }
         },
         computed: {
             ...mapState(['user'])

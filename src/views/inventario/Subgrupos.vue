@@ -149,7 +149,9 @@ import router from '@/router';
             }
         },
         mounted() {
-            this.getSubgrupos();
+            if(this.$route.name == 'subgrupos'){
+                this.getSubgrupos();
+            }
         },
         watch:{
             dialog(){

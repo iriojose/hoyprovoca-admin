@@ -100,7 +100,9 @@ import accounting from 'accounting';
             }
         },
         mounted() {
-            this.getConceptos();
+            if(this.$route.name == 'productos'){
+                this.getConceptos();
+            }
         },
         computed: {
             ...mapState(['user'])
