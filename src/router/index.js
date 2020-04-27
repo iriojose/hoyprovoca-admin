@@ -19,6 +19,7 @@ import NewCargo from '@/views/inventario/NewCargo';
 import Profile from '@/views/account/Profile';
 import Notificaciones from '@/views/account/Notificaciones' 
 import NewEmpresa from '@/views/empresas/NewEmpresa';
+import NewUsuario from '@/views/usuarios/NewUsuario';
 
 Vue.use(Router);
 
@@ -41,6 +42,16 @@ const router = new Router({
                     meta:{
                         auth:true
                     },
+                    children:[
+                        {
+                            path:'usuario',
+                            name:"nuevousuario",
+                            component:NewUsuario,
+                            meta:{
+                                auth:true
+                            },
+                        }
+                    ]
                 },
                 {
                     path:'pagos',

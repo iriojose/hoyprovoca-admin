@@ -99,7 +99,7 @@ import Snackbar from '@/components/snackbars/Snackbar';
             }
         },
         methods: {
-            ...mapActions(['setModalImagen','user','setSnackbar']),
+            ...mapActions(['setModalImagen','setSnackbar']),
 
             mensajeSnackbar(color,icon,mensaje){
                 this.color=color;

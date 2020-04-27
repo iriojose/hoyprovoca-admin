@@ -68,7 +68,7 @@
                         <template v-slot:activator="{ on }">
                             <v-text-field
                                 v-model="date"
-                                label="Date"
+                                label="Fecha de nacimiento"
                                 hint="YYYY/MM/DD format"
                                 persistent-hint
                                 color="#005598"

@@ -44,17 +44,12 @@
                 </template>
                 <template v-slot:item.action="{ item }">
                     <v-icon small class="mr-2" @click="editar(item)">mdi-border-color</v-icon>
-                    <v-icon small class="mr-2">mdi-basket</v-icon>
-                    <v-icon small class="mr-2">mdi-account-cancel</v-icon>
-                    <v-icon small class="mr-2" v-if="item.perfil_id == 0">mdi-account-check</v-icon>
-                    <!--v-icon small @click="deleteItem(item)">mdi-delete</v-icon-->
+                    <v-icon small class="mr-2" @click="pedidos(item)">mdi-basket</v-icon>
                 </template>
             </v-data-table>
         </v-card>
 
         <router-view/>
-
-        <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
     </div>
 </template>
 
@@ -62,19 +57,11 @@
 import Usuario from '@/services/Usuario';
 import variables from '@/services/variables_globales';
 import router from '@/router';
-import Snackbar from '@/components/snackbars/Snackbar';
-import {mapActions} from 'vuex';
 
     export default {
-        components:{
-            Snackbar
-        },
         data() {
             return {
                 ...variables,
-                icon:'',
-                color:'',
-                mensaje:'',
                 offset:0,
                 total:0,
                 search:'',
@@ -93,7 +80,6 @@ import {mapActions} from 'vuex';
             }
         },      
         mounted(){
-            this.setSnackbar(false);
             if(this.$route.name == 'usuarios'){
                 this.getUsuarios();
             }
@@ -109,15 +95,6 @@ import {mapActions} from 'vuex';
             }
         },
         methods:{
-            ...mapActions(['setSnackbar']),
-
-            mensajeSnackbar(color,icon,mensaje){
-                this.color=color;
-                this.icon =icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
-                this.loading = false;
-            },
             push(){
                 window.localStorage.removeItem('editar');
                 router.push("/usuarios/usuario");
@@ -145,26 +122,14 @@ import {mapActions} from 'vuex';
                     console.log(e);
                 });
             },
-            updateUsuario(item){
-                let id = 0;
-                if(item.perfil_id < 1){
-                    id = 3;
-                }
-                Usuario().post(`/${item.id}`,{data:{perfil_id:id}}).then(() => {
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario baneado exitosamente.');
-                }).catch(e => {
-                    console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
-                });
-            },
             editar(item){
                 window.localStorage.setItem('editar',item.id);
                 router.push('/usuarios/usuario');
+            },
+            pedidos(item){
+                window.localStorage.setItem('editar',item.id);
+                router.push('/usuarios/pedidos');
             }
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

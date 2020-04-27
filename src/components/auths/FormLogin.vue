@@ -76,13 +76,7 @@ import router from '@/router';
         },
         methods: {
             ...mapActions(['setSnackbar','logged']),
-            error(){
-                this.color="#D32F2F"
-                this.icon = "mdi-alert-octagon";
-                this.mensaje = "Usuario y/o contraseña incorrecta."
-                this.setSnackbar(true);
-                this.loading = false;
-            },
+        
             success(nombre,apellido){
                 this.color="#388E3C"
                 this.icon = "mdi-check-outline";
@@ -91,18 +85,28 @@ import router from '@/router';
                 this.loading = false;
                 setTimeout(() =>{ router.push('/')},1000);
             },
+            mensajeSnackbar(icon,mensaje,color){
+                this.color = color;
+                this.icon = icon;
+                this.mensaje = mensaje;
+                this.setSnackbar(true);
+                this.loading = false;
+            },
+
             login(){
                 this.loading = true;
                 Auth().post("/login",{data:this.data}).then((response) =>{
                     if(response.data.data.perfil_id < 3){
                         this.logged(response.data);
                         this.success(response.data.data.nombre,response.data.data.apellido);
+                    }else if(response.data.data.perfil_id == 0){
+                        this.mensajeSnackbar('mdi-alert-octagon','Usuario bloqueado actualmente','#D32F2F');
                     }else{
-                        this.error();
+                        this.mensajeSnackbar('mdi-alert-octagon','Usuario no permitido','#D32F2F');
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.error();
+                    this.mensajeSnackbar('mdi-alert-octagon','Usuario y/o contraseña incorrecta.','#D32F2F');
                 });
             }
         },
