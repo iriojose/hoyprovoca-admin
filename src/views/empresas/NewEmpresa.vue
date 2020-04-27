@@ -29,12 +29,16 @@
                                 v-model="data.nombre_comercial"
                                 :disabled="loading"
                                 color="#005598"
+                                hint="Nombre comercial"
+                                persistent-hint
                                 dense
                                 :rules="[required('Nombre')]"
                             />
                             <v-text-field
                                 label="Rif"
                                 solo
+                                hint="J-00000000-0"
+                                persistent-hint
                                 v-model="data.rif"
                                 :disabled="loading || id !==null "
                                 color="#005598"
@@ -48,6 +52,8 @@
                                     <v-text-field
                                         label="Correo electrónico"
                                         solo
+                                        hint="ejemplo@gmail.com"
+                                        persistent-hint
                                         v-model="data.correo_electronico"
                                         :disabled="loading"
                                         color="#005598"
@@ -63,14 +69,19 @@
                                         :disabled="loading"
                                         color="#005598"
                                         dense
-                                        type="number"
-                                        :rules="[required('Telefono')]"
+                                        hint="0000-000-0000"
+                                        persistent-hint
+                                        @input="change"
+                                        type="text"
+                                        :rules="[required('Telefono'), minLength('Telefono',13),maxLength('Telefono',13)]"
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6" sm="12">
                                     <v-text-field
                                         label="Direccion"
                                         solo
+                                        hint="Direccion fisica"
+                                        persistent-hint
                                         v-model="data.direccion"
                                         :disabled="loading"
                                         color="#005598"
@@ -82,6 +93,8 @@
                                     <v-text-field
                                         label="Pagina web"
                                         solo
+                                        hint="http://"
+                                        persistent-hint
                                         v-model="data.pag_web"
                                         :disabled="loading"
                                         color="#005598"
@@ -92,6 +105,8 @@
                                     <v-text-field
                                         label="Facebook"
                                         solo
+                                        hint="http://"
+                                        persistent-hint
                                         v-model="data.facebook"
                                         :disabled="loading"
                                         color="#005598"
@@ -102,6 +117,8 @@
                                     <v-text-field
                                         label="Instagram"
                                         solo
+                                        hint="@ejemplo"
+                                        persistent-hint
                                         v-model="data.instagram"
                                         :disabled="loading"
                                         color="#005598"
@@ -210,6 +227,13 @@ import Empresa from '@/services/Empresa';
                 this.mensaje = mensaje;
                 this.setSnackbar(true);
                 this.loading = false;
+            },
+            change(){
+                if(this.data.telefono1.length == 4){
+                    this.data.telefono1+='-';
+                }else if(this.data.telefono1.length == 8){
+                    this.data.telefono1+='-';
+                }
             },
             getEmpresa(){
                 this.loading = true;

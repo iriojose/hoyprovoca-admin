@@ -12,6 +12,7 @@ export default new Vuex.Store({
         },
         snackbar:false,
         modalImagen:false,
+        bloqueado:false,
         drawer:true,
         editar:null,
         series:[1,1,1]
@@ -25,6 +26,9 @@ export default new Vuex.Store({
         },
         SET_MODAL_IMAGEN(state,val){
             val ? state.modalImagen = true:state.modalImagen = false;
+        },
+        SET_MODAL_BLOQUEADO(state,val){
+            val ? state.bloqueado = true:state.bloqueado = false;
         },
         SET_EDITAR(state,val){
             state.editar = val;
@@ -63,6 +67,9 @@ export default new Vuex.Store({
         },
         setModalImagen({commit},val){
             commit('SET_MODAL_IMAGEN',val);
+        },
+        setModalBloqueado({commit},val){
+            commit('SET_MODAL_BLOQUEADO',val);
         },
         logged({commit},val){
             commit('SET_LOGGED',val);

@@ -99,7 +99,7 @@ import router from '@/router';
                     if(response.data.data.perfil_id < 3){
                         this.logged(response.data);
                         this.success(response.data.data.nombre,response.data.data.apellido);
-                    }else if(response.data.data.perfil_id == 0){
+                    }else if(response.data.data.perfil_id == 4){
                         this.mensajeSnackbar('mdi-alert-octagon','Usuario bloqueado actualmente','#D32F2F');
                     }else{
                         this.mensajeSnackbar('mdi-alert-octagon','Usuario no permitido','#D32F2F');

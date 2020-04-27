@@ -118,7 +118,7 @@ import {mapState,mapActions} from 'vuex';
             }
         },
         mounted(){
-            if(this.user.data.adm_empresa_id){
+            if(this.user.data.adm_empresa_id !== 0 && this.user.data.adm_empresa_id !== null){
                 this.getUsuarios();
                 this.getPedidosEmpresas();
                 this.getPedidosConceptos();

@@ -110,14 +110,13 @@ import router from '@/router';
                             response.data.data[i].perfil = 'Super usuario';
                         }else if(response.data.data[i].perfil_id == 3){
                             response.data.data[i].perfil = 'Cliente';
-                        }else if(response.data.data[i].perfil_id == 0){
+                        }else if(response.data.data[i].perfil_id == 4){
                             response.data.data[i].perfil = 'Bloqueado';
                         }
                         this.usuarios.push(response.data.data[i]);
                     }
                     this.loading=false;
                     this.offset+=50;
-                    console.log(response);
                 }).catch(e => {
                     console.log(e);
                 });

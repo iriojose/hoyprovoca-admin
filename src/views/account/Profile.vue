@@ -42,20 +42,22 @@
                         type="text"
                     />
                 </v-col>
-                <!--v-col cols="12" md="5" sm="12">
-                    <div class="grey--text font-regular mb-2">Celular</div>
+                <v-col cols="12" md="5" sm="12">
+                    <div class="grey--text font-regular mb-2">Telefono</div>
                     <v-text-field
+                        label="Telefono"
                         solo
-                        single-line
-                        dense
+                        prepend-inner-icon="mdi-cellphone"
+                        v-model="data.telefono"
+                        :disabled="loading"
                         color="#005598"
-                        append-icon="phone_iphone"
-                        label="Celular"
-                        prefix="0-"
-                        v-model="telefono"
-                        type="text"
+                        dense
+                        @input="changeCell"
+                        hint="0000-000-0000"
+                        persistent-hint
+                        :rules="[required('Telefono'), minLength('Telefono',13)]"
                     />
-                </v-col-->
+                </v-col>
                 <v-col cols="12" md="5" sm="12">
                     <div class="grey--text font-regular mb-2">Fecha de nacimiento</div>
                     <v-menu
@@ -68,6 +70,7 @@
                         <template v-slot:activator="{ on }">
                             <v-text-field
                                 v-model="date"
+                                dense
                                 label="Fecha de nacimiento"
                                 hint="YYYY/MM/DD format"
                                 persistent-hint
@@ -110,6 +113,7 @@
 import {mapState,mapActions} from 'vuex';
 import Usuario from '@/services/Usuario';
 import Snackbar from '@/components/snackbars/Snackbar';
+import validations from '@/validations/validations';
 
     export default {
         components:{
@@ -117,19 +121,19 @@ import Snackbar from '@/components/snackbars/Snackbar';
         },
         data() {
             return {
+                ...validations,
                 mensaje:'',
                 color:'',
                 icon:'',
                 change:false,
                 loading:false,
-                telefono:null,
                 data:{},
                 date: new Date().toISOString().substr(0, 10),
             }
         },
         mounted() {
             this.data = Object.assign({},this.user.data);
-            this.date = this.data.fecha_nac.substr(0,10);
+            this.data.fecha_nac = this.data.fecha_nac.substr(0,10);
         },
         computed:{
             ...mapState(['user'])
@@ -143,6 +147,13 @@ import Snackbar from '@/components/snackbars/Snackbar';
                 this.mensaje = mensaje;
                 this.setSnackbar(true);
                 this.loading = false;
+            },
+            changeCell(){
+                if(this.data.telefono.length == 4){
+                    this.data.telefono+='-';
+                }else if(this.data.telefono.length == 8){
+                    this.data.telefono+='-';
+                }
             },
             updateUsuario(id){
                 this.loading = true;

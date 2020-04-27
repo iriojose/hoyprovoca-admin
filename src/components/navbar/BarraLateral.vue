@@ -29,24 +29,7 @@
                 </v-list>
 
                 <v-divider class="back"></v-divider>
-
-                <v-list dense nav v-if="user.data.adm_empresa_id == null">
-                    <v-list-item 
-                        v-for="item in items" 
-                        :key="item.title" 
-                        link 
-                        :to="item.to"
-                        active-class="white--text color font-weight-bold sombra"
-                    >
-                        <v-list-item-icon>
-                            <v-icon dark>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
-                <v-list dense nav v-else>
+                <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
                     <v-list-item 
                         v-for="item in items2" 
                         :key="item.title" 
@@ -63,9 +46,26 @@
                     </v-list-item>
                 </v-list>
 
+                <v-list dense nav v-else>
+                    <v-list-item 
+                        v-for="item in items" 
+                        :key="item.title" 
+                        link 
+                        :to="item.to"
+                        active-class="white--text color font-weight-bold sombra"
+                    >
+                        <v-list-item-icon>
+                            <v-icon dark>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list>
+
                 <v-divider class="back"></v-divider>
                 
-                <v-list dense nav v-if="user.data.adm_empresa_id !== null">
+                <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
                     <v-list-item 
                         v-for="(item,e) in items4" 
                         :key="e" 
@@ -108,7 +108,7 @@
 <script>
 import {mapState,mapActions} from 'vuex';
 import variables from '@/services/variables_globales';
-import ModalImagen from './ModalImagen';
+import ModalImagen from '@/components/dialogs/ModalImagen';
 
     export default {
         components:{

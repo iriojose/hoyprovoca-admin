@@ -31,6 +31,8 @@
                                         solo
                                         v-model="grupo.nombre"
                                         :disabled="loading"
+                                        hint="Grupo"
+                                        persistent-hint
                                         color="#005598"
                                         dense
                                         :rules="[required('Grupo')]"
@@ -85,6 +87,8 @@
                                         v-on="on"
                                         label="Subgrupo"
                                         solo
+                                        hint="Subgrupo"
+                                        persistent-hint
                                         v-model="subgrupo.nombre"
                                         :disabled="grupo.nombre == '' ? true:false"
                                         color="#005598"
@@ -154,6 +158,8 @@
                                     <v-text-field
                                         label="Nombre"
                                         solo
+                                        hint="Nombre"
+                                        persistent-hint
                                         v-model="data.nombre"
                                         :disabled="loading"
                                         color="#005598"
@@ -165,6 +171,8 @@
                                     <v-text-field
                                         label="Codigo"
                                         solo
+                                        hint="0000001"
+                                        persistent-hint
                                         v-model="data.codigo"
                                         :disabled="loading"
                                         color="#005598"
@@ -190,6 +198,8 @@
                                         type="number"
                                         v-model="data.precio_a"
                                         :disabled="loading"
+                                        hint="Bs."
+                                        persistent-hint
                                         color="#005598"
                                         dense
                                         :rules="[required('Precio')]"
@@ -460,7 +470,6 @@ import {mapState,mapActions} from 'vuex';
             postConceptos(){
                 this.loading = true;
                 Conceptos().post("/",{data:this.data}).then((response) => {
-                    console.log(response);
                     if(this.imagen){
                         this.postImagen(response.data.data.id);
                     }else{

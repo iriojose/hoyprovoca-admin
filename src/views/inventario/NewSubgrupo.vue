@@ -24,6 +24,8 @@
                     <v-text-field
                         label="Nombre"
                         solo
+                        hint="Nombre"
+                        persistent-hint
                         v-model="data.nombre"
                         type="text"
                         ob
@@ -40,6 +42,8 @@
                                 v-on="on"
                                 label="Grupo"
                                 solo
+                                hint="Grupo"
+                                persistent-hint
                                 v-model="grupo.nombre"
                                 :disabled="loading"
                                 color="#005598"

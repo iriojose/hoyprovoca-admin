@@ -4,19 +4,32 @@
         
         <v-row justify="center" class="mx-2">
             <v-card class="pa-5" width="100%">
+                
                 <v-toolbar elevation="0" dense v-if="id">
                     <v-spacer></v-spacer>
-                    <v-hover v-slot:default="{hover}" v-if="data.perfil_id!==0" title="Bloquear usuario">
-                        <v-btn fab :elevation="hover ? 2:0" small icon @click="block">
+                    <div v-if="data.perfil_id !== 4">Bloquear usuario</div>
+                    <div v-else>Desbloquear usuario</div>
+
+                    <v-hover v-slot:default="{hover}" v-show="data.perfil_id == 2 || data.perfil_id == 3" title="Bloquear usuario">
+                        <v-btn 
+                            fab :elevation="hover ? 2:0"
+                            small icon @click="block"
+                            :disabled="data.perfil_id == 4 ? true:false"
+                        >
                             <v-icon color="#D32F2F">mdi-cancel</v-icon>
                         </v-btn>
                     </v-hover>
-                    <v-hover v-slot:default="{hover}" v-else title="Desbloquear usuario">
-                        <v-btn fab :elevation="hover ? 2:0" small icon>
+                    <v-hover v-slot:default="{hover}" title="Desbloquear usuario" v-show="data.perfil_id == 4">
+                        <v-btn 
+                            :disabled="data.perfil_id !== 4 ?  true:false" fab 
+                            :elevation="hover ? 2:0" 
+                            small icon 
+                            @click="desbloquear">
                             <v-icon color="#388E3C">mdi-check-circle-outline</v-icon>
                         </v-btn>
                     </v-hover>
                 </v-toolbar>
+
                 <v-form v-model="valid">
                     <v-row justify="center">
                          <v-col cols="12" md="4" sm="12" align-self="center">
@@ -61,6 +74,8 @@
                                         v-model="empresa.nombre_comercial"
                                         :disabled="data.perfil_id !== 2 || loading"
                                         color="#005598"
+                                        hint="Empresa"
+                                        persistent-hint
                                         dense
                                         :rules="[required('Empresa')]"
                                     />
@@ -116,6 +131,8 @@
                                         solo
                                         v-model="data.nombre"
                                         :disabled="loading"
+                                        hint="Nombre"
+                                        persistent-hint
                                         color="#005598"
                                         dense
                                         :rules="[required('Nombre')]"
@@ -128,6 +145,8 @@
                                         v-model="data.apellido"
                                         :disabled="loading"
                                         color="#005598"
+                                        hint="Apellido"
+                                        persistent-hint
                                         dense
                                         :rules="[required('Apellido')]"
                                     />
@@ -139,6 +158,8 @@
                                         :disabled="id || loading ? true:false"
                                         v-model="data.login"
                                         color="#005598"
+                                        hint="Usuario"
+                                        persistent-hint
                                         dense
                                         :rules="[required('Usuario')]"
                                     />
@@ -191,19 +212,19 @@
                                         label="Telefono"
                                         solo
                                         prepend-inner-icon="mdi-cellphone"
-                                        v-model="telefono"
+                                        v-model="data.telefono"
                                         :disabled="loading"
                                         color="#005598"
                                         dense
                                         @input="change"
                                         hint="0000-000-0000"
                                         persistent-hint
-                                        :rules="[required('Telefono'), minLength('Telefono',13)]"
+                                        :rules="[required('Telefono'), minLength('Telefono',13),maxLength('Telefono',13)]"
                                     />
                                 </v-col>
                                 <v-col cols="12" md="6" sm="12" v-if="!id">
                                     <v-text-field
-                                        label="Password"
+                                        label="Contraseña"
                                         solo
                                         v-model="data.password"
                                         :disabled="loading"
@@ -298,9 +319,8 @@ import {mapActions} from 'vuex';
                     { text: 'Usuarios', disabled: false},
                     { text: 'Nuevo', disabled: true },
                 ],
-                telefono:'',
                 data2:{
-                    perfil_id:"0"
+                    perfil_id:"4"
                 },
                 data:{
                     nombre:'',
@@ -308,6 +328,7 @@ import {mapActions} from 'vuex';
                     login:'',
                     fotografia:'default.png',
                     email:'',
+                    telefono:'',
                     fecha_nac:new Date().toISOString().substr(0,10),
                     usuario_at:new Date().toISOString().substr(0,10),
                     adm_empresa_id:null,
@@ -320,6 +341,7 @@ import {mapActions} from 'vuex';
                     login:'',
                     fotografia:'default.png',
                     email:'',
+                    telefono:'',
                     fecha_nac:new Date().toISOString().substr(0,10),
                     usuario_at:new Date().toISOString().substr(0,10),
                     adm_empresa_id:null,
@@ -410,10 +432,10 @@ import {mapActions} from 'vuex';
                 this.data.adm_empresa_id = null;
             },
             change(){
-                if(this.telefono.length == 4){
-                    this.telefono+='-';
-                }else if(this.telefono.length == 8){
-                    this.telefono+='-';
+                if(this.data.telefono.length == 4){
+                    this.data.telefono+='-';
+                }else if(this.data.telefono.length == 8){
+                    this.data.telefono+='-';
                 }
             },
             post(){
@@ -454,7 +476,24 @@ import {mapActions} from 'vuex';
             block(){
                 this.loading = true;
                 Usuario().post(`/${this.id}`,{data:this.data2}).then(() => {
+                    this.data.perfil_id = 4;
                     this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario Bloqueado exitosamente.');
+                }).catch(e => {
+                    console.log(e);
+                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Oops, ocurrio un error.');
+                });
+            },
+            desbloquear(){
+                this.loading = true;
+                if(this.data.adm_empresa_id == null || this.data.adm_empresa_id == 0){
+                    this.data2.perfil_id = 3;
+                }else{
+                    this.data2.perfil_id = 2;
+                }
+
+                Usuario().post(`/${this.id}`,{data:this.data2}).then(() => {
+                    this.data.perfil_id = this.data2.perfil_id;
+                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario Desbloqueado exitosamente.');
                 }).catch(e => {
                     console.log(e);
                     this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Oops, ocurrio un error.');
@@ -481,6 +520,8 @@ import {mapActions} from 'vuex';
                 this.imagen=null;
                 this.items[1].text="Nuevo"
                 this.id = null;
+                this.empresa = {nomber_comercial:''};
+                this.contraseña = '';
             },
             postImagen(id){
                 let formdata = new FormData();

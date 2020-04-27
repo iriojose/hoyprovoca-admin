@@ -28,6 +28,8 @@
                         type="text"
                         :disabled="loading"
                         color="#005598"
+                        hint="Nombre"
+                        persistent-hint
                         dense
                         counter="20"
                         :rules="[required('Nombre'), maxLength('Nombre',20), minLength('Nombre',2)]"

@@ -172,6 +172,7 @@ import router from '@/router';
                     this.offset+=50;
                 }).catch(e => {
                     console.log(e);
+                    this.loading = false;
                 });
             },
             deleteGrupo(){

@@ -44,10 +44,10 @@
                 </template>
                 <template v-slot:item.action="{ item }">
                     <v-icon small class="mr-2" @click="editar(item)">mdi-border-color</v-icon>
-                    <v-icon small class="mr-2">mdi-basket</v-icon>
+                    <!--v-icon small class="mr-2">mdi-basket</v-icon>
                     <v-icon small class="mr-2">mdi-food</v-icon>
                     <v-icon small class="mr-2">mdi-cancel</v-icon>
-                    <!--v-icon small @click="deleteItem(item)">mdi-delete</v-icon-->
+                    <v-icon small @click="deleteItem(item)">mdi-delete</v-icon-->
                 </template>
             </v-data-table>
         </v-card>

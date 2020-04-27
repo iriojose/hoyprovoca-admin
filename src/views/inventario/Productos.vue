@@ -181,6 +181,7 @@ import {mapState} from 'vuex';
                     this.offset+=50;
                 }).catch(e => {
                     console.log(e);
+                    this.loading = false;
                 });
             },
             deleteConceptos(){
