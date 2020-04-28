@@ -7,7 +7,7 @@
                 
                 <v-toolbar elevation="0" dense v-if="id">
                     <v-spacer></v-spacer>
-                    <div v-if="data.perfil_id !== 4">Bloquear usuario</div>
+                    <div v-if="data.perfil_id !== 4 && data.perfil_id !== 1">Bloquear usuario</div>
                     <div v-else>Desbloquear usuario</div>
 
                     <v-hover v-slot:default="{hover}" v-show="data.perfil_id == 2 || data.perfil_id == 3" title="Bloquear usuario">

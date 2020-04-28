@@ -199,10 +199,26 @@
                                         v-model="data.precio_a"
                                         :disabled="loading"
                                         hint="Bs."
+                                        @input="changeBolivar"
                                         persistent-hint
                                         color="#005598"
                                         dense
-                                        :rules="[required('Precio')]"
+                                        :rules="[required('Precio'),positivo('Precio')]"
+                                    />
+                                </v-col>
+                                <v-col cols="12" md="6" sm="12">
+                                    <v-text-field
+                                        label="Precio dolar"
+                                        solo
+                                        type="number"
+                                        v-model="data.precio_dolar"
+                                        :disabled="loading"
+                                        hint="$."
+                                        @input="changeDolar"
+                                        persistent-hint
+                                        color="#005598"
+                                        dense
+                                        :rules="[required('Precio dolar'),positivo('Precio dolar')]"
                                     />
                                 </v-col>
                                 <v-col cols="12" md="12" sm="12">
@@ -246,6 +262,7 @@ import Conceptos from '@/services/Conceptos';
 import Grupos from '@/services/Grupos';
 import SubGrupos from '@/services/SubGrupos';
 import Movimiento_deposito from '@/services/Movimiento_deposito';
+import Cambio from '@/services/Cambio';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
@@ -276,7 +293,7 @@ import {mapState,mapActions} from 'vuex';
                 dialog2:false,
                 search:'',
                 search2:'',
-
+                tasa:null,
                 ...variables,
                 ...validations,
                 icon:'',
@@ -297,14 +314,16 @@ import {mapState,mapActions} from 'vuex';
                     adm_subgrupos_id:0,
                     adm_empresa_id:0,
                     adm_tipos_conceptos_id:2,
-                    precio_a:0,
+                    precio_a:null,
+                    precio_dolar:null
                 },
                 default:{
                     nombre:'',
                     codigo:'',
                     referencia:'',
                     descripcion:'',
-                    precio_a:0,
+                    precio_a:null,
+                    precio_dolar:null,
                     adm_grupos_id:0,
                     adm_subgrupos_id:0,
                     adm_empresa_id:0,
@@ -349,6 +368,7 @@ import {mapState,mapActions} from 'vuex';
             }
 
             this.getGrupos();
+            this.getCambio();
         },
         destroyed(){
             window.localStorage.removeItem('editar');
@@ -368,6 +388,7 @@ import {mapState,mapActions} from 'vuex';
                 this.loading = true;
                 Conceptos().get(`/${id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
+                    console.log(this.data);
                     this.showImage=this.image+this.data.imagen;
                     this.getGrupo(this.data.adm_grupos_id);
                 }).catch(e => {
@@ -431,7 +452,14 @@ import {mapState,mapActions} from 'vuex';
             selectTipo(item){
                 this.data.adm_tipos_conceptos_id = item.id;
             },
-
+            changeBolivar(){
+                this.data.precio_dolar = this.data.precio_a / this.tasa;
+                this.data.precio_dolar = this.data.precio_dolar.toFixed(2);
+            },
+            changeDolar(){
+                this.data.precio_a = this.tasa * this.data.precio_dolar
+                this.data.precio_a = this.data.precio_a.toFixed(2);
+            },
             //metodos de imagenes
             postImagen(id){
                 let formdata = new FormData();
@@ -503,8 +531,16 @@ import {mapState,mapActions} from 'vuex';
                     console.log(e);
                 });
             },
+            getCambio(){
+                Cambio().get("/").then((response) => {
+                    this.tasa = response.data.data[0].tasa;
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             reset(){
                 this.data = Object.assign({},this.default);
+                this.data.adm_empresa_id = this.user.data.adm_empresa_id;
                 window.localStorage.removeItem('editar');
                 this.showImage=this.image+'default.png';
                 this.imagen=null;

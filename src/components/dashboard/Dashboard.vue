@@ -78,8 +78,10 @@
 import Usuario from '@/services/Usuario';
 import Pedidos from '@/services/Pedidos';
 import Empresa from '@/services/Empresa';
+import Cambio from '@/services/Cambio';
 //import BarChart from '@/components/charts/BarChart';
 import DonutChart from '@/components/charts/DonutChart';
+import accounting from 'accounting';
 import {mapState,mapActions} from 'vuex';
 
     export default {
@@ -111,7 +113,7 @@ import {mapState,mapActions} from 'vuex';
                     {text:'Empresas',icon:'mdi-domain',number:0,color:'#455a64'}
                 ],
                 items2:[
-                    {text:'Clientes',icon:'mdi-account',number:0,color:'#303f9f'},
+                    {text:'Tasa',icon:'mdi-currency-usd',number:0,color:'#303f9f',icon2:''},
                     {text:'Pedidos',icon:'mdi-basket',number:0,color:'#00796b'},
                     {text:'Productos',icon:'mdi-food',number:0,color:'#455a64'}
                 ],
@@ -119,7 +121,7 @@ import {mapState,mapActions} from 'vuex';
         },
         mounted(){
             if(this.user.data.adm_empresa_id !== 0 && this.user.data.adm_empresa_id !== null){
-                this.getUsuarios();
+                this.getCambio();
                 this.getPedidosEmpresas();
                 this.getPedidosConceptos();
                 this.getPedidosEmpresasEstatus();
@@ -128,7 +130,6 @@ import {mapState,mapActions} from 'vuex';
                 this.getPedidos();
                 this.getEmpresas();
             }
-            
         },
         computed: {
             ...mapState(['drawer','user'])
@@ -138,7 +139,7 @@ import {mapState,mapActions} from 'vuex';
 
             getUsuarios(){
                 Usuario().get("/?limit=1").then((response) => {
-                    this.user.data.adm_empresa_id ? this.items2[0].number = response.data.totalCount:this.items[0].number = response.data.totalCount;
+                    this.items[0].number = response.data.totalCount;
                 }).catch(e => {
                     console.log(e);
                 });
@@ -175,6 +176,13 @@ import {mapState,mapActions} from 'vuex';
             getEmpresas(){
                 Empresa().get("/?limit=1").then((response) => {
                     this.items[2].number = response.data.totalCount;
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            getCambio(){
+                Cambio().get("/").then((response) => {
+                    this.items2[0].number = accounting.formatMoney(+response.data.data[0].tasa,{symbol:"Bs ",thousand:'.',decimal:','});
                 }).catch(e => {
                     console.log(e);
                 });

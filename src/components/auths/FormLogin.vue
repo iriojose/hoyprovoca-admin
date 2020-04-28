@@ -75,7 +75,7 @@ import router from '@/router';
             }
         },
         methods: {
-            ...mapActions(['setSnackbar','logged']),
+            ...mapActions(['setSnackbar','logged','setModalBloqueado']),
         
             success(nombre,apellido){
                 this.color="#388E3C"
@@ -100,7 +100,8 @@ import router from '@/router';
                         this.logged(response.data);
                         this.success(response.data.data.nombre,response.data.data.apellido);
                     }else if(response.data.data.perfil_id == 4){
-                        this.mensajeSnackbar('mdi-alert-octagon','Usuario bloqueado actualmente','#D32F2F');
+                        this.setModalBloqueado(true);
+                        this.loading = false;
                     }else{
                         this.mensajeSnackbar('mdi-alert-octagon','Usuario no permitido','#D32F2F');
                     }
