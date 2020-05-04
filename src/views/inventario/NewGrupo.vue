@@ -49,8 +49,6 @@
                 </v-form>
             </v-card>
         </v-row>
-
-        <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
     </div>
 </template>
 
@@ -60,13 +58,10 @@ import Grupos from '@/services/Grupos';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
-import Snackbar from '@/components/snackbars/Snackbar';
-import {mapActions} from 'vuex';
 
     export default {
         components:{
             Breadcrumbs,
-            Snackbar
         },
         data() {
             return {
@@ -76,9 +71,6 @@ import {mapActions} from 'vuex';
                 imagen:null,
                 showImage:'',
                 loading:false,
-                icon:'',
-                color:'',
-                mensaje:'',
                 id:null,
                 data:{
                     nombre:'',
@@ -102,7 +94,6 @@ import {mapActions} from 'vuex';
             }
         },
         mounted() {
-            this.setSnackbar(false);
             this.id = window.localStorage.getItem('editar');
             if(this.id){
                 this.getGrupo(this.id);
@@ -114,13 +105,22 @@ import {mapActions} from 'vuex';
             window.localStorage.removeItem('editar');
         },
         methods: {
-            ...mapActions(['setSnackbar']),
-
-            mensajeSnackbar(color,icon,mensaje){
-                this.color=color;
-                this.icon =icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
+                this.loading = false;
+            },
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
             procesoImg(evt){
@@ -159,13 +159,14 @@ import {mapActions} from 'vuex';
                 Grupos().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
                         this.postImagen(response.data.data.id);
+                        this.success("Grupo registrado exitosamente");
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo registrado exitosamente.');
+                        this.success("Grupo registrado exitosamente");
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error("Ooops, Ocurrio un error.")
                 });
             },
             updateGrupos(id){
@@ -173,13 +174,14 @@ import {mapActions} from 'vuex';
                 Grupos().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
                         this.postImagen(id);
+                        this.success("Grupo actualizado exitosamente");
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo actualizado exitosamente.');
+                        this.success("Grupo actualizado exitosamente");
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error("Ooops, Ocurrio un error.")
                 });
             },
             postImagen(id){
@@ -187,11 +189,11 @@ import {mapActions} from 'vuex';
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/grupos/${id}`,formdata).then(() => {
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo registrado exitosamente.');
+                    this.success("Imagen subida exitosamente");
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.error("Erro al subir la imagen");
                     this.reset();
                 });
             },  

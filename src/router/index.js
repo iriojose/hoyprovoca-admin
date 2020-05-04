@@ -20,6 +20,7 @@ import Profile from '@/views/account/Profile';
 import Notificaciones from '@/views/account/Notificaciones' 
 import NewEmpresa from '@/views/empresas/NewEmpresa';
 import NewUsuario from '@/views/usuarios/NewUsuario';
+import Tasas from '@/views/inventario/Tasas';
 
 Vue.use(Router);
 
@@ -170,6 +171,14 @@ const router = new Router({
                             },
                         }
                     ]
+                },
+                {
+                    path:'tasas',
+                    name:"tasas",
+                    component:Tasas,
+                    meta:{
+                        auth:true
+                    },
                 }
             ]
 

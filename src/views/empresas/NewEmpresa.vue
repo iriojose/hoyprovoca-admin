@@ -144,24 +144,19 @@
                 </v-form>
             </v-card>
         </v-row>
-
-        <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
     </div>
 </template>
 
 <script>
 import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
-import Snackbar from '@/components/snackbars/Snackbar';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
-import {mapActions} from 'vuex';
 import Empresa from '@/services/Empresa';
 
     export default {
         components:{
             Breadcrumbs,
-            Snackbar
         },
         data() {
             return {
@@ -172,18 +167,14 @@ import Empresa from '@/services/Empresa';
                 showImage:'',
                 valid:false,
                 loading:false,
-                icon:'',
-                color:'',
-                mensaje:'',
                 data:{
                     telefono1:'',
                     direccion:'',
                     nombre_comercial:'',
                     correo_electronico:'',
-                    logo:'default.png',
-                    pag_web:'',
-                    facebook:'',
-                    instagram:'',
+                    pag_web:null,
+                    facebook:null,
+                    instagram:null,
                     fecha_registro:new Date().toISOString().substr(0,10),
                 },
                 default:{
@@ -191,10 +182,9 @@ import Empresa from '@/services/Empresa';
                     direccion:'',
                     nombre_comercial:'',
                     correo_electronico:'',
-                    logo:'default.png',
-                    pag_web:'',
-                    facebook:'',
-                    instagram:'',
+                    pag_web:null,
+                    facebook:null,
+                    instagram:null,
                     fecha_registro:new Date().toISOString().substr(0,10),
                 },
                 items: [
@@ -207,7 +197,6 @@ import Empresa from '@/services/Empresa';
             }
         },
         mounted() {
-            this.setSnackbar(false);
             this.id = window.localStorage.getItem('editar');
             if(this.id){
                 this.getEmpresa(this.id);
@@ -219,13 +208,22 @@ import Empresa from '@/services/Empresa';
             window.localStorage.removeItem('editar');
         },
         methods: {
-            ...mapActions(['setSnackbar']),
-
-            mensajeSnackbar(color,icon,mensaje){
-                this.color=color;
-                this.icon =icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
+                this.loading = false;
+            },
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
             change(){
@@ -239,7 +237,7 @@ import Empresa from '@/services/Empresa';
                 this.loading = true;
                 Empresa().get(`/${this.id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
-                    this.showImage=this.image+this.data.logo;
+                    this.showImage=this.image+this.data.imagen;
                     this.items[1].text="Editar"
                     this.loading = false;
                 }).catch(e => {
@@ -259,12 +257,12 @@ import Empresa from '@/services/Empresa';
                     if(this.imagen){
                         this.postImagen(response.data.data.id);
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Empresa registrada exitosamente.');
+                        this.success('Empresa registrada exitosamente.');
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error('Ooops, ocurrio un error.');
                 });
             },
             updateEmpresa(id){
@@ -272,13 +270,14 @@ import Empresa from '@/services/Empresa';
                 Empresa().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
                         this.postImagen(id);
+                        this.success('Empresa actualizada exitosamente.');
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Empresa actualizada exitosamente.');
+                        this.success('Empresa actualizada exitosamente.');
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error('Ooops, ocurrio un error.');
                 });
             },
             procesoImg(evt){
@@ -291,7 +290,7 @@ import Empresa from '@/services/Empresa';
                     reader.readAsDataURL(evt);
                 }else{
                     this.imagen = null;
-                    this.showImage=this.image+this.data.logo;
+                    this.showImage=this.image+this.data.imagen;
                 }
             },
             postImagen(id){
@@ -299,11 +298,11 @@ import Empresa from '@/services/Empresa';
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/empresa/${id}`,formdata).then(() => {
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Grupo registrado exitosamente.');
+                    this.success('Imagen subida exitosamente.');
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.error("Error al subir imagen del registro");
                     this.reset();
                 });
             }, 

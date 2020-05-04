@@ -104,27 +104,18 @@
                 </v-col>
             </v-row>
         </v-card>
-
-        <Snackbar :mensaje="mensaje" :icon="icon" :color="color" />
     </div>
 </template>
 
 <script>
-import {mapState,mapActions} from 'vuex';
+import {mapState} from 'vuex';
 import Usuario from '@/services/Usuario';
-import Snackbar from '@/components/snackbars/Snackbar';
 import validations from '@/validations/validations';
 
     export default {
-        components:{
-            Snackbar
-        },
         data() {
             return {
                 ...validations,
-                mensaje:'',
-                color:'',
-                icon:'',
                 change:false,
                 loading:false,
                 data:{},
@@ -139,13 +130,23 @@ import validations from '@/validations/validations';
             ...mapState(['user'])
         },
         methods:{
-            ...mapActions(['setSnackbar']),
             
-            mensajeSnackbar(color,icon,mensaje){
-                this.color = color;
-                this.icon = icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
+                this.loading = false;
+            },
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
             changeCell(){
@@ -159,12 +160,12 @@ import validations from '@/validations/validations';
                 this.loading = true;
                 this.data.fecha_nac = this.date;
                 Usuario().post(`/${id}`,{data:this.data}).then(() => {
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Actualizado extisamente.');
+                    this.success('Actualizado extisamente.');
                     this.user.data = this.data;
                     this.change = false;
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Opsss, Error al intentar actualizar.');
+                    this.error('Opsss, Error al intentar actualizar.');
                 });
             }
         }

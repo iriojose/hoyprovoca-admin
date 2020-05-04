@@ -14,7 +14,7 @@
                 <v-list dense nav>
                     <v-list-item two-line>
                         <v-list-item-avatar size="70">
-                            <v-img :src="image+user.data.fotografia"></v-img>
+                            <v-img :src="image+user.data.imagen"></v-img>
                         </v-list-item-avatar>
                         <v-avatar @click="open" class="abs_center" size="35" style="z-index:2;" color="#F5F5F5">
                             <v-icon style="font-size:21px;">mdi-camera</v-icon>
@@ -139,6 +139,7 @@ import ModalImagen from '@/components/dialogs/ModalImagen';
                     { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                     { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
                     { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
+                    { title: 'Cambio de tasa', icon:'mdi-currency-usd',to:'/tasas' },
                 ]
             }
         },

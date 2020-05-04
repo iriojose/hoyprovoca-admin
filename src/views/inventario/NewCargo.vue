@@ -43,8 +43,6 @@
                 </v-form>
             </v-card>
         </v-row>
-
-        <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
     </div>
 </template>
 
@@ -53,8 +51,7 @@ import Conceptos from '@/services/Conceptos';
 import Cargos from '@/services/Cargos';
 //import Movimiento_deposito from '@/services/Movimiento_deposito';
 import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
-import Snackbar from '@/components/snackbars/Snackbar';
-import {mapActions,mapState} from 'vuex';
+import {mapState} from 'vuex';
 import validations from '@/validations/validations';
 import router from '@/router';
 import variables from '@/services/variables_globales';
@@ -62,15 +59,11 @@ import variables from '@/services/variables_globales';
     export default {
         components:{
             Breadcrumbs,
-            Snackbar
         },
         data() {
             return {
                 ...validations,
                 ...variables,
-                color:'',
-                icon:'',
-                mensaje:'',
                 valid:false,
                 loading:false,
                 id:null,
@@ -99,7 +92,6 @@ import variables from '@/services/variables_globales';
             }
         },
         mounted() {
-            this.setSnackbar(false);
             this.id = window.localStorage.getItem('editar');
             this.data.adm_conceptos_id = this.id;
             this.data.usuario_id = this.user.data.id;
@@ -112,13 +104,22 @@ import variables from '@/services/variables_globales';
             window.localStorage.removeItem('editar');
         },
         methods:{
-            ...mapActions(['setSnackbar']),
-
-            mensajeSnackbar(color,icon,mensaje){
-                this.color=color;
-                this.icon =icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
+                this.loading = false;
+            },
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
             getConcepto(id){
@@ -132,11 +133,12 @@ import variables from '@/services/variables_globales';
             },
             postCargos(){
                 Cargos().post("/",{data:this.data}).then(() => {
+                    this.succes("Cargo añadido exitosamente.")
                     this.mensajeSnackbar('#388E3C','mdi-check-outline','Cargo añadido exitosamente.');
                     router.push("/cargos");
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error("Ooops, Ocurrio un error");
                     router.push("/cargos");
                 });
             }

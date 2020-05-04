@@ -42,8 +42,6 @@
                     Iniciar Sesión
                 </v-btn>
             </v-hover>
-
-            <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
         </v-form>
     </div>
 </template>
@@ -51,14 +49,10 @@
 <script>
 import Auth from '@/services/Auth';
 import validations from '@/validations/validations';
-import Snackbar from '@/components/snackbars/Snackbar';
-import {mapActions} from 'vuex';
 import router from '@/router';
+import {mapActions} from 'vuex';
 
     export default {
-        components:{
-            Snackbar
-        },
         data(){
             return {
                 data: {
@@ -68,28 +62,29 @@ import router from '@/router';
                 valid:false,
                 ...validations,
                 showPassword:false,
-                mensaje:"",
-                icon:"",
-                color:"",
                 loading:false,
             }
         },
         methods: {
-            ...mapActions(['setSnackbar','logged','setModalBloqueado']),
-        
-            success(nombre,apellido){
-                this.color="#388E3C"
-                this.icon = "mdi-check-outline";
-                this.mensaje = "Bienvenido "+nombre+" "+apellido+".";
-                this.setSnackbar(true);
+            ...mapActions(['logged','setModalBloqueado']),
+
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
                 this.loading = false;
-                setTimeout(() =>{ router.push('/')},1000);
+                router.push('/');
             },
-            mensajeSnackbar(icon,mensaje,color){
-                this.color = color;
-                this.icon = icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
 
@@ -98,16 +93,16 @@ import router from '@/router';
                 Auth().post("/login",{data:this.data}).then((response) =>{
                     if(response.data.data.perfil_id < 3){
                         this.logged(response.data);
-                        this.success(response.data.data.nombre,response.data.data.apellido);
+                        this.success("Bienvenido "+response.data.data.nombre+" "+response.data.data.apellido+".");
                     }else if(response.data.data.perfil_id == 4){
                         this.setModalBloqueado(true);
                         this.loading = false;
                     }else{
-                        this.mensajeSnackbar('mdi-alert-octagon','Usuario no permitido','#D32F2F');
+                        this.error('Usuario no permitido');
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('mdi-alert-octagon','Usuario y/o contraseña incorrecta.','#D32F2F');
+                    this.error('Usuario y/o contraseña incorrecta.');
                 });
             }
         },

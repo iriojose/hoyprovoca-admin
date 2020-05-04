@@ -113,9 +113,9 @@
                                             :search="search"
                                             @click:row="select($event)"
                                         >
-                                            <template v-slot:item.logo="{item}">
+                                            <template v-slot:item.imagen="{item}">
                                                 <v-avatar size="50">
-                                                    <v-img :src="image+item.logo"></v-img>
+                                                    <v-img :src="image+item.imagen"></v-img>
                                                 </v-avatar>
                                             </template>
                                         </v-data-table>
@@ -271,26 +271,21 @@
                 </v-form>
             </v-card>
         </v-row>
-         
-        <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
     </div>
 </template>
 
 <script>
 import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
-import Snackbar from '@/components/snackbars/Snackbar';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Usuario from '@/services/Usuario';
 import Empresa from '@/services/Empresa';
 import Images from '@/services/Images';
 import Auth from '@/services/Auth';
-import {mapActions} from 'vuex';
 
     export default {
         components:{
             Breadcrumbs,
-            Snackbar
         },
         data() {
             return {
@@ -311,9 +306,6 @@ import {mapActions} from 'vuex';
                 showImage:'',
                 valid:false,
                 loading:false,
-                icon:'',
-                color:'',
-                mensaje:'',
                 perfil:null,
                 items: [
                     { text: 'Usuarios', disabled: false},
@@ -326,7 +318,6 @@ import {mapActions} from 'vuex';
                     nombre:'',
                     apellido:'',
                     login:'',
-                    fotografia:'default.png',
                     email:'',
                     telefono:'',
                     fecha_nac:new Date().toISOString().substr(0,10),
@@ -339,7 +330,6 @@ import {mapActions} from 'vuex';
                     nombre:'',
                     apellido:'',
                     login:'',
-                    fotografia:'default.png',
                     email:'',
                     telefono:'',
                     fecha_nac:new Date().toISOString().substr(0,10),
@@ -357,13 +347,12 @@ import {mapActions} from 'vuex';
                     { text: 'Cliente', id:3 }
                 ],
                 headers: [
-                    { text: 'Imagen', value: 'logo'},
+                    { text: 'Imagen', value: 'imagen'},
                     { text: 'Nombre',sortable: true, value: 'nombre_comercial'},
                 ],
             }
         },
         mounted() {
-            this.setSnackbar(false);
             this.id = window.localStorage.getItem('editar');
             if(this.id){
                 this.getUsuario(this.id);
@@ -381,21 +370,29 @@ import {mapActions} from 'vuex';
             },
         },
         methods:{
-            ...mapActions(['setSnackbar']),
-
-            mensajeSnackbar(color,icon,mensaje){
-                this.color=color;
-                this.icon =icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
+                this.loading = false;
+            },
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
             getUsuario(){
                 this.loading = true;
                 Usuario().get(`/${this.id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
-                    this.data.fecha_nac = this.data.fecha_nac.substr(0,10);
-                    this.showImage=this.image+this.data.fotografia;
+                    this.showImage=this.image+this.data.imagen;
                     this.items[1].text="Editar"
                     this.loading = false;
                     if(this.data.perfil_id == 1){
@@ -405,6 +402,7 @@ import {mapActions} from 'vuex';
                     }else if(this.data.perfil_id == 3){
                         this.perfil = this.perfiles[2];
                     }
+                    this.data.fecha_nac = this.data.fecha_nac.substr(0,10);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -450,13 +448,14 @@ import {mapActions} from 'vuex';
                 Usuario().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
                         this.postImagen(id);
+                        this.success('Usuario actualizado exitosamente.');
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario actualizado exitosamente.');
+                        this.success('Usuario actualizado exitosamente.');
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error('Ooops, ocurrio un error.');
                 });
             },
             postUsuario(){
@@ -464,23 +463,24 @@ import {mapActions} from 'vuex';
                 Auth().post("/signup",{data:this.data}).then((response) => {
                     if(this.imagen){
                         this.postImagen(response.data.data.id);
+                        this.success('Usuario registrado exitosamente.');
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario registrado exitosamente.');
+                        this.success('Usuario registrado exitosamente.');
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Oops, ocurrio un error.');
+                    this.error('Oops, ocurrio un error.');
                 });
             },
             block(){
                 this.loading = true;
                 Usuario().post(`/${this.id}`,{data:this.data2}).then(() => {
                     this.data.perfil_id = 4;
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario Bloqueado exitosamente.');
+                    this.success('Usuario Bloqueado exitosamente.');
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Oops, ocurrio un error.');
+                    this.error('Oops, ocurrio un error.');
                 });
             },
             desbloquear(){
@@ -493,10 +493,10 @@ import {mapActions} from 'vuex';
 
                 Usuario().post(`/${this.id}`,{data:this.data2}).then(() => {
                     this.data.perfil_id = this.data2.perfil_id;
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario Desbloqueado exitosamente.');
+                    this.success('Usuario Desbloqueado exitosamente.');
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Oops, ocurrio un error.');
+                    this.error('Oops, ocurrio un error.');
                 });
             },
             //procesamiento de imagenes 
@@ -510,7 +510,7 @@ import {mapActions} from 'vuex';
                     reader.readAsDataURL(evt);
                 }else{
                     this.imagen = null;
-                    this.showImage=this.image+this.data.fotografia;
+                    this.showImage=this.image+this.data.imagen;
                 }
             },
             reset(){
@@ -521,6 +521,7 @@ import {mapActions} from 'vuex';
                 this.items[1].text="Nuevo"
                 this.id = null;
                 this.empresa = {nomber_comercial:''};
+                this.perfil = null;
                 this.contraseña = '';
             },
             postImagen(id){
@@ -528,11 +529,11 @@ import {mapActions} from 'vuex';
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/usuario/${id}`,formdata).then(() => {
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Usuario registrado exitosamente.');
+                    this.success('Imagen subida exitosamente.');
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.error('Error al subir la imagen.');
                     this.reset();
                 });
             }, 

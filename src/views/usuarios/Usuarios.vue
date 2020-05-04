@@ -37,9 +37,9 @@
                 class="elevation-0" 
                 :search="search"
             >   
-                <template v-slot:item.fotografia="{item}">
+                <template v-slot:item.imagen="{item}">
                     <v-avatar size="50">
-                        <v-img :src="image+item.fotografia"></v-img>
+                        <v-img :src="image+item.imagen"></v-img>
                     </v-avatar>
                 </template>
                 <template v-slot:item.action="{ item }">
@@ -69,7 +69,7 @@ import router from '@/router';
                 loading:true,
                 usuarios:[],
                 headers: [
-                    { text: 'Imagen',align:'left',sortable: true,value:'fotografia'},
+                    { text: 'Imagen',align:'left',sortable: true,value:'imagen'},
                     { text: 'Nombre', value: 'nombre' },
                     { text: 'Apellido', value: 'apellido' },
                     { text: 'usuario', value: 'login'},

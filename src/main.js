@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import head from "./plugins/head";
-import croppa from "./plugins/croppa";
+import toasted from "./plugins/toasted";
 import vuetify from './plugins/vuetify';
 import "@babel/polyfill";
 //import "roboto-fontface/css/roboto/roboto-fontface.css";
@@ -24,8 +24,8 @@ if(token){
             store,
             router,
             vuetify,
+            toasted,
             head,
-            croppa,
             render: h => h(App)
         }).$mount("#app");
     
@@ -34,8 +34,8 @@ if(token){
             store,
             router,
             vuetify,
+            toasted,
             head,
-            croppa,
             render: h => h(App)
         }).$mount("#app");
     });
@@ -44,8 +44,8 @@ if(token){
         store,
         router,
         vuetify,
+        toasted,
         head,
-        croppa,
         render: h => h(App)
     }).$mount("#app");
 }

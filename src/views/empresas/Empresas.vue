@@ -37,9 +37,9 @@
                 class="elevation-0" 
                 :search="search"
             >   
-                <template v-slot:item.logo="{item}">
+                <template v-slot:item.imagen="{item}">
                     <v-avatar size="50">
-                        <v-img :src="image+item.logo"></v-img>
+                        <v-img :src="image+item.imagen"></v-img>
                     </v-avatar>
                 </template>
                 <template v-slot:item.action="{ item }">
@@ -72,7 +72,7 @@ import router from '@/router';
                 loading:true,
                 empresas:[],
                 headers: [
-                    { text: 'Imagen',align:'left',sortable: true,value:'logo',},
+                    { text: 'Imagen',align:'left',sortable: true,value:'imagen',},
                     { text: 'Rif',sortable: true, value: 'rif' },
                     { text: 'Nombre', value: 'nombre_comercial' },
                     { text: 'Direccion', value: 'direccion' },
@@ -110,7 +110,6 @@ import router from '@/router';
                     response.data.data.filter(a => this.empresas.push(a));
                     this.loading=false;
                     this.offset+=50;
-                    console.log(response);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -122,7 +121,3 @@ import router from '@/router';
         }
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

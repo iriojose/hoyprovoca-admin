@@ -115,7 +115,7 @@ import {mapState,mapActions} from 'vuex';
                 items2:[
                     {text:'Tasa',icon:'mdi-currency-usd',number:0,color:'#303f9f',icon2:''},
                     {text:'Pedidos',icon:'mdi-basket',number:0,color:'#00796b'},
-                    {text:'Productos',icon:'mdi-food',number:0,color:'#455a64'}
+                    {text:'Productos',icon:'mdi-food',number:0,color:'#455a64'},
                 ],
             }
         },
@@ -181,8 +181,13 @@ import {mapState,mapActions} from 'vuex';
                 });
             },
             getCambio(){
-                Cambio().get("/").then((response) => {
-                    this.items2[0].number = accounting.formatMoney(+response.data.data[0].tasa,{symbol:"Bs ",thousand:'.',decimal:','});
+                Cambio().get(`/?adm_empresa_id=${this.user.data.adm_empresa_id}`).then((response) => {
+                    if(response.data.data[0]){
+                        this.items2[0].number = accounting.formatMoney(+response.data.data[0].tasa,{symbol:"Bs ",thousand:'.',decimal:','});
+                    }else{
+                        this.items2[0].number = "crear tasa";
+                    }
+                    
                 }).catch(e => {
                     console.log(e);
                 });

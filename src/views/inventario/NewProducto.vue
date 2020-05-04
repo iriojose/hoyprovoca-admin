@@ -251,8 +251,6 @@
                 </v-form>
             </v-card>
         </v-row>
-
-        <Snackbar :icon="icon" :color="color" :mensaje="mensaje"/>
     </div>
 </template>
 
@@ -266,13 +264,11 @@ import Cambio from '@/services/Cambio';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
-import Snackbar from '@/components/snackbars/Snackbar';
-import {mapState,mapActions} from 'vuex';
+import {mapState} from 'vuex';
 
     export default {
         components:{
             Breadcrumbs,
-            Snackbar
         },
         data() {
             return {
@@ -296,9 +292,6 @@ import {mapState,mapActions} from 'vuex';
                 tasa:null,
                 ...variables,
                 ...validations,
-                icon:'',
-                mensaje:'',
-                color:'',
                 showImage:'',
                 imagen:null,
                 loading:false,
@@ -356,7 +349,6 @@ import {mapState,mapActions} from 'vuex';
             ...mapState(['user'])
         },
         mounted() {
-            this.setSnackbar(false);
             this.data.adm_empresa_id = this.user.data.adm_empresa_id;
 
             this.id = window.localStorage.getItem('editar');
@@ -374,13 +366,22 @@ import {mapState,mapActions} from 'vuex';
             window.localStorage.removeItem('editar');
         },
         methods:{
-            ...mapActions(['setSnackbar']),
-
-            mensajeSnackbar(color,icon,mensaje){
-                this.color=color;
-                this.icon =icon;
-                this.mensaje = mensaje;
-                this.setSnackbar(true);
+            success(mensaje){
+                this.$toasted.success(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-check-outline",
+                });
+                this.loading = false;
+            },
+            error(mensaje){
+                this.$toasted.error(mensaje, { 
+                    theme: "toasted-primary", 
+                    position: "bottom-right", 
+                    duration : 2000,
+                    icon : "mdi-alert-octagon",
+                });
                 this.loading = false;
             },
             //metodos para traer el grupo y subgrupo al inicio
@@ -388,7 +389,6 @@ import {mapState,mapActions} from 'vuex';
                 this.loading = true;
                 Conceptos().get(`/${id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
-                    console.log(this.data);
                     this.showImage=this.image+this.data.imagen;
                     this.getGrupo(this.data.adm_grupos_id);
                 }).catch(e => {
@@ -466,11 +466,11 @@ import {mapState,mapActions} from 'vuex';
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/conceptos/${id}`,formdata).then(() => {
-                    this.mensajeSnackbar('#388E3C','mdi-check-outline','Producto registrado exitosamente.');
+                    this.success('Imagen subida exitosamente');
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.error('Error al subir la imagen.');
                     this.reset();
                 });
             },  
@@ -499,29 +499,31 @@ import {mapState,mapActions} from 'vuex';
                 this.loading = true;
                 Conceptos().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
+                        this.success('Producto registrado exitosamente.');
                         this.postImagen(response.data.data.id);
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Producto registrado exitosamente.');
+                        this.success('Producto registrado exitosamente.');
                         this.reset();
                     }
                     this.postMovimiento(response.data.data.id);
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error('Ooops, ocurrio un error.');
                 });
             },
-            updateConceptoss(id){
+            updateConceptos(id){
                 this.loading = true;
+                delete this.data.presentaciones;
                 Conceptos().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
                         this.postImagen(id);
                     }else{
-                        this.mensajeSnackbar('#388E3C','mdi-check-outline','Producto actualizado exitosamente.');
+                        this.success('Producto actualizado exitosamente');
                         this.reset();
                     }
                 }).catch(e => {
                     console.log(e);
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Ooops, ocurrio un error.');
+                    this.error('Ooops, ocurrio un error.');
                 });
             },
             postMovimiento(id){
@@ -532,7 +534,7 @@ import {mapState,mapActions} from 'vuex';
                 });
             },
             getCambio(){
-                Cambio().get("/").then((response) => {
+                Cambio().get(`/?adm_empresa_id=${this.user.data.adm_empresa_id}`).then((response) => {
                     this.tasa = response.data.data[0].tasa;
                 }).catch(e => {
                     console.log(e);
