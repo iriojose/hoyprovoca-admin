@@ -29,7 +29,7 @@
                         v-model="data.nombre"
                         type="text"
                         ob
-                        :disabled="loading"
+                        :disabled="loading2"
                         color="#005598"
                         dense
                         counter="20"
@@ -45,7 +45,7 @@
                                 hint="Grupo"
                                 persistent-hint
                                 v-model="grupo.nombre"
-                                :disabled="loading"
+                                :disabled="loading2"
                                 color="#005598"
                                 dense
                                 :rules="[required('Grupo')]"
@@ -77,7 +77,7 @@
                             </v-card-actions>
                             <v-card-text>
                                 <v-data-table
-                                    :loading="loading && '#005598'" 
+                                    :loading="loading2 && '#005598'" 
                                     loading-text="Loading... Please wait" 
                                     :headers="headers" 
                                     :items="grupos"  
@@ -97,7 +97,7 @@
                     <v-btn 
                         :dark="valid"
                         :disabled="!valid"
-                        :loading="loading"
+                        :loading="loading2"
                         color="#005598"
                         block
                         @click="post"
@@ -108,11 +108,43 @@
                 </v-form>
             </v-card>
         </v-row>
+
+        <ModalMensaje 
+            :dialog="dialog2" :icon="icon"
+            :color="color"
+            :mensaje="mensaje"
+            :loading="loading" 
+            :error="errorPeticion"
+        > 
+            <template v-slot:nuevo>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        @click="dialog2 = false"
+                    >
+                        ¿Crear Subgrupo?
+                    </v-btn>
+                </v-hover>
+            </template>
+            <template v-slot:close>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        to="/subgrupos"
+                    >
+                        No, volver
+                    </v-btn>
+                </v-hover>
+            </template>
+        </ModalMensaje>
     </div>
 </template>
 
 <script>
 import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
+import ModalMensaje from '@/components/dialogs/ModalMensaje';
 import SubGrupos from '@/services/SubGrupos';
 import Grupos from '@/services/Grupos';
 import validations from '@/validations/validations';
@@ -122,9 +154,18 @@ import Images from '@/services/Images';
     export default {
         components:{
             Breadcrumbs,
+            ModalMensaje
         },
         data() {
             return {
+                //modal variables
+                icon:'',
+                mensaje:'',
+                color:'',
+                loading2:false,
+                dialog2:false,
+                errorPeticion:true,
+                //variables del form
                 ...validations,
                 ...variables,
                 valid:false,
@@ -181,21 +222,16 @@ import Images from '@/services/Images';
         },
         methods: {
             success(mensaje){
-                this.$toasted.success(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "mdi-check-outline",
-                });
+                this.icon = 'mdi-checkbox-marked-circle-outline';
+                this.mensaje = mensaje;
+                this.color = '#388E3C';
                 this.loading = false;
             },
             error(mensaje){
-                this.$toasted.error(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "mdi-alert-octagon",
-                });
+                this.icon = 'mdi-alert-octagon';
+                this.mensaje = mensaje;
+                this.color = '#D32F2F';
+                this.errorPeticion = false;
                 this.loading = false;
             },
             procesoImg(evt){
@@ -217,6 +253,7 @@ import Images from '@/services/Images';
                 this.dialog = false;
             },
             post(){
+                this.dialog2 = true;
                 if(this.id){
                     this.items[1].text="Editar"
                     this.updateSubgrupos(this.id);
@@ -228,8 +265,7 @@ import Images from '@/services/Images';
                 this.loading = true;
                 SubGrupos().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
-                        this.success("Subgrupo registrado exitosamente.");
-                        this.postImagen(response.data.data.id);
+                        this.postImagen(response.data.data.id,"Subgrupo registrado exitosamente.");
                     }else{
                         this.success("Subgrupo registrado exitosamente.");
                         this.reset();
@@ -243,8 +279,7 @@ import Images from '@/services/Images';
                 this.loading = true;
                 SubGrupos().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
-                        this.success("Subgrupo actualizado exitosamente.");
-                        this.postImagen(id);
+                        this.postImagen(id,"Subgrupo actualizado exitosamente.");
                     }else{
                         this.success("Subgrupo actualizado exitosamente.");
                         this.reset();
@@ -255,7 +290,7 @@ import Images from '@/services/Images';
                 });
             },
             getSubgrupo(id){
-                this.loading = true;
+                this.loading2 = true;
                 SubGrupos().get(`/${id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
                     this.showImage=this.image+this.data.imagen;
@@ -267,33 +302,32 @@ import Images from '@/services/Images';
             getGrupo(id){
                 Grupos().get(`/${id}`).then((response) => {
                     this.grupo = Object.assign({},response.data.data);
-                    this.loading = false;
+                    this.loading2 = false;
                 }).catch(e => {
                     console.log(e);
                 });
             },
             getGrupos(){
-                this.loading=true;
+                this.loading2=true;
                 Grupos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
                     this.total=response.data.totalCount;
                     response.data.data.filter(a => this.grupos.push(a));
-                    this.loading=false;
+                    this.loading2=false;
                     this.offset+=50;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            postImagen(id){
+            postImagen(id,mensaje){
                 let formdata = new FormData();
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/subgrupos/${id}`,formdata).then(() => {
-                    this.success("Imagen subida exitosamente");
+                    this.success(mensaje);
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.error("Error al subir la imagen");
-                    this.mensajeSnackbar('#D32F2F','mdi-alert-octagon','Error al subir la imagen.');
+                    this.error(mensaje+','+"\n Pero hubo un error al subir la imagen");
                     this.reset();
                 });
             },  

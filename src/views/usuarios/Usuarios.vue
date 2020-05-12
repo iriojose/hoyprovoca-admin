@@ -113,6 +113,9 @@ import router from '@/router';
                         }else if(response.data.data[i].perfil_id == 4){
                             response.data.data[i].perfil = 'Bloqueado';
                         }
+                        else if(response.data.data[i].perfil_id == 5){
+                            response.data.data[i].perfil = 'Repartidor';
+                        }
                         this.usuarios.push(response.data.data[i]);
                     }
                     this.loading=false;

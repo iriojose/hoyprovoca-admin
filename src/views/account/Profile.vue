@@ -136,7 +136,7 @@ import validations from '@/validations/validations';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-check-outline",
+                    icon : "done",
                 });
                 this.loading = false;
             },
@@ -145,7 +145,7 @@ import validations from '@/validations/validations';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-alert-octagon",
+                    icon : "error",
                 });
                 this.loading = false;
             },
@@ -159,6 +159,8 @@ import validations from '@/validations/validations';
             updateUsuario(id){
                 this.loading = true;
                 this.data.fecha_nac = this.date;
+                delete this.data.usuario_at;
+                delete this.data.usuario_in;
                 Usuario().post(`/${id}`,{data:this.data}).then(() => {
                     this.success('Actualizado extisamente.');
                     this.user.data = this.data;

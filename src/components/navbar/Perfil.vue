@@ -18,7 +18,7 @@
                 <v-list width="250" elevation="0">
                     <v-list-item class="border">
                         <v-list-item-avatar>
-                            <v-img :src="image+user.data.fotografia"></v-img>
+                            <v-img :src="image+user.data.imagen"></v-img>
                         </v-list-item-avatar>
                         <v-list-item-content>
                             <v-list-item-title v-text="user.data.nombre+' '+user.data.apellido"></v-list-item-title>

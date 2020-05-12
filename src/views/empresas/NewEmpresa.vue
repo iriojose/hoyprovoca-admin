@@ -213,7 +213,7 @@ import Empresa from '@/services/Empresa';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-check-outline",
+                    icon : "done",
                 });
                 this.loading = false;
             },
@@ -222,7 +222,7 @@ import Empresa from '@/services/Empresa';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-alert-octagon",
+                    icon : "error",
                 });
                 this.loading = false;
             },
@@ -267,6 +267,7 @@ import Empresa from '@/services/Empresa';
             },
             updateEmpresa(id){
                 this.loading = true;
+                delete this.data.fecha_registro;
                 Empresa().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
                         this.postImagen(id);

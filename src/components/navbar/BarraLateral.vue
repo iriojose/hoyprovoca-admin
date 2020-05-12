@@ -135,8 +135,8 @@ import ModalImagen from '@/components/dialogs/ModalImagen';
                     { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                 ],
                 items4:[
-                    { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
-                    { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
+                    //{ title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
+                    //{ title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                     { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
                     { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
                     { title: 'Cambio de tasa', icon:'mdi-currency-usd',to:'/tasas' },

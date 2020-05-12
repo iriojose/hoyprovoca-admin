@@ -15,7 +15,7 @@
                         label="Imagen Grupo"
                         dense
                         solo
-                        :disabled="loading"
+                        :disabled="loading2"
                         @change="procesoImg($event)"
                         color="#005598"
                         v-model="imagen"
@@ -26,7 +26,7 @@
                         solo
                         v-model="data.nombre"
                         type="text"
-                        :disabled="loading"
+                        :disabled="loading2"
                         color="#005598"
                         hint="Nombre"
                         persistent-hint
@@ -38,7 +38,7 @@
                     <v-btn 
                         :dark="valid"
                         :disabled="!valid"
-                        :loading="loading"
+                        :loading="loading2"
                         color="#005598"
                         block
                         @click="post()"
@@ -49,12 +49,45 @@
                 </v-form>
             </v-card>
         </v-row>
+
+        <ModalMensaje 
+            :dialog="dialog" 
+            :icon="icon"
+            :color="color"
+            :mensaje="mensaje"
+            :loading="loading" 
+            :error="errorPeticion"
+        > 
+            <template v-slot:nuevo>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        @click="dialog = false"
+                    >
+                        ¿Crear Grupo?
+                    </v-btn>
+                </v-hover>
+            </template>
+            <template v-slot:close>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        to="/grupos"
+                    >
+                        No, volver
+                    </v-btn>
+                </v-hover>
+            </template>
+        </ModalMensaje>
     </div>
 </template>
 
 <script>
 import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
 import Grupos from '@/services/Grupos';
+import ModalMensaje from '@/components/dialogs/ModalMensaje';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
@@ -62,6 +95,7 @@ import Images from '@/services/Images';
     export default {
         components:{
             Breadcrumbs,
+            ModalMensaje
         },
         data() {
             return {
@@ -71,7 +105,13 @@ import Images from '@/services/Images';
                 imagen:null,
                 showImage:'',
                 loading:false,
+                loading2:false,
+                dialog:false,
                 id:null,
+                icon:'',
+                mensaje:'',
+                color:'',
+                errorPeticion:true,
                 data:{
                     nombre:'',
                     imagen:'default.png',
@@ -106,21 +146,16 @@ import Images from '@/services/Images';
         },
         methods: {
             success(mensaje){
-                this.$toasted.success(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "mdi-check-outline",
-                });
+                this.icon = 'mdi-checkbox-marked-circle-outline';
+                this.mensaje = mensaje;
+                this.color = '#388E3C';
                 this.loading = false;
             },
             error(mensaje){
-                this.$toasted.error(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "mdi-alert-octagon",
-                });
+                this.icon = 'mdi-alert-octagon';
+                this.mensaje = mensaje;
+                this.color = '#D32F2F';
+                this.errorPeticion = false;
                 this.loading = false;
             },
             procesoImg(evt){
@@ -137,17 +172,18 @@ import Images from '@/services/Images';
                 }
             },
             getGrupo(id){
-                this.loading = true;
+                this.loading2 = true;
                 Grupos().get(`/${id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
                     this.showImage=this.image+this.data.imagen;
                     this.items[1].text="Editar"
-                    this.loading = false;
+                    this.loading2 = false;
                 }).catch(e => {
                     console.log(e);
                 });
             },
             post(){
+                this.dialog = true;
                 if(this.id){
                     this.updateGrupos(this.id);
                 }else{
@@ -158,8 +194,7 @@ import Images from '@/services/Images';
                 this.loading = true;
                 Grupos().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
-                        this.postImagen(response.data.data.id);
-                        this.success("Grupo registrado exitosamente");
+                        this.postImagen(response.data.data.id,"Grupo registrado exitosamente");
                     }else{
                         this.success("Grupo registrado exitosamente");
                         this.reset();
@@ -173,8 +208,7 @@ import Images from '@/services/Images';
                 this.loading = true;
                 Grupos().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
-                        this.postImagen(id);
-                        this.success("Grupo actualizado exitosamente");
+                        this.postImagen(id,"Grupo actualizado exitosamente");
                     }else{
                         this.success("Grupo actualizado exitosamente");
                         this.reset();
@@ -184,16 +218,16 @@ import Images from '@/services/Images';
                     this.error("Ooops, Ocurrio un error.")
                 });
             },
-            postImagen(id){
+            postImagen(id,mensaje){
                 let formdata = new FormData();
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/grupos/${id}`,formdata).then(() => {
-                    this.success("Imagen subida exitosamente");
+                    this.success(mensaje);
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.error("Erro al subir la imagen");
+                    this.error(mensaje+','+"\n Pero hubo un error al subir la imagen");
                     this.reset();
                 });
             },  

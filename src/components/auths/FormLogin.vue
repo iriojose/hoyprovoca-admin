@@ -73,7 +73,7 @@ import {mapActions} from 'vuex';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-check-outline",
+                    icon : "done",
                 });
                 this.loading = false;
                 router.push('/');
@@ -83,7 +83,7 @@ import {mapActions} from 'vuex';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-alert-octagon",
+                    icon : "error",
                 });
                 this.loading = false;
             },
@@ -91,7 +91,7 @@ import {mapActions} from 'vuex';
             login(){
                 this.loading = true;
                 Auth().post("/login",{data:this.data}).then((response) =>{
-                    if(response.data.data.perfil_id < 3){
+                    if(response.data.data.perfil_id < 3 || response.data.data.perfil_id > 4){
                         this.logged(response.data);
                         this.success("Bienvenido "+response.data.data.nombre+" "+response.data.data.apellido+".");
                     }else if(response.data.data.perfil_id == 4){

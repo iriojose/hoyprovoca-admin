@@ -42,9 +42,24 @@
                         <v-img :src="image+item.imagen"></v-img>
                     </v-avatar>
                 </template>
+
+                <template slot="loading">
+                    <LoaderRect class="mb-12"/> 
+                </template>
+
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2" @click="editar(item)" >mdi-border-color</v-icon>
-                    <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+                    <v-icon 
+                        :small="$vuetify.breakpoint.smAndDown ? false:true"
+                        class="mr-2" @click="editar(item)" 
+                    >
+                        mdi-border-color
+                    </v-icon>
+                    <v-icon 
+                        :small="$vuetify.breakpoint.smAndDown ? false:true"
+                        @click="deleteItem(item)"
+                    >
+                        mdi-delete
+                        </v-icon>
                 </template>
             </v-data-table>
         </v-card>

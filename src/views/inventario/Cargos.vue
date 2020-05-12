@@ -100,7 +100,7 @@ import accounting from 'accounting';
             }
         },
         mounted() {
-            if(this.$route.name == 'productos'){
+            if(this.$route.name == 'cargos'){
                 this.getConceptos();
             }
         },

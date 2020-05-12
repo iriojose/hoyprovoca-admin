@@ -77,7 +77,7 @@
                                         hint="Empresa"
                                         persistent-hint
                                         dense
-                                        :rules="[required('Empresa')]"
+                                        :rules="[data.perfil_id == 2 ? required('Empresa'):null]"
                                     />
                                 </template>
                                 <v-card width="100%" class="pa-2">
@@ -321,7 +321,6 @@ import Auth from '@/services/Auth';
                     email:'',
                     telefono:'',
                     fecha_nac:new Date().toISOString().substr(0,10),
-                    usuario_at:new Date().toISOString().substr(0,10),
                     adm_empresa_id:null,
                     perfil_id:null,
                     password:'',
@@ -333,7 +332,6 @@ import Auth from '@/services/Auth';
                     email:'',
                     telefono:'',
                     fecha_nac:new Date().toISOString().substr(0,10),
-                    usuario_at:new Date().toISOString().substr(0,10),
                     adm_empresa_id:null,
                     perfil_id:null,
                     password:'',
@@ -344,7 +342,9 @@ import Auth from '@/services/Auth';
                 perfiles: [
                     { text: 'Administrador',id:1},
                     { text: 'Super usuario', id:2 },
-                    { text: 'Cliente', id:3 }
+                    { text: 'Cliente', id:3 },
+                    { text: 'Bloqueado', id:4},
+                    { text: 'Repartidor', id:5}
                 ],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -375,7 +375,7 @@ import Auth from '@/services/Auth';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-check-outline",
+                    icon : "done",
                 });
                 this.loading = false;
             },
@@ -384,25 +384,29 @@ import Auth from '@/services/Auth';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-alert-octagon",
+                    icon : "error",
                 });
                 this.loading = false;
             },
             getUsuario(){
                 this.loading = true;
-                Usuario().get(`/${this.id}`).then((response) => {
+                Usuario().get(`/${this.id}/?fields=id,nombre,apellido,adm_empresa_id,telefono,email,imagen,login,fecha_nac,perfil_id`).then((response) => {
                     this.data = Object.assign({},response.data.data);
                     this.showImage=this.image+this.data.imagen;
                     this.items[1].text="Editar"
-                    this.loading = false;
                     if(this.data.perfil_id == 1){
                         this.perfil = this.perfiles[0];
                     }else if(this.data.perfil_id == 2){
                         this.perfil = this.perfiles[1];
                     }else if(this.data.perfil_id == 3){
                         this.perfil = this.perfiles[2];
+                    }else if(this.data.perfil_id == 4){
+                        this.perfil = this.perfiles[3];
+                    }else if(this.data.perfil_id == 5){
+                        this.perfil = this.perfiles[4];
                     }
                     this.data.fecha_nac = this.data.fecha_nac.substr(0,10);
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
                 });
@@ -445,6 +449,7 @@ import Auth from '@/services/Auth';
             },
             updateUsuario(id){
                 this.loading = true;
+                console.log(this.data);
                 Usuario().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
                         this.postImagen(id);

@@ -371,7 +371,7 @@ import {mapState} from 'vuex';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-check-outline",
+                    icon : "done",
                 });
                 this.loading = false;
             },
@@ -380,7 +380,7 @@ import {mapState} from 'vuex';
                     theme: "toasted-primary", 
                     position: "bottom-right", 
                     duration : 2000,
-                    icon : "mdi-alert-octagon",
+                    icon : "error",
                 });
                 this.loading = false;
             },
