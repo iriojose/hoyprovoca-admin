@@ -1,10 +1,9 @@
 <template>
-     <div v-if="$route.name == 'nuevousuario'">
+    <div v-if="$route.name == 'nuevousuario'">
         <Breadcrumbs :items="items"/>
         
         <v-row justify="center" class="mx-2">
             <v-card class="pa-5" width="100%">
-                
                 <v-toolbar elevation="0" dense v-if="id">
                     <v-spacer></v-spacer>
                     <div v-if="data.perfil_id !== 4 && data.perfil_id !== 1">Bloquear usuario</div>
@@ -32,7 +31,7 @@
 
                 <v-form v-model="valid">
                     <v-row justify="center">
-                         <v-col cols="12" md="4" sm="12" align-self="center">
+                        <v-col cols="12" md="4" sm="12" align-self="center">
                             <v-img height="150" width="100%" contain :src="showImage" class="mb-5" />
 
                             <v-file-input
@@ -271,6 +270,38 @@
                 </v-form>
             </v-card>
         </v-row>
+
+        <ModalMensaje 
+            :dialog="dialog2" 
+            :icon="icon"
+            :color="color"
+            :mensaje="mensaje"
+            :loading="loading" 
+            :error="errorPeticion"
+        > 
+            <template v-slot:nuevo>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1"
+                        dark class="text-capitalize white--text"
+                        @click="dialog2 = false"
+                    >
+                        ¿Crear un Usuario?
+                    </v-btn>
+                </v-hover>
+            </template>
+            <template v-slot:close>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        to="/usuarios"
+                    >
+                        No, volver
+                    </v-btn>
+                </v-hover>
+            </template>
+        </ModalMensaje>
     </div>
 </template>
 
@@ -282,13 +313,22 @@ import Usuario from '@/services/Usuario';
 import Empresa from '@/services/Empresa';
 import Images from '@/services/Images';
 import Auth from '@/services/Auth';
+import ModalMensaje from '@/components/dialogs/ModalMensaje';
 
     export default {
         components:{
             Breadcrumbs,
+            ModalMensaje
         },
         data() {
             return {
+                icon:'',
+                color:'',
+                mensaje:'',
+                errorPeticion:true,
+                loading2:false,
+                dialog2:false,
+                
                 ...validations,
                 ...variables,
                 offset:0,
@@ -371,25 +411,34 @@ import Auth from '@/services/Auth';
         },
         methods:{
             success(mensaje){
-                this.$toasted.success(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "done",
-                });
+                this.icon = 'mdi-checkbox-marked-circle-outline';
+                this.mensaje = mensaje;
+                this.color = '#388E3C';
                 this.loading = false;
             },
             error(mensaje){
-                this.$toasted.error(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "error",
-                });
+                this.icon = 'mdi-alert-octagon';
+                this.mensaje = mensaje;
+                this.color = '#D32F2F';
+                this.errorPeticion = false;
+                this.loading = false;
+            },
+            successBlock(mensaje){
+                this.icon = 'mdi-checkbox-marked-circle-outline';
+                this.mensaje = mensaje;
+                this.color = '#388E3C';
+                this.loading = false;
+                this.errorPeticion = false;
+            },
+            errorBlock(mensaje){
+                this.icon = 'mdi-alert-octagon';
+                this.mensaje = mensaje;
+                this.color = '#D32F2F';
+                this.errorPeticion = false;
                 this.loading = false;
             },
             getUsuario(){
-                this.loading = true;
+                this.loading2 = true;
                 Usuario().get(`/${this.id}/?fields=id,nombre,apellido,adm_empresa_id,telefono,email,imagen,login,fecha_nac,perfil_id`).then((response) => {
                     this.data = Object.assign({},response.data.data);
                     this.showImage=this.image+this.data.imagen;
@@ -406,17 +455,17 @@ import Auth from '@/services/Auth';
                         this.perfil = this.perfiles[4];
                     }
                     this.data.fecha_nac = this.data.fecha_nac.substr(0,10);
-                    this.loading = false;
+                    this.loading2 = false;
                 }).catch(e => {
                     console.log(e);
                 });
             },
             getEmpresas(){
-                this.loading=true;
+                this.loading2=true;
                 Empresa().get(`/?limit=50&offset=${this.offset}`).then((response) => {
                     this.total=response.data.totalCount;
                     response.data.data.filter(a => this.empresas.push(a));
-                    this.loading=false;
+                    this.loading2=false;
                     this.offset+=50;
                 }).catch(e => {
                     console.log(e);
@@ -441,6 +490,7 @@ import Auth from '@/services/Auth';
                 }
             },
             post(){
+                this.dialog2 = true;
                 if(this.id){
                     this.updateUsuario(this.id);
                 }else{
@@ -449,11 +499,9 @@ import Auth from '@/services/Auth';
             },
             updateUsuario(id){
                 this.loading = true;
-                console.log(this.data);
                 Usuario().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
-                        this.postImagen(id);
-                        this.success('Usuario actualizado exitosamente.');
+                        this.postImagen(id,'Usuario actualizado exitosamente.');
                     }else{
                         this.success('Usuario actualizado exitosamente.');
                         this.reset();
@@ -467,8 +515,7 @@ import Auth from '@/services/Auth';
                 this.loading = true;
                 Auth().post("/signup",{data:this.data}).then((response) => {
                     if(this.imagen){
-                        this.postImagen(response.data.data.id);
-                        this.success('Usuario registrado exitosamente.');
+                        this.postImagen(response.data.data.id,'Usuario registrado exitosamente.');
                     }else{
                         this.success('Usuario registrado exitosamente.');
                         this.reset();
@@ -480,15 +527,17 @@ import Auth from '@/services/Auth';
             },
             block(){
                 this.loading = true;
+                this.dialog2 = true;
                 Usuario().post(`/${this.id}`,{data:this.data2}).then(() => {
                     this.data.perfil_id = 4;
-                    this.success('Usuario Bloqueado exitosamente.');
+                    this.successBlock('Usuario Bloqueado exitosamente.');
                 }).catch(e => {
                     console.log(e);
-                    this.error('Oops, ocurrio un error.');
+                    this.errorBlock('Oops, ocurrio un error.');
                 });
             },
             desbloquear(){
+                this.dialog2 = true;
                 this.loading = true;
                 if(this.data.adm_empresa_id == null || this.data.adm_empresa_id == 0){
                     this.data2.perfil_id = 3;
@@ -498,10 +547,10 @@ import Auth from '@/services/Auth';
 
                 Usuario().post(`/${this.id}`,{data:this.data2}).then(() => {
                     this.data.perfil_id = this.data2.perfil_id;
-                    this.success('Usuario Desbloqueado exitosamente.');
+                    this.successBlock('Usuario Desbloqueado exitosamente.');
                 }).catch(e => {
                     console.log(e);
-                    this.error('Oops, ocurrio un error.');
+                    this.errorBlock('Oops, ocurrio un error.');
                 });
             },
             //procesamiento de imagenes 
@@ -529,16 +578,16 @@ import Auth from '@/services/Auth';
                 this.perfil = null;
                 this.contraseña = '';
             },
-            postImagen(id){
+            postImagen(id,mensaje){
                 let formdata = new FormData();
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/usuario/${id}`,formdata).then(() => {
-                    this.success('Imagen subida exitosamente.');
+                    this.success(mensaje);
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.error('Error al subir la imagen.');
+                    this.error(mensaje+','+"\n Pero hubo un error al subir la imagen");
                     this.reset();
                 });
             }, 

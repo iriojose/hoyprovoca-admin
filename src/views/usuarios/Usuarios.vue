@@ -42,9 +42,16 @@
                         <v-img :src="image+item.imagen"></v-img>
                     </v-avatar>
                 </template>
+                <template slot="loading">
+                    <LoaderRect class="mb-12"/> 
+                </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2" @click="editar(item)">mdi-border-color</v-icon>
-                    <v-icon small class="mr-2" @click="pedidos(item)">mdi-basket</v-icon>
+                    <v-icon 
+                        :small="$vuetify.breakpoint.smAndDown ? false:true"
+                        class="mr-2" @click="editar(item)" 
+                    >
+                        mdi-border-color
+                    </v-icon>
                 </template>
             </v-data-table>
         </v-card>
@@ -56,9 +63,13 @@
 <script>
 import Usuario from '@/services/Usuario';
 import variables from '@/services/variables_globales';
+import LoaderRect from '@/components/loaders/LoaderRect';
 import router from '@/router';
 
     export default {
+        components:{
+            LoaderRect
+        },
         data() {
             return {
                 ...variables,
@@ -128,10 +139,6 @@ import router from '@/router';
                 window.localStorage.setItem('editar',item.id);
                 router.push('/usuarios/usuario');
             },
-            pedidos(item){
-                window.localStorage.setItem('editar',item.id);
-                router.push('/usuarios/pedidos');
-            }
         }
     }
 </script>

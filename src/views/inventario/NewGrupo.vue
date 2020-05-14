@@ -61,18 +61,18 @@
             <template v-slot:nuevo>
                 <v-hover v-slot:default="{hover}">
                     <v-btn 
-                        :elevation="hover ? 3:1" :color="hover ? '#005598':null"
-                        :dark="hover ? true:false" class="text-capitalize"
+                        :elevation="hover ? 3:1"
+                        dark class="text-capitalize white--text"
                         @click="dialog = false"
                     >
-                        ¿Crear Grupo?
+                        ¿Crear un Grupo?
                     </v-btn>
                 </v-hover>
             </template>
             <template v-slot:close>
                 <v-hover v-slot:default="{hover}">
                     <v-btn 
-                        :elevation="hover ? 3:1" :color="hover ? '#005598':null"
+                        :elevation="hover ? 3:1"
                         :dark="hover ? true:false" class="text-capitalize"
                         to="/grupos"
                     >

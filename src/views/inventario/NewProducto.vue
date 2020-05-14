@@ -17,7 +17,7 @@
                                 label="Imagen Grupo"
                                 dense
                                 solo
-                                :disabled="loading"
+                                :disabled="loading2"
                                 @change="procesoImg($event)"
                                 color="#005598"
                                 v-model="imagen"
@@ -30,7 +30,7 @@
                                         label="Grupo"
                                         solo
                                         v-model="grupo.nombre"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         hint="Grupo"
                                         persistent-hint
                                         color="#005598"
@@ -161,7 +161,7 @@
                                         hint="Nombre"
                                         persistent-hint
                                         v-model="data.nombre"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         color="#005598"
                                         dense
                                         :rules="[required('Nombre')]"
@@ -174,7 +174,7 @@
                                         hint="0000001"
                                         persistent-hint
                                         v-model="data.codigo"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         color="#005598"
                                         dense
                                         :rules="[required('Codigo')]"
@@ -185,7 +185,7 @@
                                         label="Referencia"
                                         solo
                                         v-model="data.referencia"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         color="#005598"
                                         dense
                                         :rules="[required('Referencia')]"
@@ -197,7 +197,7 @@
                                         solo
                                         type="number"
                                         v-model="data.precio_a"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         hint="Bs."
                                         @input="changeBolivar"
                                         persistent-hint
@@ -212,7 +212,7 @@
                                         solo
                                         type="number"
                                         v-model="data.precio_dolar"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         hint="$."
                                         @input="changeDolar"
                                         persistent-hint
@@ -225,7 +225,7 @@
                                     <v-textarea
                                         label="Descripcion"
                                         v-model="data.descripcion"
-                                        :disabled="loading"
+                                        :disabled="loading2"
                                         color="#005598"
                                         solo
                                         dense
@@ -236,7 +236,7 @@
                                     <v-btn 
                                         :dark="valid"
                                         :disabled="!valid"
-                                        :loading="loading"
+                                        :loading="loading2"
                                         color="#005598"
                                         block
                                         @click="post"
@@ -251,6 +251,38 @@
                 </v-form>
             </v-card>
         </v-row>
+
+        <ModalMensaje 
+            :dialog="dialog3" 
+            :icon="icon"
+            :color="color"
+            :mensaje="mensaje"
+            :loading="loading" 
+            :error="errorPeticion"
+        > 
+            <template v-slot:nuevo>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1"
+                        dark class="text-capitalize white--text"
+                        @click="dialog3 = false"
+                    >
+                        ¿Crear un Producto?
+                    </v-btn>
+                </v-hover>
+            </template>
+            <template v-slot:close>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        to="/productos"
+                    >
+                        No, volver
+                    </v-btn>
+                </v-hover>
+            </template>
+        </ModalMensaje>
     </div>
 </template>
 
@@ -265,13 +297,20 @@ import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
 import {mapState} from 'vuex';
+import ModalMensaje from '@/components/dialogs/ModalMensaje';
 
     export default {
         components:{
             Breadcrumbs,
+            ModalMensaje
         },
         data() {
             return {
+                icon:'',
+                mensaje:'',
+                color:'',
+                dialog3:false,
+                errorPeticion:true,
                 grupo:{
                     nombre:''
                 },
@@ -367,26 +406,21 @@ import {mapState} from 'vuex';
         },
         methods:{
             success(mensaje){
-                this.$toasted.success(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "done",
-                });
+                this.icon = 'mdi-checkbox-marked-circle-outline';
+                this.mensaje = mensaje;
+                this.color = '#388E3C';
                 this.loading = false;
             },
             error(mensaje){
-                this.$toasted.error(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "error",
-                });
+                this.icon = 'mdi-alert-octagon';
+                this.mensaje = mensaje;
+                this.color = '#D32F2F';
+                this.errorPeticion = false;
                 this.loading = false;
             },
             //metodos para traer el grupo y subgrupo al inicio
             getConcepto(id){
-                this.loading = true;
+                this.loading2 = true;
                 Conceptos().get(`/${id}`).then((response) => {
                     this.data = Object.assign({},response.data.data);
                     this.showImage=this.image+this.data.imagen;
@@ -398,7 +432,6 @@ import {mapState} from 'vuex';
             getGrupo(id){
                 Grupos().get(`/${id}`).then((response) => {
                     this.grupo = Object.assign({},response.data.data);
-                    this.loading = false;
                     this.getSubgrupo(this.data.adm_subgrupos_id);
                 }).catch(e => {
                     console.log(e);
@@ -407,7 +440,7 @@ import {mapState} from 'vuex';
             getSubgrupo(id){
                 SubGrupos().get(`/${id}`).then((response) => {
                     this.subgrupo = Object.assign({},response.data.data);
-                    this.loading = false;
+                    this.loading2 = false;
                 }).catch(e => {
                     console.log(e);
                 });
@@ -415,11 +448,11 @@ import {mapState} from 'vuex';
             
             //metodos para seleccionar grupos
             getGrupos(){
-                this.loading=true;
+                this.loading2=true;
                 Grupos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
                     this.total1=response.data.totalCount;
                     response.data.data.filter(a => this.grupos.push(a));
-                    this.loading=false;
+                    this.loading2=false;
                     this.offset+=50;
                 }).catch(e => {
                     console.log(e);
@@ -435,10 +468,11 @@ import {mapState} from 'vuex';
                 this.getSubgrupos(item.id);
             },
             getSubgrupos(id){
+                this.loading2=true;
                 Grupos().get(`/${id}/subgrupos/?limit=50&offset=${this.offset2}`).then((response) => {
                     this.total2=response.data.totalCount;
                     response.data.data.filter(a => this.subgrupos.push(a));
-                    this.loading=false;
+                    this.loading2=false;
                     this.offset2+=50;
                 }).catch(e => {
                     console.log(e);
@@ -461,16 +495,16 @@ import {mapState} from 'vuex';
                 this.data.precio_a = this.data.precio_a.toFixed(2);
             },
             //metodos de imagenes
-            postImagen(id){
+            postImagen(id,mensaje){
                 let formdata = new FormData();
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/conceptos/${id}`,formdata).then(() => {
-                    this.success('Imagen subida exitosamente');
+                    this.success(mensaje);
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.error('Error al subir la imagen.');
+                    this.error(mensaje+','+"\n Pero hubo un error al subir la imagen");
                     this.reset();
                 });
             },  
@@ -489,6 +523,7 @@ import {mapState} from 'vuex';
             },
             //metodos de update y create
             post(){
+                this.dialog3 = true;
                 if(this.id){
                     this.updateConceptos(this.id);
                 }else{
@@ -499,8 +534,7 @@ import {mapState} from 'vuex';
                 this.loading = true;
                 Conceptos().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
-                        this.success('Producto registrado exitosamente.');
-                        this.postImagen(response.data.data.id);
+                        this.postImagen(response.data.data.id,'Producto registrado exitosamente.');
                     }else{
                         this.success('Producto registrado exitosamente.');
                         this.reset();
@@ -516,7 +550,7 @@ import {mapState} from 'vuex';
                 delete this.data.presentaciones;
                 Conceptos().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
-                        this.postImagen(id);
+                        this.postImagen(id,'Producto actualizado exitosamente');
                     }else{
                         this.success('Producto actualizado exitosamente');
                         this.reset();

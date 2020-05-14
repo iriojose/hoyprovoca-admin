@@ -38,6 +38,9 @@
                         <v-img :src="image+item.imagen"></v-img>
                     </v-avatar>
                 </template>
+                <template slot="loading">
+                    <LoaderRect class="mb-12"/> 
+                </template>
             </v-data-table>
         </v-card>
 
@@ -71,8 +74,12 @@ import Empresa from '@/services/Empresa';
 import router from '@/router';
 import variables from '@/services/variables_globales';
 import accounting from 'accounting';
+import LoaderRect from '@/components/loaders/LoaderRect';
 
     export default {
+        components:{
+            LoaderRect
+        },
         data(){
             return {
                 ...variables,

@@ -144,6 +144,39 @@
                 </v-form>
             </v-card>
         </v-row>
+
+
+        <ModalMensaje 
+            :dialog="dialog" 
+            :icon="icon"
+            :color="color"
+            :mensaje="mensaje"
+            :loading="loading" 
+            :error="errorPeticion"
+        > 
+            <template v-slot:nuevo>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1"
+                        dark class="text-capitalize white--text"
+                        @click="dialog = false"
+                    >
+                        ¿Crear una Empresa?
+                    </v-btn>
+                </v-hover>
+            </template>
+            <template v-slot:close>
+                <v-hover v-slot:default="{hover}">
+                    <v-btn 
+                        :elevation="hover ? 3:1"
+                        :dark="hover ? true:false" class="text-capitalize"
+                        to="/empresas"
+                    >
+                        No, volver
+                    </v-btn>
+                </v-hover>
+            </template>
+        </ModalMensaje>
     </div>
 </template>
 
@@ -153,15 +186,23 @@ import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
 import Empresa from '@/services/Empresa';
+import ModalMensaje from '@/components/dialogs/ModalMensaje';
 
     export default {
         components:{
             Breadcrumbs,
+            ModalMensaje
         },
         data() {
             return {
                 ...validations,
                 ...variables,
+                icon:'',
+                mensaje:'',
+                color:'',
+                errorPeticion:true,
+                dialog:false,
+
                 id:null,
                 imagen:null,
                 showImage:'',
@@ -209,21 +250,16 @@ import Empresa from '@/services/Empresa';
         },
         methods: {
             success(mensaje){
-                this.$toasted.success(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "done",
-                });
+                this.icon = 'mdi-checkbox-marked-circle-outline';
+                this.mensaje = mensaje;
+                this.color = '#388E3C';
                 this.loading = false;
             },
             error(mensaje){
-                this.$toasted.error(mensaje, { 
-                    theme: "toasted-primary", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : "error",
-                });
+                this.icon = 'mdi-alert-octagon';
+                this.mensaje = mensaje;
+                this.color = '#D32F2F';
+                this.errorPeticion = false;
                 this.loading = false;
             },
             change(){
@@ -245,6 +281,7 @@ import Empresa from '@/services/Empresa';
                 });
             },
             post(){
+                this.dialog = true;
                 if(this.id){
                     this.updateEmpresa(this.id);
                 }else{
@@ -255,7 +292,7 @@ import Empresa from '@/services/Empresa';
                 this.loading = true;
                 Empresa().post("/",{data:this.data}).then((response) => {
                     if(this.imagen){
-                        this.postImagen(response.data.data.id);
+                        this.postImagen(response.data.data.id,'Empresa registrada exitosamente.');
                     }else{
                         this.success('Empresa registrada exitosamente.');
                         this.reset();
@@ -270,8 +307,7 @@ import Empresa from '@/services/Empresa';
                 delete this.data.fecha_registro;
                 Empresa().post(`/${id}`,{data:this.data}).then(() => {
                     if(this.imagen){
-                        this.postImagen(id);
-                        this.success('Empresa actualizada exitosamente.');
+                        this.postImagen(id,'Empresa actualizada exitosamente.');
                     }else{
                         this.success('Empresa actualizada exitosamente.');
                         this.reset();
@@ -294,16 +330,16 @@ import Empresa from '@/services/Empresa';
                     this.showImage=this.image+this.data.imagen;
                 }
             },
-            postImagen(id){
+            postImagen(id,mensaje){
                 let formdata = new FormData();
                 formdata.append('image',this.imagen);
 
                 Images().post(`/main/empresa/${id}`,formdata).then(() => {
-                    this.success('Imagen subida exitosamente.');
+                    this.success(mensaje);
                     this.reset();
                 }).catch(e =>  {
                     console.log(e);
-                    this.error("Error al subir imagen del registro");
+                    this.error(mensaje+"\n Pero hubo un error al subir la imagen");
                     this.reset();
                 });
             }, 
