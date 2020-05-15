@@ -81,6 +81,19 @@
                 </v-hover>
             </template>
         </ModalMensaje>
+
+        <ModalFile :dialog="dialog2" :id="id">
+            <template v-slot:close>
+                <v-btn 
+                    fab
+                    small
+                    text
+                    @click="dialog2 = false"
+                >
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ModalFile>
     </div>
 </template>
 
@@ -91,11 +104,13 @@ import ModalMensaje from '@/components/dialogs/ModalMensaje';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
 import Images from '@/services/Images';
+import ModalFile from '@/components/dialogs/ModalFile';
 
     export default {
         components:{
             Breadcrumbs,
-            ModalMensaje
+            ModalMensaje,
+            ModalFile
         },
         data() {
             return {
@@ -131,6 +146,7 @@ import Images from '@/services/Images';
                 rules: [
                     value => !value || value.size < 3000000 || 'Debe pesar menos de 3 MB!',
                 ],
+                dialog2:true
             }
         },
         mounted() {

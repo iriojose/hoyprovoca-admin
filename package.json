@@ -15,6 +15,7 @@
 		"chart.js": "^2.9.3",
 		"core-js": "^3.4.4",
 		"filepond": "^4.13.6",
+		"filepond-plugin-image-preview": "^4.6.3",
 		"jspdf": "^1.5.3",
 		"jspdf-autotable": "^3.2.13",
 		"sass": "^1.26.3",
