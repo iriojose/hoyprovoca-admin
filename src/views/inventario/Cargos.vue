@@ -1,16 +1,24 @@
 <template>
     <div>
-        <v-card width="100%" v-if="$route.name == 'cargos'">
+        <v-card width="100%">
             <v-toolbar flat color="#fff">
                 <v-btn 
-                    @click="getConceptos()" 
+                    @click="getCargos(user.data.adm_empresa_id)" 
                     dark 
                     class="mb-2 mx-2 text-capitalize caption" 
                     color="#005598"
-                    :disabled="conceptos.length == total || loading ? true:false"
+                    :disabled="cargos.length == total || loading ? true:false"
                 >
                     Ver más 
                     <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
+                </v-btn>
+                <v-btn 
+                    color="#005598" dark 
+                    class="mb-2 text-capitalize caption" 
+                    @click="dialogCargo = true"
+                >
+                    Nuevo
+                    <v-icon dark class="ml-2">mdi-plus-box</v-icon>
                 </v-btn>
                 <v-spacer></v-spacer>
                 <v-text-field
@@ -28,141 +36,101 @@
                 :loading="loading && '#005598'" 
                 loading-text="Loading... Please wait" 
                 :headers="headers" 
-                :items="conceptos" 
+                :items="cargos" 
                 class="elevation-0" 
                 :search="search"
-                @click:row="select($event)"
             >   
-                <template v-slot:item.imagen="{item}">
-                    <v-avatar size="50">
-                        <v-img :src="image+item.imagen"></v-img>
-                    </v-avatar>
-                </template>
                 <template slot="loading">
                     <LoaderRect class="mb-12"/> 
                 </template>
             </v-data-table>
         </v-card>
 
-        <v-dialog v-model="dialog" width="700" transition="dialog-bottom-transition">
-            <v-card>
-                <v-card-text>
-                    <v-btn color="#005598" dark class="my-2 text-capitalize caption" @click="push">
-                        Nuevo
-                        <v-icon dark class="ml-2">mdi-plus-box</v-icon>
-                    </v-btn>
-                    <v-data-table 
-                        :loading="loading && '#005598'" 
-                        loading-text="Loading... Please wait" 
-                        :headers="headers2" 
-                        :items="cargos" 
-                        class="elevation-0" 
-                    >   
-                    </v-data-table>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
-
-        <router-view/>
+        <ModalCreateCargo :dialog="dialogCargo">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogCargo = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+            <template v-slot:close2>
+                <v-btn tile @click="dialogCargo = false" class="white--text text-capitalize" color="#232323">
+                    volver
+                </v-btn>
+            </template>
+        </ModalCreateCargo>
     </div>
 </template>
 
 <script>
-import Cargos from '@/services/Cargos';
-import {mapState} from 'vuex';
+import ModalCreateCargo from '@/components/dialogs/ModalCreateCargo';
 import Empresa from '@/services/Empresa';
-import router from '@/router';
-import variables from '@/services/variables_globales';
-import accounting from 'accounting';
+import {mapState} from 'vuex';
 import LoaderRect from '@/components/loaders/LoaderRect';
 
     export default {
         components:{
-            LoaderRect
+            LoaderRect,
+            ModalCreateCargo
         },
         data(){
             return {
-                ...variables,
-                offset:0,
-                search:'',
-                total:0,
-                dialog:false,
                 loading:false,
-                conceptos:[],
+                dialogCargo:false,
+                search:'',
+                offset:0,
+                total:0,
                 cargos:[],
                 headers: [
-                    { text: 'Imagen', value: 'imagen'},
-                    { text: 'Nombre',sortable: true, value: 'nombre'},
-                    { text: 'Codigo', value: 'codigo'},
-                    { text: 'Referencia', value: 'referencia'},
-                    { text: 'Precio', value: 'precio_a'},
-                    { text: 'Existencia', value: 'existencias[0].existencia'},
-                ],
-                headers2: [
-                    { text: 'Fecha', value: 'fecha_at'},
-                    { text: 'Producto',sortable: true, value:'concepto'},
+                    { text: 'Fecha', value: 'fecha_at',align:'center'},
+                    { text: 'Producto',sortable: true, value:'concepto.nombre'},
                     { text: 'Cantidad', value: 'cantidad'},
                     { text: 'Usuario', value: 'usuario'},
                 ],
             }
         },
-        mounted() {
-            if(this.$route.name == 'cargos'){
-                this.getConceptos();
+        watch: {
+            dialogCargo(){
+                if (!this.dialogCargo) this.mostRecent(this.user.data.adm_empresa_id);
             }
         },
-        computed: {
+        computed:{
             ...mapState(['user'])
         },
-        watch: {
-            "$route"(){
-                if(this.$route.name == 'cargos'){
-                    this.loading = true;
-                    this.conceptos = [];
-                    this.offset = 0;
-                    this.getConceptos();
-                }
-            }
+        mounted() {
+            this.getCargos(this.user.data.adm_empresa_id)
         },
         methods:{
-            getConceptos(){
-                this.loading=true;
-                Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&offset=${this.offset}`).then((response) => {
-                    this.total= response.data.totalCount;
-                    response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
-                    response.data.data.filter(a => this.conceptos.push(a));
-                    this.loading=false;
-                    this.offset+=50;
-                }).catch(e => {
-                    console.log(e);
-                });
-            },
-            select(item){
-                this.dialog = true;
-                window.localStorage.setItem('editar',item.id);
-                this.getCargos(item);
-            },
-            push(){
-                this.dialog = false;
-                router.push('/cargos/cargo');
-            },
-            getCargos(item){
+            getCargos(id){
                 this.loading = true;
-                Cargos().get(`/?adm_conceptos_id=${item.id}&limit=1000`).then((response) => {
-                    console.log(response);
+                Empresa().get(`${id}/cargos/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
                     if(response.data !== 'This entity is empty'){
-                        response.data.data.filter(a => a.usuario = this.user.data.nombre);
-                        response.data.data.filter(a => a.concepto = item.nombre);
-                        response.data.data.filter(a => a.fecha_at = a.fecha_at.substr(0,10));
-                        this.cargos = response.data.data;
+                        response.data.data.filter(a => a.usuario = this.user.data.nombre + this.user.data.apellido);
+                        response.data.data.filter(a => {
+                            if(a.fecha_at) a.fecha_at = a.fecha_at.substr(0,10);
+                            else a.fecha_at = '-';
+                        });
+                        response.data.data.filter(a => this.cargos.push(a));
+                        this.offset+=50;
+                        this.total= response.data.totalCount;
                     }else{
                         this.cargos = [];
                     }
                     this.loading = false;
-                }).catch(e=> {
+                }).catch(e => {
                     console.log(e);
                 });
             },
-        }
+            mostRecent(id){
+                Empresa().get(`${id}/cargos/?limit=1&order=desc`).then((response) => {
+                    if(response.data.data[0].id !== this.cargos[0].id){
+                        response.data.data[0].usuario = this.user.data.nombre + this.user.data.apellido;
+                        response.data.data[0].fecha_at = response.data.data[0].fecha_at.substr(0,10);
+                        this.cargos.unshift(response.data.data[0]);
+                    }
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+        }  
     }
 </script>

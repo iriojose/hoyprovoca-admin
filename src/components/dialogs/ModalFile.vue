@@ -2,6 +2,7 @@
     <v-dialog v-model="dialog" width="400">
         <v-card>
             <v-toolbar>
+                {{title}}
                 <v-spacer></v-spacer>
                 <slot name="close"></slot>
             </v-toolbar>
@@ -10,12 +11,7 @@
                     ref="pond"
                     label-idle="Drop image here..."
                     labelFileAdded = "Archivo Añadido"
-                    v-bind:files="imagen"
                     :server="{process}"
-                    v-on:init="handleFilePondInit"
-                    v-on:warning="handleWarning"
-                    v-on:error="handleError"
-                    v-on:addfile="handleFileAdded"
                 />
             </v-card-text>
         </v-card>
@@ -46,6 +42,10 @@ const FilePond = vueFilePond( FilePondPluginImagePreview);
                 default:''
             },
             entidad:{
+                type:String,
+                default:''
+            },
+            title:{
                 type:String,
                 default:''
             }
