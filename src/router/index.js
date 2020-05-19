@@ -12,8 +12,6 @@ import Grupos from '@/views/inventario/Grupos';
 import Cargos from '@/views/inventario/Cargos';
 import Subgrupos from '@/views/inventario/Subgrupos';
 import Productos from '@/views/inventario/Productos';
-import NewGrupo from '@/views/inventario/NewGrupo';
-import NewSubgrupo from '@/views/inventario/NewSubgrupo';
 import NewProducto from '@/views/inventario/NewProducto';
 import Profile from '@/views/account/Profile';
 import Notificaciones from '@/views/account/Notificaciones' 
@@ -102,17 +100,6 @@ const router = new Router({
                     meta:{
                         auth:true
                     },
-
-                    children:[
-                        {
-                            path:'grupo',
-                            name:"nuevogrupo",
-                            component:NewGrupo,
-                            meta:{
-                                auth:true
-                            },
-                        }
-                    ]
                 },
                 {
                     path:'subgrupos',
@@ -121,17 +108,6 @@ const router = new Router({
                     meta:{
                         auth:true
                     },
-
-                    children:[
-                        {
-                            path:'subgrupo',
-                            name:"nuevosubgrupo",
-                            component:NewSubgrupo,
-                            meta:{
-                                auth:true
-                            },
-                        }
-                    ]
                 },
                 {
                     path:'productos',

@@ -40,11 +40,14 @@
 
             <v-scroll-x-transition>
                 <v-card-text v-show="showMessage">
-                    <Message :icon="icon" :mensaje="mensaje" :color="color" />
+                    <v-scroll-x-transition>
+                        <Message v-show="showMessage" :icon="icon" :mensaje="mensaje" :color="color" />
+                    </v-scroll-x-transition> 
 
-                    <div v-if="created" class="text-center font-weight-black mb-4">
+                    <div v-show="created" class="text-center font-weight-black mb-4">
                         ¿ Agregar imagen al grupo creado ?
                     </div>
+
                     <FilePond  
                         v-if="created"
                         ref="pond"
