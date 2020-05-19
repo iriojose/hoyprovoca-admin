@@ -7,7 +7,7 @@
                 <v-scroll-x-transition>
                     <div class="mx-2" v-show="showMessage">Salir</div>
                 </v-scroll-x-transition>
-                <slot name="close"></slot>
+                <slot name="close" v-if="!loadingImagen"></slot>
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
@@ -16,19 +16,21 @@
                         <v-avatar class="my-5 text-center" size="200" v-if="!otherImage">
                             <v-img :src="image+$parent.bandera.imagen" />
                         </v-avatar>
-                        <v-col cols="12" md="12" sm="12" v-if="!otherImage">
-                            <v-btn text color="#232323" class="text-capitalize" @click="otherImage = true">
-                                Cambiar Imagen
-                            </v-btn>
-                        </v-col>
                         <v-col cols="12" md="12" sm="12" v-if="otherImage">
                             <FilePond  
                                 ref="pond"
                                 label-idle="Drop image here..."
                                 labelFileAdded = "Archivo Añadido"
                                 :server="{process}"
+                                :onaddfilestart="initProcess"
                             />
                         </v-col>
+                    </v-row>
+
+                    <v-row justify="center" v-if="!otherImage" class="my-3">
+                        <v-btn text color="#232323" class="text-capitalize" @click="otherImage = true">
+                            Cambiar Imagen
+                        </v-btn>
                     </v-row>
 
                     <v-text-field
@@ -99,6 +101,7 @@ const FilePond = vueFilePond( FilePondPluginImagePreview);
                 otherImage:false,
                 valid:false,
                 loading:false,
+                loadingImagen:false,
                 icon:'',
                 color:'',
                 mensaje:''
@@ -126,13 +129,18 @@ const FilePond = vueFilePond( FilePondPluginImagePreview);
                 this.loading = false;
                 this.showMessage = true;
             },
+            initProcess(){
+                this.loadingImagen = true;
+            },
             change(){
                 this.mutations = true;
             },
             reset(){
-                this.mutations = false;
-                this.showMessage = false;
-                this.otherImage = false;
+                setTimeout(() => {
+                    this.mutations = false;
+                    this.showMessage = false;
+                    this.otherImage = false;
+                },500);
             },
             process(fieldName, file, metadata, load, error, progress) {
                 progress(true, 0, 1);
@@ -141,9 +149,11 @@ const FilePond = vueFilePond( FilePondPluginImagePreview);
 
                 Images().post(`/main/grupos/${this.$parent.bandera.id}`,formdata).then((response) => {
                    this.$parent.bandera.imagen = response.data.filename;
+                   this.loadingImagen = false;
                     //this.respuesta("mdi-checkbox-marked-circle-outline","Imagen añadida.","#388E3C");
                 }).catch(e =>  {
                     console.log(e);
+                    this.loadingImagen=false;
                     //this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
                 }); 
             },
