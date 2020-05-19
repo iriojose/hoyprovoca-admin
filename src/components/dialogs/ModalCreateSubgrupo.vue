@@ -24,6 +24,62 @@
                             dense
                         ></v-text-field>
 
+                        <v-dialog v-model="dialog1" width="400" transition="dialog-bottom-transition">
+                            <template v-slot:activator="{ on }">
+                                <v-text-field
+                                    v-on="on"
+                                    label="Grupo"
+                                    solo
+                                    v-model="grupo.nombre"
+                                    :disabled="loading"
+                                    color="#005598"
+                                    dense
+                                    :rules="[required('Grupo')]"
+                                />
+                            </template>
+                                <v-card width="100%" class="pa-2">
+                                    <v-card-actions>
+                                        <v-btn 
+                                            @click="getGrupos()" 
+                                            dark 
+                                            class="mb-2 mx-2 text-capitalize caption" 
+                                            color="#005598"
+                                            :disabled="grupos.length == total || loading2 ? true:false"
+                                        >
+                                            Ver más 
+                                            <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
+                                        </v-btn>
+                                        <v-spacer></v-spacer>
+                                        <v-text-field
+                                            v-model="search"
+                                            label="Buscar"
+                                            single-line
+                                            append-icon="mdi-magnify"
+                                            type="text"
+                                            color="#005598"
+                                            hide-details
+                                            dense
+                                        />
+                                    </v-card-actions>
+                                <v-card-text>
+                                    <v-data-table
+                                        :loading="loading2 && '#005598'" 
+                                        loading-text="Loading... Please wait" 
+                                        :headers="headers" 
+                                        :items="grupos"  
+                                        :search="search"
+                                        @click:row="changeGrupo($event)"
+                                    >
+                                        <template v-slot:item.imagen="{item}">
+                                            <v-avatar size="50">
+                                                <v-img :src="image+item.imagen"></v-img>
+                                            </v-avatar>
+                                        </template>
+                                    </v-data-table>
+                                </v-card-text>
+                            </v-card>
+                        </v-dialog>
+
                         <v-btn 
                             elevation="3" class="mt-5 text-capitalize white--text" 
                             block @click="postSubgrupo" color="#232323" :disabled="!valid"
@@ -61,10 +117,11 @@
 </template>
 
 <script>
-//import Grupos from '@/services/Grupos';
+import Grupos from '@/services/Grupos';
 import SubGrupos from '@/services/SubGrupos';
 import Message from '@/components/mensajes/Message';
 import Images from '@/services/Images';
+import variables from '@/services/variables_globales';
 import validations from '@/validations/validations';
 import LoaderRect from '@/components/loaders/LoaderRect';
 
@@ -81,6 +138,7 @@ import LoaderRect from '@/components/loaders/LoaderRect';
         },
         data() {
             return {
+                ...variables,
                 ...validations,
                 valid:false,
                 loading:false,
@@ -91,13 +149,28 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                 showMessage:false,
                 data:{
                     nombre:'',
-                    adm_grupos_id:10,
+                    adm_grupos_id:0,
                     imagen:'default.png',
                     visualizar:0,
                     posicion:1
                 },
-                grupo:{}
+                grupo:{
+                    nombre:''
+                },
+                total:0,
+                offset:0,
+                loading2:false,
+                dialog1:false,
+                search:'',
+                grupos:[],
+                headers: [
+                    { text: 'Imagen', value: 'imagen'},
+                    { text: 'Nombre',sortable: true, value: 'nombre'},
+                ],
             }
+        },
+        mounted() {
+            this.getGrupos();
         },
         watch: {
             dialog(){
@@ -120,6 +193,17 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                     nombre:''
                 };
             },
+            getGrupos(){
+                this.loading2=true;
+                Grupos().get(`/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
+                    this.total=response.data.totalCount;
+                    response.data.data.filter(a => this.grupos.push(a));
+                    this.loading2=false;
+                    this.offset+=50;
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             postSubgrupo(){
                 this.loading = true;
                 SubGrupos().post("/",{data:this.data}).then((response) => {
@@ -130,6 +214,11 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                     console.log(e);
                     this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
                 });
+            },
+            changeGrupo(evt){
+                this.data.adm_grupos_id = evt.id;
+                this.grupo = evt;
+                this.dialog1 = false;
             },
             initProcess(){
                 this.loadingImagen = true;
