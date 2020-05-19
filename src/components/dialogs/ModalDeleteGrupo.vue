@@ -2,7 +2,7 @@
     <v-dialog v-model="dialog" width="450" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title>
-                Eliminar Subgrupo
+                Eliminar Grupo
                 <v-spacer></v-spacer>
                 <v-scroll-x-transition>
                     <div class="mx-2" v-show="showMessage">Salir</div>
@@ -11,8 +11,8 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-                <div v-if="!showMessage && !loading" class="text-center title font-weight-black pt-10">
-                    ¿Seguro que quiere eliminar este Subgrupo? 
+                <div v-if="!showMessage && !loading" class="text-center title font-weight-black py-10">
+                    ¿Seguro que quiere eliminar este Grupo? 
                 </div>
 
                 <v-row justify="space-around" class="py-10" v-if="!showMessage && !loading" >
@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import Conceptos from '@/services/Conceptos';
-import SubGrupos from '@/services/SubGrupos';
 import Message from '@/components/mensajes/Message';
-import LoaderRect from '@/components/loaders/LoaderRect';
+import Conceptos from '@/services/Conceptos';
+import Grupos from '@/services/Grupos';
+import LoaderRect from '@/components/loaders/LoaderRect'
 
     export default {
         components:{
@@ -52,7 +52,7 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                 default:false
             }
         },
-        data(){
+        data() {
             return {
                 icon:'',
                 color:'',
@@ -66,7 +66,7 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                 if (!this.dialog) setTimeout(() => {this.showMessage = false},500);
             }
         },
-        methods:{
+        methods: {
             respuesta(icon,mensaje,color){
                 this.icon = icon;
                 this.color = color;
@@ -76,26 +76,26 @@ import LoaderRect from '@/components/loaders/LoaderRect';
             },
             getConcepto(){//se determina si el grupo tiene conceptos indexados
                 this.loading = true;
-                Conceptos().get(`/?limit=1&adm_subgrupos_id=${this.$parent.bandera.id}`).then((response) => {
+                Conceptos().get(`/?limit=1&adm_grupos_id=${this.$parent.bandera.id}`).then((response) => {
                     if(response.data.data){
-                        this.respuesta("mdi-alert-octagon","No se puede eliminar este Subgrupo.","#D32F2F");
+                        this.respuesta("mdi-alert-octagon","No se puede eliminar este Grupo.","#D32F2F");
                     }else{
-                        this.deleteSubgrupo();
+                        this.deleteGrupo();
                     }
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
                 });
             },
-            deleteSubgrupo(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
-                SubGrupos().delete(`/${this.$parent.bandera.id}`).then(() => {
+            deleteGrupo(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
+                Grupos().delete(`/${this.$parent.bandera.id}`).then(() => {
                     this.$parent.eliminado = true;
-                    this.respuesta("mdi-checkbox-marked-circle-outline","SubGrupo eliminado.","#388E3C");
+                    this.respuesta("mdi-checkbox-marked-circle-outline","Grupo eliminado.","#388E3C");
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
                 });
             },
-        }
+        },
     }
 </script>

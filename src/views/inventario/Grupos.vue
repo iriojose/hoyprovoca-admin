@@ -60,35 +60,6 @@
             </v-card-text>
         </v-card>
 
-        <!--modal para borrar un grupo -->
-        <v-dialog v-model="dialogBorrar" width="400" transition="dialog-bottom-transition">
-            <v-card>
-                <v-card-text>
-                    <div v-if="!showMessage && !loadingBorrar" class="text-center title font-weight-black pt-10">
-                        ¿Seguro que quiere eliminar este Grupo? 
-                    </div>
-
-                    <v-row justify="space-around" class="py-10" v-if="!showMessage && !loadingBorrar" >
-                        <v-btn elevation="3" color="#232323" class="text-capitalize white--text" @click="getConcepto()">
-                            Sí, seguro
-                        </v-btn>
-
-                        <v-btn elevation="3" color="#fff" class="text-capitalize" @click="close">
-                            No, volver
-                        </v-btn>
-                    </v-row>
-
-                    <v-scroll-x-transition>
-                        <LoaderRect class="py-12" v-show="loadingBorrar" />
-                    </v-scroll-x-transition>
-                    
-                    <v-scroll-x-transition>
-                        <Message  v-show="showMessage" :mensaje="mensaje" :color="color" :icon="icon" />
-                    </v-scroll-x-transition>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
-
         <!--modal para crear un grupo -->
 
         <ModalCreateGrupo :dialog="dialogGrupo">
@@ -107,34 +78,45 @@
                 </v-btn>
             </template>
         </ModalEditGrupo>
+
+        <!--modal para eliminar un grupo -->
+        <ModalDeleteGrupo :dialog="dialogBorrar">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogBorrar = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+            <template v-slot:close2>  
+                <v-btn elevation="3" color="#fff" class="text-capitalize" @click="dialogBorrar = false">
+                    No, volver
+                </v-btn>
+            </template>
+        </ModalDeleteGrupo>
     </div>
 </template>
 
 <script>
 import Grupos from '@/services/Grupos';
-import Conceptos from '@/services/Conceptos';
 import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
-import Message from '@/components/mensajes/Message';
+import ModalDeleteGrupo from '@/components/dialogs/ModalDeleteGrupo';
 import ModalCreateGrupo from '@/components/dialogs/ModalCreateGrupo';
 import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
 
     export default {
         components:{
             LoaderRect,
-            Message,
             ModalCreateGrupo,
-            ModalEditGrupo
+            ModalEditGrupo,
+            ModalDeleteGrupo
         },
         data(){
             return {
                 ...variables,
                 loading:false,
-                loadingBorrar:false,
                 dialogGrupo:false,
                 dialogBorrar:false,
                 dialogEditar:false,
-                showMessage:false,
                 eliminado:false,
                 icon:'',
                 color:'',
@@ -163,7 +145,12 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
         },
         watch: {
             dialogBorrar(){
-                if (!this.dialogBorrar) setTimeout(() => {this.showMessage = false},500);
+                if (!this.dialogBorrar) {
+                    if(this.eliminado) {
+                        this.grupos.filter((a,i) => a.id == this.bandera.id ? this.grupos.splice(i,1):null)
+                        this.eliminado = false;
+                    }
+                }
             },
             dialogGrupo(){
                 if (!this.dialogGrupo) this.mostRecent();
@@ -189,44 +176,13 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
                     console.log(e);
                 });
             },
-            respuesta(icon,mensaje,color){
-                this.icon = icon;
-                this.color = color;
-                this.mensaje = mensaje;
-                this.loadingBorrar = false;
-                this.showMessage = true;
-            },
             deleteItem(item){
                 this.dialogBorrar = true;
-                this.bandera = item;
+                this.bandera = Object.assign({},item);
             },
             editar(item){//envia a la ruta editar
                 this.dialogEditar = true;
                 this.bandera = Object.assign({},item);
-            },
-            getConcepto(){//se determina si el grupo tiene conceptos indexados
-                this.loadingBorrar = true;
-                Conceptos().get(`/?limit=1&adm_grupos_id=${this.bandera.id}`).then((response) => {
-                    if(response.data.data){
-                        this.respuesta("mdi-alert-octagon","No se puede eliminar este grupo.","#D32F2F");
-                    }else{
-                        this.deleteGrupo();
-                    }
-                }).catch(e => {
-                    console.log(e);
-                    this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
-                });
-            },
-            deleteGrupo(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
-                Grupos().delete(`/${this.bandera.id}`).then(() => {
-                    const index = this.grupos.indexOf(this.bandera);
-                    this.grupos.splice(index,1);
-                    this.eliminado = true;
-                    this.respuesta("mdi-checkbox-marked-circle-outline","Grupo eliminado.","#388E3C");
-                }).catch(e => {
-                    console.log(e);
-                    this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
-                });
             },
             close(){//cierra el modal
                 this.dialogBorrar = false;
