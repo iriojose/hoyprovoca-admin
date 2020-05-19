@@ -5,7 +5,7 @@
                 <v-btn 
                     color="#005598" dark 
                     class="mb-2 text-capitalize caption" 
-                    @click="dialogSubrupo = true"
+                    @click="dialogSubgrupo = true"
                 >
                     Nuevo
                     <v-icon dark class="ml-2">mdi-plus-box</v-icon>
@@ -74,6 +74,16 @@
                 </v-btn>
             </template>
         </ModalDeleteSubgrupo>
+
+        <!--modal para crear un subgrupo -->
+
+        <ModalCreateSubgrupo :dialog="dialogSubgrupo">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogSubgrupo = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ModalCreateSubgrupo>
     </div>
 </template>
 
@@ -82,21 +92,24 @@ import SubGrupos from '@/services/SubGrupos';
 import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
 import ModalDeleteSubgrupo from '@/components/dialogs/ModalDeleteSubgrupo';
+import ModalCreateSubgrupo from '@/components/dialogs/ModalCreateSubgrupo';
 
     export default {
         components:{
             LoaderRect,
-            ModalDeleteSubgrupo
+            ModalDeleteSubgrupo,
+            ModalCreateSubgrupo
         },
         data(){
             return {
                 ...variables,
                 loading:false,
-                dialogSubrupo:false,
+                dialogSubgrupo:false,
                 dialogBorrar:false,
                 dialogEditar:false,
                 showMessage:false,
                 eliminado:false,
+                creado:false,
                 bandera:{
                     imagen:'default.png'
                 },
@@ -122,6 +135,14 @@ import ModalDeleteSubgrupo from '@/components/dialogs/ModalDeleteSubgrupo';
                     }
                 }
             },
+            dialogSubgrupo(){
+                if(!this.dialogSubgrupo){
+                    if(this.creado){
+                        this.subgrupos.unshift(this.bandera);
+                        this.creado = false;
+                    }
+                }
+            }
         },
         computed:{
             bloqueado(){//bloquea el boton de ver mas segun la condicion
