@@ -98,6 +98,15 @@
                 </v-btn>
             </template>
         </ModalCreateGrupo>
+
+        <!--modal para editar un grupo -->
+        <ModalEditGrupo :dialog="dialogEditar" :grupo="bandera">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogEditar = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ModalEditGrupo>
     </div>
 </template>
 
@@ -108,13 +117,14 @@ import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
 import Message from '@/components/mensajes/Message';
 import ModalCreateGrupo from '@/components/dialogs/ModalCreateGrupo';
-import router from '@/router';
+import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
 
     export default {
         components:{
             LoaderRect,
             Message,
-            ModalCreateGrupo
+            ModalCreateGrupo,
+            ModalEditGrupo
         },
         data(){
             return {
@@ -123,6 +133,7 @@ import router from '@/router';
                 loadingBorrar:false,
                 dialogGrupo:false,
                 dialogBorrar:false,
+                dialogEditar:false,
                 showMessage:false,
                 eliminado:false,
                 icon:'',
@@ -131,7 +142,9 @@ import router from '@/router';
                 total:0,
                 offset:0,
                 search:'',
-                bandera:null,
+                bandera:{
+                    imagen:'default.png'
+                },
                 grupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -150,10 +163,15 @@ import router from '@/router';
         },
         watch: {
             dialogBorrar(){
-                if (!this.dialogBorrar) setTimeout(() => {this.showMessage = false},300);
+                if (!this.dialogBorrar) setTimeout(() => {this.showMessage = false},500);
             },
             dialogGrupo(){
                 if (!this.dialogGrupo) this.mostRecent();
+            },
+            dialogEditar(){
+                if (!this.dialogEditar) {
+                    this.grupos.filter(a => a.id == this.bandera.id ? Object.assign(a,this.bandera):null);
+                }
             }
         },
         mounted(){
@@ -183,8 +201,8 @@ import router from '@/router';
                 this.bandera = item;
             },
             editar(item){//envia a la ruta editar
-                window.localStorage.setItem('editar',item.id);
-                router.push('/grupos/grupo');
+                this.dialogEditar = true;
+                this.bandera = Object.assign({},item);
             },
             getConcepto(){//se determina si el grupo tiene conceptos indexados
                 this.loadingBorrar = true;

@@ -1,27 +1,28 @@
 <template>
-    <div v-if="$route.name == 'nuevogrupo'">
-        <v-row justify="center" class="mx-2">
-            <v-card width="500" height="500" class="pa-5">
-                holapapus
-            </v-card>
-        </v-row>
+    <div >
+        <Breadcrumbs :items="items"/>
+
     </div>
 </template>
 
 <script>
+import Breadcrumbs from '@/components/breadcrumbs/Breadcrumbs';
 
     export default {
-        
+        components:{
+            Breadcrumbs
+        },
         data() {
             return {
-                
+                items: [
+                    { text: 'Grupos', disabled: false},
+                    { text: 'Editar', disabled: true },
+                ],
             }
         },
-        mounted() {
-            let id = window.localStorage.getItem('editar');
-            console.log(id);
-        },
-        
-        
     }
 </script>
+
+<style lang="scss" scoped>
+
+</style>
