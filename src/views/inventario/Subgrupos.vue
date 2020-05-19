@@ -84,6 +84,15 @@
                 </v-btn>
             </template>
         </ModalCreateSubgrupo>
+
+        <!--modal para editar un grupo -->
+        <ModalEditSubgrupo :dialog="dialogEditar" :grupo="bandera">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogEditar = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ModalEditSubgrupo>
     </div>
 </template>
 
@@ -93,12 +102,14 @@ import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
 import ModalDeleteSubgrupo from '@/components/dialogs/ModalDeleteSubgrupo';
 import ModalCreateSubgrupo from '@/components/dialogs/ModalCreateSubgrupo';
+import ModalEditSubgrupo from '@/components/dialogs/ModalEditSubgrupo';
 
     export default {
         components:{
             LoaderRect,
             ModalDeleteSubgrupo,
-            ModalCreateSubgrupo
+            ModalCreateSubgrupo,
+            ModalEditSubgrupo
         },
         data(){
             return {
@@ -141,6 +152,11 @@ import ModalCreateSubgrupo from '@/components/dialogs/ModalCreateSubgrupo';
                         this.subgrupos.unshift(this.bandera);
                         this.creado = false;
                     }
+                }
+            },
+            dialogEditar(){
+                if (!this.dialogEditar) {
+                    this.subgrupos.filter(a => a.id == this.bandera.id ? Object.assign(a,this.bandera):null);
                 }
             }
         },
