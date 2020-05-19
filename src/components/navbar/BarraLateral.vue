@@ -35,6 +35,7 @@
                         :key="item.title" 
                         link 
                         :to="item.to"
+                        class="transition"
                         active-class="white--text color font-weight-bold sombra"
                     >
                         <v-list-item-icon>
@@ -52,6 +53,7 @@
                         :key="item.title" 
                         link 
                         :to="item.to"
+                        class="transition"
                         active-class="white--text color font-weight-bold sombra"
                     >
                         <v-list-item-icon>
@@ -71,6 +73,7 @@
                         :key="e" 
                         link 
                         :to="item.to"
+                        class="transition"
                         active-class="white--text color font-weight-bold sombra"
                     >
                         <v-list-item-icon>
@@ -88,6 +91,7 @@
                         :key="e" 
                         link 
                         :to="item.to"
+                        class="transition"
                         active-class="white--text color font-weight-bold sombra"
                     >
                         <v-list-item-icon>
@@ -186,5 +190,12 @@ import ModalImagen from '@/components/dialogs/ModalImagen';
         -webkit-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
         -moz-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
         box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
+    }
+
+    .transition{
+        transition:all 0.3s;
+    }
+    .transition:hover{
+        transform:translateX(15px);
     }
 </style>

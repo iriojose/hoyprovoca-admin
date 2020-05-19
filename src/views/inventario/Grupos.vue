@@ -53,43 +53,18 @@
                     </template>
 
                     <template v-slot:item.action="{ item }">
-                        <v-icon 
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                            class="mr-2" @click="editar(item)" 
-                        >
-                            mdi-border-color
-                        </v-icon>
-                        <v-icon 
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                            @click="deleteItem(item)"
-                        >
-                            mdi-delete
-                            </v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editar(item)" >mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
             </v-card-text>
         </v-card>
 
-        <ModalCreateGrupo :dialog="dialogGrupo">
-            <template v-slot:close>
-                <v-btn fab small text @click="dialogGrupo = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </template>
-            <template v-slot:close2>
-                <v-btn tile text @click="dialogGrupo = false" elevation="3" class="text-capitalize caption">
-                    No, volver
-                </v-btn>
-            </template>
-        </ModalCreateGrupo>
-
+        <!--modal para borrar un grupo -->
         <v-dialog v-model="dialogBorrar" width="400" transition="dialog-bottom-transition">
             <v-card>
                 <v-card-text>
-                    <div 
-                        v-if="!showMessage && !loadingBorrar" 
-                        class="text-center title font-weight-black pt-10"
-                    >
+                    <div v-if="!showMessage && !loadingBorrar" class="text-center title font-weight-black pt-10">
                         ¿Seguro que quiere eliminar este Grupo? 
                     </div>
 
@@ -103,48 +78,60 @@
                         </v-btn>
                     </v-row>
 
-                    <LoaderRect class="py-12" v-if="loadingBorrar" />
-
-                    <div v-if="showMessage" class="py-12 text-center title font-weight-bold">
-                        <div class="mb-3"><v-icon size="50" :color="color">{{icon}}</v-icon></div>
-                        {{mensaje}}
-                    </div>
+                    <v-scroll-x-transition>
+                        <LoaderRect class="py-12" v-show="loadingBorrar" />
+                    </v-scroll-x-transition>
+                    
+                    <v-scroll-x-transition>
+                        <Message  v-show="showMessage" :mensaje="mensaje" :color="color" :icon="icon" />
+                    </v-scroll-x-transition>
                 </v-card-text>
             </v-card>
         </v-dialog>
+
+        <!--modal para crear un grupo -->
+
+        <ModalCreateGrupo :dialog="dialogGrupo">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogGrupo = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ModalCreateGrupo>
     </div>
 </template>
 
 <script>
 import Grupos from '@/services/Grupos';
-import variables from '@/services/variables_globales';
 import Conceptos from '@/services/Conceptos';
 import LoaderRect from '@/components/loaders/LoaderRect';
+import variables from '@/services/variables_globales';
+import Message from '@/components/mensajes/Message';
 import ModalCreateGrupo from '@/components/dialogs/ModalCreateGrupo';
 import router from '@/router';
 
     export default {
         components:{
             LoaderRect,
+            Message,
             ModalCreateGrupo
         },
-        data() {
+        data(){
             return {
                 ...variables,
-                bandera:null,//bandera del grupo a borrar
-                total:0,//total de registros
-                offset:0,//indica desde donde debe traer registros la llamada
                 loading:false,
                 loadingBorrar:false,
-                dialogGrupo:false,//para abrir y cerrar el dialog de crear grupo
-                dialogBorrar:false,//dialog para borrar item
-                //variables el mensaje del dialog
+                dialogGrupo:false,
+                dialogBorrar:false,
+                showMessage:false,
+                eliminado:false,
                 icon:'',
                 color:'',
                 mensaje:'',
-                showMessage:false,//muestra el mensaje
-                //variables de la tabla
+                total:0,
+                offset:0,
                 search:'',
+                bandera:null,
                 grupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -155,57 +142,51 @@ import router from '@/router';
                 ],
             }
         },
-        mounted() {
-            if(this.$route.name == 'grupos'){
-                this.getGrupos();
-            }
-        },
         computed:{
-            bloqueado(){
-                if(this.grupos.length == this.total || this.loading ){
-                    return true;
-                }else{
-                    return false;
-                }
+            bloqueado(){//bloquea el boton de ver mas segun la condicion
+                if(this.grupos.length == this.total) return true;
+                else return false;
             }
         },
         watch: {
             dialogBorrar(){
-                if(!this.dialogBorrar){
-                    setTimeout(() => {this.showMessage = false},300);
-                }
+                if (!this.dialogBorrar) setTimeout(() => {this.showMessage = false},300);
             },
             dialogGrupo(){
-                if(!this.dialogGrupo){
-                    this.grupos = [];
-                    this.total = 0;
-                    this.offset = 0;
-                    this.getGrupos();
-                }
+                if (!this.dialogGrupo) this.mostRecent();
             }
         },
+        mounted(){
+            this.getGrupos();
+        },
         methods:{
-            getGrupos(){
-                this.loading=true;
-                Grupos().get(`/?limit=50&offset=${this.offset}`).then((response) => {
-                    this.total = response.data.totalCount;
+            getGrupos(){//obtiene todos los grupos
+                this.loading = true;
+                Grupos().get(`/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
                     response.data.data.filter(a => this.grupos.push(a));
-                    this.loading=false;
                     this.offset+=50;
+                    this.total= response.data.totalCount;
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
-                    this.loading = false;
                 });
+            },
+            respuesta(icon,mensaje,color){
+                this.icon = icon;
+                this.color = color;
+                this.mensaje = mensaje;
+                this.loadingBorrar = false;
+                this.showMessage = true;
             },
             deleteItem(item){
                 this.dialogBorrar = true;
                 this.bandera = item;
             },
-            editar(item){
+            editar(item){//envia a la ruta editar
                 window.localStorage.setItem('editar',item.id);
                 router.push('/grupos/grupo');
             },
-            getConcepto(){
+            getConcepto(){//se determina si el grupo tiene conceptos indexados
                 this.loadingBorrar = true;
                 Conceptos().get(`/?limit=1&adm_grupos_id=${this.bandera.id}`).then((response) => {
                     if(response.data.data){
@@ -218,7 +199,7 @@ import router from '@/router';
                     this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
                 });
             },
-            deleteGrupo(){
+            deleteGrupo(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
                 Grupos().delete(`/${this.bandera.id}`).then(() => {
                     const index = this.grupos.indexOf(this.bandera);
                     this.grupos.splice(index,1);
@@ -229,18 +210,18 @@ import router from '@/router';
                     this.respuesta("mdi-alert-octagon","Ocurrio un error.","#D32F2F");
                 });
             },
-            respuesta(icon,mensaje,color){
-                this.icon = icon;
-                this.color = color;
-                this.mensaje = mensaje;
-                this.loadingBorrar = false;
-                this.showMessage = true;
-            },
-            close(){
+            close(){//cierra el modal
                 this.dialogBorrar = false;
                 this.eliminado = false;
-            }
-        }
-
+            },
+            mostRecent(){//devuelve el ultimo grupo creado
+                Grupos().get(`/?limit=1&order=desc`).then((response) => {
+                    //solo lo agrega si es diferente al primero del array grupos
+                    if(response.data.data[0].id !== this.grupos[0].id) this.grupos.unshift(response.data.data[0]);
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+        }  
     }
 </script>

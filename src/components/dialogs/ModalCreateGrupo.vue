@@ -1,14 +1,17 @@
 <template>
-    <v-dialog v-model="dialog" width="500" transition="dialog-bottom-transition" persistent>
+    <v-dialog v-model="dialog" width="450" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title>
                 Nuevo Grupo
                 <v-spacer></v-spacer>
+                <v-scroll-x-transition>
+                    <div class="mx-2" v-show="showMessage">Salir</div>
+                </v-scroll-x-transition>
                 <slot name="close" v-if="!loading || !loadingImagen"></slot>
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-                <v-form v-model="valid" class="pt-8" v-if="!loading && !showMessage">
+                <v-form v-model="valid" class="pt-8" v-if="!loading && !showMessage" @submit.prevent="">
                     <v-row justify="center">
                         <v-text-field
                             solo
@@ -35,34 +38,22 @@
                 </v-row>
             </v-card-text>
 
-            <v-card-text v-if="showMessage">
-                <div class="py-5 text-center title font-weight-bold">
-                    <div class="mb-3"><v-icon size="50" :color="color">{{icon}}</v-icon></div>
-                    {{mensaje}}
-                </div>
+            <v-scroll-x-transition>
+                <v-card-text v-show="showMessage">
+                    <Message :icon="icon" :mensaje="mensaje" :color="color" />
 
-                <div v-if="created" class="text-center font-weight-black mb-4">
-                    ¿ Agregar imagen al grupo creado ?
-                </div>
-                <FilePond  
-                    v-if="created"
-                    ref="pond"
-                    label-idle="Drop image here..."
-                    labelFileAdded = "Archivo Añadido"
-                    :server="{process}"
-                />
-
-                <v-row justify="space-around" class="pt-5">
-                    <div>
-                        <v-btn tile @click="reset" elevation="3" color="#232323" 
-                            class="white--text caption text-capitalize mx-2"
-                        >
-                            ¿ Crear otro grupo ?
-                        </v-btn>
+                    <div v-if="created" class="text-center font-weight-black mb-4">
+                        ¿ Agregar imagen al grupo creado ?
                     </div>
-                    <div><slot name="close2" v-if="showMessage"></slot></div>
-                </v-row>
-            </v-card-text>
+                    <FilePond  
+                        v-if="created"
+                        ref="pond"
+                        label-idle="Drop image here..."
+                        labelFileAdded = "Archivo Añadido"
+                        :server="{process}"
+                    />
+                </v-card-text>
+            </v-scroll-x-transition>    
         </v-card>
     </v-dialog>
 </template>
@@ -76,13 +67,15 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filep
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import Images from '@/services/Images';
+import Message from '@/components/mensajes/Message';
 
 const FilePond = vueFilePond( FilePondPluginImagePreview);
 
     export default {
         components:{
             LoaderRect,
-            FilePond
+            FilePond,
+            Message
         },
         props:{
             dialog:{
