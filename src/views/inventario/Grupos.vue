@@ -118,6 +118,7 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
                 dialogBorrar:false,
                 dialogEditar:false,
                 eliminado:false,
+                creado:false,
                 icon:'',
                 color:'',
                 mensaje:'',
@@ -153,7 +154,12 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
                 }
             },
             dialogGrupo(){
-                if (!this.dialogGrupo) this.mostRecent();
+                if(!this.dialogGrupo){
+                    if(this.creado){
+                        this.grupos.unshift(this.bandera);
+                        this.creado = false;
+                    }
+                }
             },
             dialogEditar(){
                 if (!this.dialogEditar) {
@@ -187,14 +193,6 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
             close(){//cierra el modal
                 this.dialogBorrar = false;
                 this.eliminado = false;
-            },
-            mostRecent(){//devuelve el ultimo grupo creado
-                Grupos().get(`/?limit=1&order=desc`).then((response) => {
-                    //solo lo agrega si es diferente al primero del array grupos
-                    if(response.data.data[0].id !== this.grupos[0].id) this.grupos.unshift(response.data.data[0]);
-                }).catch(e => {
-                    console.log(e);
-                });
             },
         }  
     }

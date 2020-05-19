@@ -11,11 +11,11 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-                <div v-if="!showMessage && !loading" class="text-center title font-weight-black py-10">
+                <div v-if="!showMessage && !loading" class="text-center title font-weight-black py-5">
                     ¿Seguro que quiere eliminar este Grupo? 
                 </div>
 
-                <v-row justify="space-around" class="py-10" v-if="!showMessage && !loading" >
+                <v-row justify="space-around" class="py-5" v-if="!showMessage && !loading" >
                     <v-btn elevation="3" color="#232323" class="text-capitalize white--text" @click="getConcepto()">
                         Sí, seguro
                     </v-btn>
