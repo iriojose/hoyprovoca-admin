@@ -73,6 +73,16 @@
                 </v-btn>
             </template>
         </ModalDeleteProducto>
+
+        <!--modal para crear un producto -->
+        
+        <ModalCreateProducto :dialog="dialogConcepto">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogConcepto = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ModalCreateProducto>
     </div>
 </template>
 
@@ -83,11 +93,13 @@ import variables from '@/services/variables_globales';
 import {mapState} from 'vuex';
 import accounting from 'accounting';
 import ModalDeleteProducto from '@/components/dialogs/ModalDeleteProducto';
+import ModalCreateProducto from '@/components/dialogs/ModalCreateProducto';
 
     export default {
         components:{
             LoaderRect,
-            ModalDeleteProducto
+            ModalDeleteProducto,
+            ModalCreateProducto
         },
         data() {
             return {
@@ -142,6 +154,19 @@ import ModalDeleteProducto from '@/components/dialogs/ModalDeleteProducto';
                     }
                 }
             },
+            dialogConcepto(){
+                if(!this.dialogConcepto){
+                    if(this.creado){
+                        this.conceptos.unshift(this.bandera);
+                        this.creado = false;
+                    }
+                }
+            },
+            dialogEditar(){
+                if (!this.dialogEditar) {
+                    this.conceptos.filter(a => a.id == this.bandera.id ? Object.assign(a,this.bandera):null);
+                }
+            }
         },
         methods:{
             getConceptos(){
