@@ -59,6 +59,20 @@
                 </v-data-table>
             </v-card-text>
         </v-card>
+
+        <!--modal para eliminar un producto -->
+        <ModalDeleteProducto :dialog="dialogBorrar">
+            <template v-slot:close>
+                <v-btn fab small text @click="dialogBorrar = false">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+            </template>
+            <template v-slot:close2>  
+                <v-btn elevation="3" color="#fff" class="text-capitalize" @click="dialogBorrar = false">
+                    No, volver
+                </v-btn>
+            </template>
+        </ModalDeleteProducto>
     </div>
 </template>
 
@@ -68,10 +82,12 @@ import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
 import {mapState} from 'vuex';
 import accounting from 'accounting';
+import ModalDeleteProducto from '@/components/dialogs/ModalDeleteProducto';
 
     export default {
         components:{
-            LoaderRect
+            LoaderRect,
+            ModalDeleteProducto
         },
         data() {
             return {
@@ -116,6 +132,16 @@ import accounting from 'accounting';
                 if(this.conceptos.length == this.total) return true;
                 else return false;
             }
+        },
+        watch: {
+            dialogBorrar(){
+                if (!this.dialogBorrar) {
+                    if(this.eliminado) {
+                        this.conceptos.filter((a,i) => a.id == this.bandera.id ? this.conceptos.splice(i,1):null)
+                        this.eliminado = false;
+                    }
+                }
+            },
         },
         methods:{
             getConceptos(){
