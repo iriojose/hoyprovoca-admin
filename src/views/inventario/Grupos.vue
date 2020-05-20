@@ -190,10 +190,6 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
                 this.dialogEditar = true;
                 this.bandera = Object.assign({},item);
             },
-            close(){//cierra el modal
-                this.dialogBorrar = false;
-                this.eliminado = false;
-            },
         }  
     }
 </script>
