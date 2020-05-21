@@ -1,123 +1,95 @@
 <template>
-    <div>
-        <v-navigation-drawer 
-            app width="256" 
-            hide-overlay
-            class="mx-auto"
-            v-model="drawers"
-        >
-            <v-img
-                src="https://cdn.pixabay.com/photo/2020/04/02/07/38/balloon-4993835_960_720.jpg"
-                height="100%"
-                gradient="to top right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
+    <v-navigation-drawer 
+        app width="256" 
+        hide-overlay
+        class="mx-auto"
+        v-model="drawers"
+        color="#3b61d1"
+    >
+            
+        <v-row justify="center" class="mt-4">
+            <v-img :src="require('@/assets/logo 3.png')" contain width="60" height="60"></v-img>
+        </v-row>
+
+        <v-divider class="mt-5 mb-2 back mx-5"></v-divider>
+
+        <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
+            <v-list-item 
+                v-for="item in items2" :key="item.title" link 
+                :to="item.to" active-class="font-weight-black" 
+                class="transition color font-weight-black"
             >
-                <v-list dense nav>
-                    <v-list-item two-line>
-                        <v-list-item-avatar size="70">
-                            <v-img :src="image+user.data.imagen"></v-img>
-                        </v-list-item-avatar>
-                        <v-avatar @click="open" class="abs_center" size="35" style="z-index:2;" color="#F5F5F5">
-                            <v-icon style="font-size:21px;">mdi-camera</v-icon>
-                        </v-avatar>
+                <v-list-item-icon>
+                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                        {{item.icon}}
+                    </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                    {{item.title}}
+                </v-list-item-title>
+            </v-list-item>
+        </v-list>
 
-                        <v-list-item-content class="white--text font-weight-bold">
-                            <v-list-item-title v-if="user.data.perfil_id==2">Super usuario</v-list-item-title>
-                            <v-list-item-title v-if="user.data.perfil_id==1">Administrador</v-list-item-title>
-                            <v-list-item-subtitle class="white--text font-weight-bold">{{user.data.nombre +' '+ user.data.apellido}}</v-list-item-subtitle>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
+        <v-list dense nav v-else>
+            <v-list-item 
+                v-for="item in items" :key="item.title" link 
+                :to="item.to" active-class="font-weight-black" 
+                class="transition color font-weight-black"
+            >
+                <v-list-item-icon>
+                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                        {{item.icon}}
+                    </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                    {{item.title}}
+                </v-list-item-title>
+            </v-list-item>
+        </v-list>
 
-                <v-divider class="back"></v-divider>
-                <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
-                    <v-list-item 
-                        v-for="item in items2" 
-                        :key="item.title" 
-                        link 
-                        :to="item.to"
-                        class="transition"
-                        active-class="white--text color font-weight-bold sombra"
-                    >
-                        <v-list-item-icon>
-                            <v-icon dark>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
-
-                <v-list dense nav v-else>
-                    <v-list-item 
-                        v-for="item in items" 
-                        :key="item.title" 
-                        link 
-                        :to="item.to"
-                        class="transition"
-                        active-class="white--text color font-weight-bold sombra"
-                    >
-                        <v-list-item-icon>
-                            <v-icon dark>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
-
-                <v-divider class="back"></v-divider>
+        <v-divider class="mt-5 mb-2 back mx-5"></v-divider>
                 
-                <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
-                    <v-list-item 
-                        v-for="(item,e) in items4" 
-                        :key="e" 
-                        link 
-                        :to="item.to"
-                        class="transition"
-                        active-class="white--text color font-weight-bold sombra"
-                    >
-                        <v-list-item-icon>
-                            <v-icon dark>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
+        <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
+            <v-list-item 
+                v-for="item in items4" :key="item.title" link 
+                :to="item.to" active-class="font-weight-black" 
+                class="transition color font-weight-black"
+            >
+                <v-list-item-icon>
+                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                        {{item.icon}}
+                    </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                    {{item.title}}
+                </v-list-item-title>
+            </v-list-item>
+        </v-list>
 
-                <v-list dense nav v-else>
-                    <v-list-item 
-                        v-for="(item,e) in items3" 
-                        :key="e" 
-                        link 
-                        :to="item.to"
-                        class="transition"
-                        active-class="white--text color font-weight-bold sombra"
-                    >
-                        <v-list-item-icon>
-                            <v-icon dark>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                            <v-list-item-title class="white--text font-weight-bold">{{ item.title }}</v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item>
-                </v-list>
-            </v-img>
-        </v-navigation-drawer>
-
-        <ModalImagen />
-    </div>
+        <v-list dense nav v-else>
+            <v-list-item 
+                v-for="item in items3" :key="item.title" link 
+                :to="item.to" active-class="font-weight-black" 
+                class="transition color font-weight-black"
+            >
+                <v-list-item-icon>
+                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                        {{item.icon}}
+                    </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                    {{item.title}}
+                </v-list-item-title>
+            </v-list-item>
+        </v-list>
+    </v-navigation-drawer>
 </template>
 
 <script>
 import {mapState,mapActions} from 'vuex';
 import variables from '@/services/variables_globales';
-import ModalImagen from '@/components/dialogs/ModalImagen';
 
     export default {
-        components:{
-            ModalImagen
-        },
         data() {
             return {
                 ...variables,
@@ -139,8 +111,6 @@ import ModalImagen from '@/components/dialogs/ModalImagen';
                     { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                 ],
                 items4:[
-                    //{ title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
-                    //{ title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                     { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
                     { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
                     { title: 'Cambio de tasa', icon:'mdi-currency-usd',to:'/tasas' },
@@ -159,43 +129,30 @@ import ModalImagen from '@/components/dialogs/ModalImagen';
             }
         },
         methods:{
-            ...mapActions(['setDrawer','setModalImagen']),
-            open(){
-                this.setModalImagen(true);
-            }
+            ...mapActions(['setDrawer']),
         }
     }
 </script>
 
 <style lang="scss" scoped>
-    .abs_center{
-        position: absolute;
-        top: 50px;
-        left: 50px;
-    }
-    .abs_center:hover{
-        cursor: pointer;
-        background: #ededed !important;
-    }
-    .color{
-        background: #17468b;
-    }
-    .back{
-        background: #fff;
-    }
-    .back2{
-        background: transparent !important;
-    }
-    .sombra{
-        -webkit-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
-        -moz-box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
-        box-shadow: 0px 5px 6px -5px rgba(0,0,0,0.75);
-    }
-
     .transition{
         transition:all 0.3s;
     }
     .transition:hover{
         transform:translateX(15px);
     }
+    .back{
+        background: rgba(255,255,255,0.3) !important;
+    }
+    .color{
+        color:rgba(255,255,255,0.5) !important;
+        
+    }
+    .color:hover{
+        color:#fff !important;
+        v-icon{
+            background: #fff;
+        }
+    }
+    
 </style>

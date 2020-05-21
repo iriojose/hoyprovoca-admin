@@ -10,11 +10,11 @@
                         <v-col cols="12" md="6" sm="12" class="pa-12">
                             <div class="headline text-center mb-5">¿Olvido su contraseña?</div>
                             
-                            <v-fad-transition>
+                            <v-fade-transition>
                                 <v-alert :type="type" v-show="showMessage">
                                     {{mensaje}}
                                 </v-alert>
-                            </v-fad-transition> 
+                            </v-fade-transition> 
 
                             <v-form v-model="valid" @submit.prevent="" v-if="!send">
                                 <v-text-field
@@ -70,7 +70,7 @@
                                 </v-form>
                             </v-scroll-x-transition>
                                 
-                            <v-scrollx-transition>
+                            <v-scroll-x-transition>
                                 <v-form v-model="valid3" @submit.prevent="" v-show="send && validCode">
                                     <v-text-field
                                         filled
@@ -109,7 +109,7 @@
                                         Resetear contraseña
                                     </v-btn>
                                 </v-form>
-                            </v-scrollx-transition>
+                            </v-scroll-x-transition>
 
                             <v-divider class="my-10"></v-divider>
 
@@ -139,7 +139,7 @@ import Auth from '@/services/Auth';
                 contraseña:'',
                 contraseña2:'',
                 mensaje:'',
-                type:'',
+                type:'error',
                 loading:false,
                 showMessage:false,
                 send:false,

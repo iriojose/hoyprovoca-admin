@@ -10,11 +10,11 @@
                         <v-col cols="12" md="6" sm="12" class="pa-12">
                             <div class="headline text-center mb-5">Bienvenido!</div>
 
-                            <v-fad-transition>
+                            <v-fade-transition>
                                 <v-alert :type="type" v-show="showMessage">
                                     {{mensaje}}
                                 </v-alert>
-                            </v-fad-transition> 
+                            </v-fade-transition> 
 
                             <v-form v-model="valid" @submit.prevent="">
                                 <v-text-field
@@ -90,7 +90,7 @@ import Auth from '@/services/Auth';
                 valid:false,
                 loading:false,
                 mensaje:'',
-                type:''
+                type:'error'
             }
         },
         methods: {
@@ -116,7 +116,7 @@ import Auth from '@/services/Auth';
                     if(response.data.data.perfil_id < 3 || response.data.data.perfil_id > 4){
                         this.logged(response.data);
                         this.respuesta("Bienvenido",'success');
-                        setTimeout(() => {router.push('/');},1000);
+                        setTimeout(() => {router.push('/');},500);
                     }else if(response.data.data.perfil_id == 4){
                         this.setModalBloqueado(true);
                         this.loading = false;
@@ -134,7 +134,7 @@ import Auth from '@/services/Auth';
 
 <style lang="scss" scoped>
     .color{
-        color:#2950c3
+        color:#2950c3;
     }
     .color:hover{
         cursor:pointer;
