@@ -35,7 +35,7 @@
                                     :disabled="loading"
                                     type="password"
                                     color="#2950c3"
-                                    :rules="[required('Contraseña')]"
+                                    :rules="[required('Contraseña'),minLength('Contraseña',6)]"
                                     single-line
                                     label="Ingrese Contraseña"
                                 >
