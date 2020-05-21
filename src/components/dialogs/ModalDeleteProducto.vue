@@ -73,13 +73,13 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                 this.loading = false;
                 this.showMessage = true;
             },
-            getConcepto(){//se determina si el grupo tiene conceptos indexados
+            getConcepto(){//se determina si el concepto ha sido facturado
                 this.loading = true;
-                Conceptos().get(`/?limit=1&adm_subgrupos_id=${this.$parent.bandera.id}`).then((response) => {
-                    if(response.data.data){
+                Conceptos().get(`/${this.$parent.bandera.id}/issold`).then((response) => {
+                    if(response.data.isSold){
                         this.respuesta("mdi-alert-octagon","No se puede eliminar este Producto.","#D32F2F");
                     }else{
-                        this.deleteSubgrupo();
+                        this.deleteConcepto();
                     }
                 }).catch(e => {
                     console.log(e);

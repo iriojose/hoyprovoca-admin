@@ -35,12 +35,13 @@
 
                     <v-text-field
                         label="Nombre"
-                        solo
+                        outlined
+                        filled
                         @input="change"
                         v-model="$parent.bandera.nombre"
                         type="text"
                         :disabled="loading"
-                        color="#005598"
+                        color="#232323"
                         hint="Nombre"
                         persistent-hint
                         dense

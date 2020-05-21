@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" width="450" transition="dialog-bottom-transition" persistent>
+    <v-dialog v-model="dialog" width="400" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title>
                 Nuevo Subgrupo
@@ -14,7 +14,8 @@
                 <v-form v-model="valid" class="pt-8" v-if="!loading && !showMessage" @submit.prevent="">
                     <v-row justify="center">
                         <v-text-field
-                            solo
+                            outlined
+                            filled
                             color="#232323"
                             hint="Sub Categorías de productos"
                             persistent-hint
@@ -29,10 +30,11 @@
                                 <v-text-field
                                     v-on="on"
                                     label="Grupo"
-                                    solo
+                                    outlined
+                                    filled
                                     v-model="grupo.nombre"
                                     :disabled="loading"
-                                    color="#005598"
+                                    color="#232323"
                                     dense
                                     :rules="[required('Grupo')]"
                                 />
@@ -81,7 +83,7 @@
                         </v-dialog>
 
                         <v-btn 
-                            elevation="3" class="mt-5 text-capitalize white--text" 
+                            class="mt-5 text-capitalize white--text" 
                             block @click="postSubgrupo" color="#232323" :disabled="!valid"
                         >
                             Guardar

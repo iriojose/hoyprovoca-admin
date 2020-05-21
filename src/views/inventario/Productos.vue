@@ -129,7 +129,7 @@ import ModalCreateProducto from '@/components/dialogs/ModalCreateProducto';
                     { text: 'Subgrupo', value: 'subgrupo.nombre'},
                     { text: 'Precio Bs', value: 'precio_a'},
                     { text: 'Precio $', value: 'precio_dolar'},
-                    //{ text: 'Existencia', value: 'existencias[0].existencia'},
+                    { text: 'Existencia', value: 'existencias[0].existencia'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
@@ -141,7 +141,7 @@ import ModalCreateProducto from '@/components/dialogs/ModalCreateProducto';
             ...mapState(['user']),
 
             bloqueado(){//bloquea el boton de ver mas segun la condicion
-                if(this.conceptos.length == this.total) return true;
+                if(this.conceptos.length == this.total || this.loading) return true;
                 else return false;
             }
         },
@@ -171,14 +171,13 @@ import ModalCreateProducto from '@/components/dialogs/ModalCreateProducto';
         methods:{
             getConceptos(){
                 this.loading = true;
-                Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&offset=${this.offset}&fields=grupo,subgrupo`).then((response) => {
+                Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&offset=${this.offset}&fields=grupo,subgrupo,existencias`).then((response) => {
                     this.total= response.data.totalCount;
                     response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
                     response.data.data.filter(a => a.precio_dolar = accounting.formatMoney(+a.precio_dolar,{symbol:"$",thousand:',',decimal:'.'}));
                     response.data.data.filter(a => this.conceptos.push(a));
                     this.loading=false;
                     this.offset+=50;
-                    console.log(response.data);
                 }).catch(e => {
                     console.log(e);
                     this.loading = false;

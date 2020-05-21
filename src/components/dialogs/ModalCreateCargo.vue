@@ -15,7 +15,9 @@
                                 dense
                                 label="cantidad"
                                 hint="Numero positivos mayores a 0"
-                                solo
+                                outlined
+                                filled
+                                color="#232323"
                                 type="text"
                                 v-model="data.cantidad"
                                 :rules="[required('Cantidad'), positivo('Cantidad')]"
@@ -26,12 +28,13 @@
                                     <v-text-field
                                         v-on="on"
                                         label="Concepto"
-                                        solo
+                                        outlined
+                                        filled
                                         hint="Concepto"
                                         persistent-hint
                                         v-model="concepto.nombre"
                                         :disabled="loading"
-                                        color="#005598"
+                                        color="#232323"
                                         dense
                                         class="mt-5"
                                         :rules="[required('Grupo')]"
