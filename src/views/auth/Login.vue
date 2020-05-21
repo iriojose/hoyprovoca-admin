@@ -1,90 +1,143 @@
 <template>
-    <div>
-        <v-row justify="center" align="center" class="mt-8 mb-5">
-            <v-img contain width="100" height="50" :src="require('@/assets/logo2.png')"></v-img>
-        </v-row>
+    <v-card width="100%" height="1000" elevation="0" color="#2950c3">
+        <v-card-text>
+            <v-row justify="center" class="py-10">
+                <v-card width="900" height="570" :class="$vuetify.breakpoint.smAndDown ? 'mx-4':null">
+                    <v-row justify="center">
+                        <v-col cols="12" md="6" class="hidden-sm-and-down">
+                            <v-img width="100%" height="500" contain :src="require('@/assets/dashboard.svg')"></v-img>
+                        </v-col>
+                        <v-col cols="12" md="6" sm="12" class="pa-12">
+                            <div class="headline text-center mb-5">Bienvenido!</div>
 
-        <v-row justify="center" align="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-5':null">
-            <v-col cols="12" md="4" lg="4" class="hidden-sm-and-down">
-                <v-img contain width="100%" height="300" :src="require('@/assets/dashboard.svg')"></v-img>
-            </v-col>
+                            <v-fad-transition>
+                                <v-alert :type="type" v-show="showMessage">
+                                    {{mensaje}}
+                                </v-alert>
+                            </v-fad-transition> 
 
-            <v-col cols="12" md="4" sm="10" class="mt-5">
-                <v-card width="100%" height="400" elevation="5" class="py-5">
-                    <div class="text-center my-5 font-weight-black subtitle-1">Iniciar sesión</div>
-                    
-                    <v-card-text>
-                        <FormLogin />
-                    </v-card-text>
+                            <v-form v-model="valid" @submit.prevent="">
+                                <v-text-field
+                                    filled
+                                    rounded
+                                    :disabled="loading"
+                                    v-model="data.user"
+                                    single-line
+                                    color="#2950c3"
+                                    :rules="[required('Correo electrónico / Usuario')]"
+                                    label="Ingrese correo electrónico / Usuario"
+                                >
+                                </v-text-field>
+                                <v-text-field
+                                    filled
+                                    v-model="data.password"
+                                    rounded
+                                    :disabled="loading"
+                                    type="password"
+                                    color="#2950c3"
+                                    :rules="[required('Contraseña')]"
+                                    single-line
+                                    label="Ingrese Contraseña"
+                                >
+                                </v-text-field>
 
-                    <div class="my-5">
-                        <v-divider></v-divider>
-                    </div>
+                                <v-checkbox 
+                                    v-model="custom" 
+                                    color="#2950c3"
+                                    :disabled="loading"
+                                    label="Recordar"
+                                ></v-checkbox>
 
-                    <div @click="push()" class="text-center" >
-                        <a class="mx-2 subtitle-2 underline text-color">
-                            ¿No puede iniciar sesión?
-                        </a>
-                    </div>
+                                <v-btn
+                                    rounded
+                                    color="#2950c3"
+                                    block
+                                    :loading="loading"
+                                    height="40"
+                                    @click="validacion"
+                                    class="text-capitalize caption white--text"
+                                >
+                                    Login
+                                </v-btn>
+                            </v-form>
+                            <v-divider class="my-10"></v-divider>
+
+                            <div class="subtitle-2 text-center color" @click="forgot">¿Olvido su contraseña?</div>
+                        </v-col>
+                    </v-row>
                 </v-card>
-            </v-col>
-
-            <v-col cols="12" md="4" lg="4" class="hidden-sm-and-down">
-                <v-img contain width="100%" height="300" :src="require('@/assets/charts.svg')"></v-img>
-            </v-col>
-        </v-row>
-    </div>
+            </v-row>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
-import FormLogin from '@/components/auths/FormLogin';
 import router from '@/router';
+import {mapActions} from 'vuex';
+import validations from '@/validations/validations';
+import Auth from '@/services/Auth';
 
     export default {
-        components:{
-            FormLogin
-        },
-        head:{
-            title(){
-                return {
-                    inner:'Iniciar sesión',
-                    separator:' ',
-                    complement: ' '
-                }
+        data() {
+            return {
+                ...validations,
+                custom:false,
+                data: {
+                    user: "",
+                    password: "",
+                },
+                showMessage:false,
+                valid:false,
+                loading:false,
+                mensaje:'',
+                type:''
             }
         },
         methods: {
-            push(){ router.push('/forgot') },
-        },
+            ...mapActions(['logged','setModalBloqueado']),
+
+            forgot(){
+                router.push('/forgot');
+            },
+            validacion(){
+                if(this.valid) this.login();
+                else this.respuesta('Campos invalidos','error');
+            },
+            respuesta(mensaje,type){
+                this.mensaje = mensaje;
+                this.type = type
+                this.loading = false;
+                this.showMessage = true;
+                setTimeout(() => {this.showMessage = false}, 2000);
+            },
+            login(){
+                this.loading = true;
+                Auth().post("/login",{data:this.data}).then((response) =>{
+                    if(response.data.data.perfil_id < 3 || response.data.data.perfil_id > 4){
+                        this.logged(response.data);
+                        this.respuesta("Bienvenido",'success');
+                        setTimeout(() => {router.push('/');},1000);
+                    }else if(response.data.data.perfil_id == 4){
+                        this.setModalBloqueado(true);
+                        this.loading = false;
+                    }else{
+                        this.respuesta('Este usuario no pertenece a este sistema','error');
+                    }
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta('Usuario y/o contraseña incorrecta.','error');
+                });
+            }
+        }
     }
 </script>
 
 <style lang="scss" scoped>
-    .text-color{
-        color: #232323;
+    .color{
+        color:#2950c3
     }
-    $thetransition: all .5s cubic-bezier(1,.25,0,.75) 0s;
-    .underline{
-        text-decoration: none;
-        position: relative;
-        &:before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 1px;
-            bottom: 0;
-            left: 0;
-            background-color: #232323;
-            visibility: hidden;
-            -webkit-transform: scaleX(0);
-            transform: scaleX(0);
-            -webkit-transition: $thetransition;
-            transition: $thetransition;
-        }
-        &:hover:before {
-            visibility: visible;
-            -webkit-transform: scaleX(1);
-            transform: scaleX(1);
-        }
+    .color:hover{
+        cursor:pointer;
+        text-decoration:underline;
     }
 </style>

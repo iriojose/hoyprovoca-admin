@@ -334,6 +334,14 @@ import {mapState} from 'vuex';
             reset(){
                 this.showMessage = false;
                 this.data.nombre = '';
+                this.data.descripcion = '';
+                this.data.codigo = '';
+                this.data.referencia = '';
+                this.data.precio_a = null;
+                this.data.precio_dolar = null;
+                this.grupo.nombre = '';
+                this.subgrupo.nombre = '';
+
             },
             postConcepto(){
                 this.loading = true;
