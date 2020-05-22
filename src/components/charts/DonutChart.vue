@@ -28,8 +28,11 @@ import {mapState} from 'vuex';
                         width: 350,
                         type: 'pie',
                     },
+                    legend: {
+                        position: 'bottom'
+                    },
                     labels: ['Pedidos Iniciados', 'Pedidos Pendientes', 'Pedidos Completados'],
-                    responsive: [{
+                    /*responsive: [{
                         breakpoint: 450,
                         options: {
                             chart: {
@@ -39,10 +42,10 @@ import {mapState} from 'vuex';
                                 position: 'bottom'
                             }
                         }
-                    }],
+                    }],*/
                     theme: {
                         mode: 'light', 
-                        palette: 'palette', 
+                        palette: 'palette1', 
                         monochrome: {
                             enabled: false,
                             color: '#D32F2F',

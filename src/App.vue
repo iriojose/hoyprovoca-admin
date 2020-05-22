@@ -1,11 +1,22 @@
 <template>
     <v-app style="background-color:#f7f7f7;">
-        <AppBar v-if="ruta()" />
+        <AppBar v-if="ruta()" id="top" />
         <transition name="fade">
             <router-view/>
         </transition>  
         
         <ModalBloqueado />
+
+        <!--v-hover v-slot:default="{hover}">
+            <v-btn 
+                @click="$vuetify.goTo('#top')" 
+                tile dark bottom small
+                right color="rgba(0,0,0,0.1)"
+                class="v-btn--example btn" 
+            >
+                <v-icon :color="hover ? '#3b61d1':'#232323'">mdi-apple-keyboard-control</v-icon>
+            </v-btn>
+        </v-hover-->
     </v-app>
 </template>
 
@@ -36,7 +47,21 @@ import ModalBloqueado from '@/components/dialogs/ModalBloqueado';
     }
 </script>
 
-<style>
+<style lang="scss" scope>
+    .v-btn--example {
+        bottom: 0;
+        right:0;
+        position: fixed;
+        margin: 16px;
+        animation: animat 0.5s 1;
+        //transform:translateX(-15px) rotate(10deg);
+    }
+    @keyframes animat{
+        0% {
+            transform: translateX(100px);
+        }
+    }
+
     .fade-enter-active, .fade-leave-active {
         transition: opacity .5s;
     }

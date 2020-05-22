@@ -16,7 +16,7 @@ export default new Vuex.Store({
         bloqueado:false,
         drawer:true,
         editar:null,
-        series:[1,1,1]
+        series:[0,0,0]
     },
     mutations: {
         SET_DRAWER(state,val){
