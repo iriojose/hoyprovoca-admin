@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div class="sombra">
         <BarraLateral />
 
-        <v-app-bar app color="#f7f7f7" elevation="0">
+        <v-app-bar color="#fff" elevation="0" :class="$vuetify.breakpoint.smAndDown || !drawer ? '':'margen'">
             <v-btn fab class="mx-3" small elevation="2" @click="change">
                 <v-icon v-if="drawer">
                     mdi-dots-vertical
@@ -12,15 +12,8 @@
                 </v-icon>
             </v-btn>
 
-            <v-toolbar-title class="cursor">
-                <v-img 
-                    contain 
-                    height="60"
-                    width="120"  
-                    :src="require('@/assets/logo 3.png')"
-                />
-            </v-toolbar-title>
-
+            <div class="text-capitalize font-weight-bold color"> {{$route.name}} </div>
+            
             <v-spacer></v-spacer>
 
             <v-btn text fab to="/notificaciones" small>
@@ -62,5 +55,15 @@ import {mapState,mapActions} from 'vuex';
 <style lang="css" scoped>
     .cursor{
         cursor:pointer;
+    }
+    .sombra{
+        /*box-shadow: 0px 0px 35px 80px (173, 185, 201, 0.8) !important;*/
+        box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);
+    }
+    .margen{
+        margin-left:256px;
+    }
+    .color{
+        color:#3b61d1;
     }
 </style>

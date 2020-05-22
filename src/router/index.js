@@ -26,7 +26,7 @@ const router = new Router({
 	routes:[
 		{
 			path: "/",
-			name: "home",
+			name: "dashboard",
 			component: Home,
 			meta:{
                 auth:true
@@ -184,7 +184,7 @@ router.beforeEach((to,from,next) => {
         }else if(to.name == 'resetPassword' && user){
             next({name:'home'});
         }else if(to.name == 'forgot' && user){
-            next({name:'home'});
+            next({name:'forgot'});
         }else{
             next();
         }

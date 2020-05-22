@@ -16,15 +16,15 @@
         <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
             <v-list-item 
                 v-for="item in items2" :key="item.title" link 
-                :to="item.to" active-class="font-weight-black" 
-                class="transition color font-weight-black"
+                :to="item.to" class="transition white--text"
+                active-class="background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
-                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                <v-list-item-title :class="$route.path == item.to ? 'font-weight-medium color':'font-weight-medium white--text'">
                     {{item.title}}
                 </v-list-item-title>
             </v-list-item>
@@ -33,15 +33,15 @@
         <v-list dense nav v-else>
             <v-list-item 
                 v-for="item in items" :key="item.title" link 
-                :to="item.to" active-class="font-weight-black" 
-                class="transition color font-weight-black"
+                :to="item.to" class="transition white--text font-weight-black"
+                active-class="font-weight-black background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
-                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                <v-list-item-title :class="$route.path == item.to ? 'font-weight-medium color':'font-weight-medium white--text'">
                     {{item.title}}
                 </v-list-item-title>
             </v-list-item>
@@ -52,15 +52,15 @@
         <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
             <v-list-item 
                 v-for="item in items4" :key="item.title" link 
-                :to="item.to" active-class="font-weight-black" 
-                class="transition color font-weight-black"
+                :to="item.to" class="transition white--text font-weight-black"
+                active-class="font-weight-black background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
-                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                <v-list-item-title :class="$route.path == item.to ? 'font-weight-medium color':'font-weight-medium white--text'">
                     {{item.title}}
                 </v-list-item-title>
             </v-list-item>
@@ -69,15 +69,15 @@
         <v-list dense nav v-else>
             <v-list-item 
                 v-for="item in items3" :key="item.title" link 
-                :to="item.to" active-class="font-weight-black" 
-                class="transition color font-weight-black"
+                :to="item.to" class="transition white--text font-weight-black"
+                active-class="font-weight-black background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#fff':'rgba(255,255,255,.7)'">
+                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
-                <v-list-item-title :class="$route.path == item.to ? 'white--text':'color'">
+                <v-list-item-title :class="$route.path == item.to ? 'font-weight-medium color':'font-weight-medium white--text'">
                     {{item.title}}
                 </v-list-item-title>
             </v-list-item>
@@ -144,15 +144,12 @@ import variables from '@/services/variables_globales';
     .back{
         background: rgba(255,255,255,0.3) !important;
     }
-    .color{
-        color:rgba(255,255,255,0.5) !important;
-        
+
+    .background{
+        background:#fff;
     }
-    .color:hover{
-        color:#fff !important;
-        v-icon{
-            background: #fff;
-        }
+    .color{
+        color:#3b61d1;
     }
     
 </style>
