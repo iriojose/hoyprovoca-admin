@@ -18,20 +18,37 @@
 
 <script>
 import VueApexCharts from "vue-apexcharts";
-//import {mapState} from 'vuex';
 
     export default {
         components: {
             apexchart: VueApexCharts,
         },
+        mounted() {
+            let resta = 1000 * 60 * 60  * 24 * 30;
+            let fecha = new Date();
+            let date = fecha.getTime();
+
+            for (let i = 0; i < 5; i++) {
+                if(i !== 0)  date -= resta;
+                for (let e = 0; e < this.meses.length; e++) {
+                    if(new Date(date).getMonth() == e) {
+                        this.chartOptions.xaxis.categories[i] = this.meses[e];
+                    }
+                }
+            }
+            this.chartOptions.xaxis.categories.reverse();
+        },
         computed: {
-            //...mapState(['series'])
+            
         },
         data() {
             return {
+                mes:null,
+                meses:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+                numMeses:[],
                 series: [{
                     name: "Ganancias",
-                    data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+                    data: [10, 41, 35, 51,50]
                 }],
                 chartOptions: {
                     chart: {
@@ -47,18 +64,14 @@ import VueApexCharts from "vue-apexcharts";
                     stroke: {
                         curve: 'straight'
                     },
-                    /*title: {
-                        text: 'Product Trends by Month',
-                        align: 'left'
-                    },*/
                     grid: {
                         row: {
-                            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                            colors: ['#f3f3f3', 'transparent'],
                             opacity: 0.5
                         },
                     },
                     xaxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        categories: ['','','','',''],
                     },
                     yaxis: {
                         labels: {

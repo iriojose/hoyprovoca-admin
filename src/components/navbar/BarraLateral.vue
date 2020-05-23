@@ -8,7 +8,7 @@
     >
             
         <v-row justify="center" class="mt-4">
-            <v-img :src="require('@/assets/logo 3.png')" contain width="60" height="60"></v-img>
+            <v-img :src="require('@/assets/logo 4.png')" contain width="60" height="60"></v-img>
         </v-row>
 
         <v-divider class="mt-5 mb-2 back mx-5"></v-divider>

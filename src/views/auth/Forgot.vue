@@ -10,11 +10,13 @@
                         <v-col cols="12" md="6" sm="12" class="pa-12">
                             <div class="headline text-center mb-5">¿Olvido su contraseña?</div>
                             
-                            <v-fade-transition>
-                                <v-alert :type="type" v-show="showMessage">
-                                    {{mensaje}}
-                                </v-alert>
-                            </v-fade-transition> 
+                            <v-card elevation="0" height="50">
+                                <v-fade-transition>
+                                    <v-alert dense :type="type" v-show="showMessage">
+                                        {{mensaje}}
+                                    </v-alert>
+                                </v-fade-transition> 
+                            </v-card>
 
                             <v-form v-model="valid" @submit.prevent="" v-if="!send">
                                 <v-text-field
@@ -24,7 +26,9 @@
                                     v-model="email"
                                     single-line
                                     color="#2950c3"
-                                    :rules="[required('Correo electrónico'),emailFormat()]"
+                                    :error-messages="errors"
+                                    @input="getUser(email)"
+                                    :error="error"
                                     label="Ingrese correo electrónico"
                                 ></v-text-field>
 
@@ -32,7 +36,7 @@
                                     rounded
                                     color="#2950c3"
                                     block
-                                    :disabled="!valid"
+                                    :disabled="!error"
                                     :loading="loading"
                                     height="40"
                                     @click="sendMail"
@@ -126,6 +130,7 @@
 import router from '@/router';
 import validations from '@/validations/validations';
 import Auth from '@/services/Auth';
+import Usuario from '@/services/Usuario';
 
     export default {
         data() {
@@ -143,6 +148,8 @@ import Auth from '@/services/Auth';
                 loading:false,
                 showMessage:false,
                 send:false,
+                errors:[],
+                error:false,
                 validCode:false,
             }
         },
@@ -150,6 +157,15 @@ import Auth from '@/services/Auth';
             passwordConfirmationRule() {
                 return () => (this.contraseña === this.contraseña2) || 'Las contraseñas no coinciden.';
             },
+        },
+         head:{
+            title(){
+                return {
+                    inner:'Forgot',
+                    separator:' ',
+                    complement: ' '
+                }
+            }
         },
         methods:{
             login(){
@@ -162,9 +178,9 @@ import Auth from '@/services/Auth';
                 this.showMessage = true;
                 setTimeout(() => {this.showMessage = false}, 2000);
             },
-            sendMail(){
+            async sendMail(){
                 this.loading = true;
-                Auth().post("/sendmail",{data:{user:this.email}}).then(() => {
+                await Auth().post("/sendmail",{data:{user:this.email}}).then(() => {
                     this.respuesta("Codigo enviado.","success");
                     this.send = true;
                 }).catch(e => {
@@ -172,9 +188,9 @@ import Auth from '@/services/Auth';
                     this.respuesta("Error el enviar el codigo","error");
                 });
             },
-            validc(){
+            async validc(){
                 this.loading = true;
-                Auth().post("/validcode",{data:{user:this.email,hash:this.codigo}}).then(() => {
+                await Auth().post("/validcode",{data:{user:this.email,hash:this.codigo}}).then(() => {
                     this.respuesta("Codigo valido","success");
                     this.validCode=true;
                 }).catch(e => {
@@ -182,9 +198,9 @@ import Auth from '@/services/Auth';
                     this.respuesta("Error el enviar el codigo","error");
                 });
             },
-            reset(){
+            async reset(){
                 this.loading = true;
-                Auth().post("/resetpassword",{data:{user:this.email,password:this.contraseña}}).then(() => {
+                await Auth().post("/resetpassword",{data:{user:this.email,password:this.contraseña}}).then(() => {
                     this.respuesta("Contraseña cambiada.","success");
                     setTimeout(() => {
                         this.login();
@@ -193,6 +209,29 @@ import Auth from '@/services/Auth';
                     console.log(e);
                     this.respuesta("Error al resetear la contraseña.","error");
                 });
+            },
+            async getUser(email){
+                this.errors = [];
+                this.error = false;
+
+                if(email.length <= 0) return this.errors.push('Debe ingresar un email');
+
+                // eslint-disable-next-line
+                let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/ 
+                if (!regex.test(this.email)) return this.errors.push(`Debe ingresar un email válido`);
+
+                await Usuario().get(`/?email=${email}`).then((response) => {
+                    console.log(response.data);
+                    if(!response.data.data) {
+                        return this.errors.push('Este email no esta registrado')
+                    }else{
+                        this.error = true;
+                    }
+                }).catch(e => {
+                    console.log(e);
+                })
+
+
             }
         }
     }

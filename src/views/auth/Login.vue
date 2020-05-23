@@ -10,28 +10,33 @@
                         <v-col cols="12" md="6" sm="12" class="pa-12">
                             <div class="headline text-center mb-5">Bienvenido!</div>
 
-                            <v-fade-transition>
-                                <v-alert :type="type" v-show="showMessage">
-                                    {{mensaje}}
-                                </v-alert>
-                            </v-fade-transition> 
+                            <v-card elevation="0" height="50">
+                                <v-fade-transition>
+                                    <v-alert dense :type="type" v-show="showMessage">
+                                        {{mensaje}}
+                                    </v-alert>
+                                </v-fade-transition> 
+                            </v-card>
 
                             <v-form v-model="valid" @submit.prevent="">
                                 <v-text-field
                                     filled
                                     rounded
+                                    dense
                                     :disabled="loading"
                                     v-model="data.user"
                                     single-line
+                                    validate-on-blur
                                     color="#2950c3"
-                                    :rules="[required('Correo electrónico / Usuario')]"
-                                    label="Ingrese correo electrónico / Usuario"
+                                    :rules="[required('Correo electrónico'),emailFormat()]"
+                                    label="Ingrese correo electrónico"
                                 >
                                 </v-text-field>
                                 <v-text-field
                                     filled
                                     v-model="data.password"
                                     rounded
+                                    dense
                                     :disabled="loading"
                                     type="password"
                                     color="#2950c3"
@@ -60,6 +65,7 @@
                                     Login
                                 </v-btn>
                             </v-form>
+
                             <v-divider class="my-10"></v-divider>
 
                             <div class="subtitle-2 text-center color" @click="forgot">¿Olvido su contraseña?</div>
@@ -90,7 +96,7 @@ import Auth from '@/services/Auth';
                 valid:false,
                 loading:false,
                 mensaje:'',
-                type:'error'
+                type:'error',
             }
         },
         methods: {
@@ -103,6 +109,15 @@ import Auth from '@/services/Auth';
                 if(this.valid) this.login();
                 else this.respuesta('Campos invalidos','error');
             },
+            head:{
+                title(){
+                    return {
+                        inner:'Login',
+                        separator:' ',
+                        complement: ' '
+                    }
+                }
+            },
             respuesta(mensaje,type){
                 this.mensaje = mensaje;
                 this.type = type
@@ -110,9 +125,9 @@ import Auth from '@/services/Auth';
                 this.showMessage = true;
                 setTimeout(() => {this.showMessage = false}, 2000);
             },
-            login(){
+            async login(){
                 this.loading = true;
-                Auth().post("/login",{data:this.data}).then((response) =>{
+                await Auth().post("/login",{data:this.data}).then((response) =>{
                     if(response.data.data.perfil_id < 3 || response.data.data.perfil_id > 4){
                         this.logged(response.data);
                         this.respuesta("Bienvenido",'success');
@@ -127,7 +142,7 @@ import Auth from '@/services/Auth';
                     console.log(e);
                     this.respuesta('Usuario y/o contraseña incorrecta.','error');
                 });
-            }
+            },
         }
     }
 </script>

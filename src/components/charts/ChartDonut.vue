@@ -31,11 +31,7 @@ import {mapState} from 'vuex';
             return {
                 chartOptions: {
                     chart: {
-                        width: 400,
                         type: 'donut',
-                    },
-                    legend: {
-                        position: 'bottom'
                     },
                     theme: {
                         monochrome: {
@@ -45,18 +41,45 @@ import {mapState} from 'vuex';
                             shadeIntensity: 0.65
                         }
                     },
-                    labels: ['Iniciados', 'Pendientes', 'Completados'],
-                    /*responsive: [{
-                        breakpoint: 450,
-                        options: {
-                            chart: {
-                                width: 300
-                            },
-                            legend: {
-                                position: 'bottom'
-                            }
+                    labels: ['Pedidos Iniciados', 'Pedidos Pendientes', 'Pedidos Completados'],
+                    legend: {
+                        show: true,
+                        position: 'bottom',
+                        horizontalAlign: 'center', 
+                        fontSize: '14px',
+                        fontFamily: 'Helvetica, Arial',
+                        fontWeight: 400,
+                        offsetX: 0,
+                        offsetY: 0,
+                        markers: {
+                            width: 12,
+                            height: 12,
+                            strokeColor: '#232323',
+                            radius: 12,
+                            offsetX: 0,
+                            offsetY: 0
+                        },
+                        itemMargin: {
+                            horizontal: 5,
+                            vertical: 0
+                        },
+                        onItemClick: {
+                            toggleDataSeries: true
+                        },
+                        onItemHover: {
+                            highlightDataSeries: true
+                        },
+                    },
+                    noData: {
+                        text: 'Not results',
+                        align: 'center',
+                        verticalAlign: 'middle',
+                        offsetX: 0,
+                        offsetY: 0,
+                        style: {
+                            fontSize: '14px',
                         }
-                    }],*/
+                    }
                 },
             }
         },
