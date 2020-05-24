@@ -161,7 +161,7 @@ import variables from '@/services/variables_globales';
     }
 </script>
 
-<style lang="scss">
+<style lang="scss" >
 
     .sombra{
        /*box-shadow: 0px 0px 50px 20px (173, 185, 201, 0.9);*/
@@ -188,13 +188,23 @@ import variables from '@/services/variables_globales';
     }
 
     .v-data-table table {
-        border-spacing: 0 15px;
+        border-spacing: 0 15px!important;
+        background: #eeeeee;
+    }
+
+    .v-data-table table tr{
+        background: #fff;
     }
 
 
     .noBorder.theme--light.v-data-table tbody tr:not(:last-child) td:last-child, .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {
         border-bottom: thin solid transparent;
         
+    }
+
+    .v-table tr:hover:not(.v-table__expanded__content) {
+        background: #fff !important;
+        border-spacing: 0 15px;
     }
     
     .mytable table tr {
@@ -203,7 +213,7 @@ import variables from '@/services/variables_globales';
         margin-bottom:20px !important;
         border-bottom: none !important;
     }
-    
+
     .theme--light.v-table tbody tr:not(:last-child) {
         border-bottom: none !important;
     }
