@@ -99,6 +99,15 @@ import Auth from '@/services/Auth';
                 type:'error',
             }
         },
+       head:{
+            title(){
+                return {
+                    inner:'Login',
+                    separator:' ',
+                    complement: ' '
+                }
+            }
+        },
         methods: {
             ...mapActions(['logged','setModalBloqueado']),
 
@@ -108,15 +117,6 @@ import Auth from '@/services/Auth';
             validacion(){
                 if(this.valid) this.login();
                 else this.respuesta('Campos invalidos','error');
-            },
-            head:{
-                title(){
-                    return {
-                        inner:'Dashboard',
-                        separator:' ',
-                        complement: ' '
-                    }
-                }
             },
             respuesta(mensaje,type){
                 this.mensaje = mensaje;

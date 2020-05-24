@@ -29,7 +29,6 @@
                                     :success-messages="success"
                                     :error-messages="errors"
                                     @input="getUser(email)"
-                                    :error="error"
                                     label="Ingrese correo electrónico"
                                 >
                                     <template v-slot:append>
@@ -172,7 +171,7 @@ import Usuario from '@/services/Usuario';
                 return () => (this.contraseña === this.contraseña2) || 'Las contraseñas no coinciden.';
             },
         },
-         head:{
+        head:{
             title(){
                 return {
                     inner:'Forgot',
