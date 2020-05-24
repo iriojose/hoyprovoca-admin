@@ -35,9 +35,10 @@
                 loading-text="Loading... Please wait" 
                 :headers="headers" 
                 :items="usuarios" 
-                class="elevation-0 theme--light v-table" 
+                class="elevation-0 noBorder theme--light v-table" 
                 :search="search"
                 :headers-length="60"
+                
             >   
                 <template v-slot:body="{ items }">
                     <tbody>
@@ -160,35 +161,49 @@ import variables from '@/services/variables_globales';
     }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+
     .sombra{
        /*box-shadow: 0px 0px 50px 20px (173, 185, 201, 0.9);*/
         box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);
     }
+
     .fondo-table-body{
         background: #fff;
         height: 60px;
         margin-top:20px;
         margin-bottom:20px;
     }
+
     .fondo-table{
         background: #06c;
     }
+
     .radius{
         border-radius:5%;
     }
+
     .foco:focus{
         border:2px solid #06c !important;
     }
-    .quitBorder .v-table tbody tr:not(:last-child) {
-        border-bottom: none !important;
+
+    .v-data-table table {
+        border-spacing: 0 15px;
     }
+
+
+    .noBorder.theme--light.v-data-table tbody tr:not(:last-child) td:last-child, .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {
+        border-bottom: thin solid transparent;
+        
+    }
+    
     .mytable table tr {
         background-color: #fff;
         margin-top:20px !important;
         margin-bottom:20px !important;
         border-bottom: none !important;
     }
+    
     .theme--light.v-table tbody tr:not(:last-child) {
         border-bottom: none !important;
     }
