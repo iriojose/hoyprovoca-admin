@@ -124,7 +124,7 @@ import {mapActions} from 'vuex';
     }
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
     .sombre{
        /*box-shadow: 0px 0px 50px 20px (173, 185, 201, 0.9);*/
         box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);

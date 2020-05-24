@@ -1,119 +1,137 @@
 <template>
     <div>
-        <v-card width="100%" v-if="$route.name == 'usuarios'">
-            <v-toolbar flat color="#fff">
-                <v-btn color="#005598" dark class="mb-2 text-capitalize caption" @click="push">
-                    Nuevo
-                    <v-icon dark class="ml-2">mdi-plus-box</v-icon>
-                </v-btn>
-
+        <v-sheet color="grey" class="px-3 pt-3 mb-3" v-if="!usuarios">
+            <v-skeleton-loader class="mx-auto" type="table"></v-skeleton-loader>
+        </v-sheet>
+        <v-card width="100%" elevation="2" color="#fff" v-else>
+            <v-card-title class="mb-2">
                 <v-btn 
-                    @click="getUsuarios()" 
-                    dark 
-                    class="mb-2 mx-2 text-capitalize caption" 
-                    color="#005598"
-                    :disabled="usuarios.length == total || loading ? true:false"
+                    :height="35" color="#1c3faa"
+                    class="radius font-weight-bold text-capitalize overline white--text" 
                 >
-                    Ver más 
-                    <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
+                    Add new user
                 </v-btn>
                 <v-spacer></v-spacer>
+                <v-spacer></v-spacer>
+                <v-spacer></v-spacer>
                 <v-text-field
-                    v-model="search"
-                    label="Buscar"
-                    single-line
-                    append-icon="mdi-magnify"
-                    type="text"
-                    color="#005598"
-                    hide-details
                     dense
-                />
-            </v-toolbar>
+                    height="30"
+                    :full-width="true"
+                    single-line
+                    hide-details
+                    filled
+                    class="foco"
+                    v-model="search"
+                    color="#1c3faa"
+                    label="search..."
+                    append-icon="mdi-magnify"
+                >
+                </v-text-field>
+            </v-card-title>
+
             <v-data-table 
                 :loading="loading && '#005598'" 
                 loading-text="Loading... Please wait" 
                 :headers="headers" 
                 :items="usuarios" 
-                class="elevation-0" 
+                class="elevation-0 theme--light v-table" 
                 :search="search"
+                :headers-length="60"
             >   
-                <template v-slot:item.imagen="{item}">
+                <template v-slot:body="{ items }">
+                    <tbody>
+                        <tr v-for="item in items" :key="item.name">
+                            <td>
+                                <v-avatar size="50">
+                                    <v-img :src="image+item.imagen"></v-img>
+                                </v-avatar>
+                            </td>
+                            <td>{{item.nombre}}</td>
+                            <td>{{item.apellido}}</td>
+                            <td>{{item.email}}</td>
+                            <td>{{item.perfil}}</td>
+                            <td align="center">
+                                <div>
+                                    <v-icon 
+                                        :small="$vuetify.breakpoint.smAndDown ? false:true"
+                                        @click="editar(item)" color="#232323"
+                                    >
+                                        mdi-pencil-box-outline
+                                    </v-icon>
+                                    <strong  @click="editar(item)" class="black--text mr-4">Edit</strong>
+                                    <v-icon 
+                                        :small="$vuetify.breakpoint.smAndDown ? false:true"
+                                        @click="editar(item)" color="#E53935"
+                                    >
+                                        mdi-delete-sweep-outline
+                                    </v-icon>
+                                    <strong class="red--text mr-4" @click="editar(item)">Delete</strong>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </template>
+
+                <!--template v-slot:item.imagen="{item}">
                     <v-avatar size="50">
                         <v-img :src="image+item.imagen"></v-img>
                     </v-avatar>
-                </template>
-                <template slot="loading">
-                    <LoaderRect class="mb-12"/> 
-                </template>
-                <template v-slot:item.action="{ item }">
-                    <v-icon 
-                        :small="$vuetify.breakpoint.smAndDown ? false:true"
-                        class="mr-2" @click="editar(item)" 
-                    >
-                        mdi-border-color
-                    </v-icon>
-                </template>
+                </template-->
+                
+                <!--template v-slot:item.action="{ item }">
+                    <div>
+                        <v-icon 
+                            :small="$vuetify.breakpoint.smAndDown ? false:true"
+                            @click="editar(item)" color="#232323"
+                        >
+                            mdi-pencil-box-outline
+                        </v-icon>
+                        <strong  @click="editar(item)" class="black--text mr-4">Edit</strong>
+                        <v-icon 
+                            :small="$vuetify.breakpoint.smAndDown ? false:true"
+                            @click="editar(item)" color="#E53935"
+                        >
+                            mdi-delete-sweep-outline
+                        </v-icon>
+                        <strong class="red--text mr-4" @click="editar(item)">Delete</strong>
+                    </div>
+                </template-->
             </v-data-table>
         </v-card>
-
-        <router-view/>
-    </div>
+    </div>      
 </template>
 
 <script>
 import Usuario from '@/services/Usuario';
 import variables from '@/services/variables_globales';
-import LoaderRect from '@/components/loaders/LoaderRect';
-import router from '@/router';
 
     export default {
-        components:{
-            LoaderRect
-        },
         data() {
             return {
                 ...variables,
-                offset:0,
-                total:0,
+                loading:false,
                 search:'',
-                dialog:false,
-                loading:true,
+                tota:0,
+                offset:0,
                 usuarios:[],
                 headers: [
-                    { text: 'Imagen',align:'left',sortable: true,value:'imagen'},
-                    { text: 'Nombre', value: 'nombre' },
+                    { text: 'IMAGEN',align: 'center',value: 'imagen'},
+                    { text: 'Nombre', value: 'nombre'},
                     { text: 'Apellido', value: 'apellido' },
-                    { text: 'usuario', value: 'login'},
                     { text: 'Email', value: 'email' },
                     { text: 'Perfil', value: 'perfil' },
-                    { text: 'Acciones', value: 'action', sortable: false },
+                    { text: 'Acciones', align: 'center',value: 'action'},
                 ],
             }
-        },      
-        mounted(){
-            if(this.$route.name == 'usuarios'){
-                this.getUsuarios();
-            }
         },
-        watch: {
-            "$route"(){
-                if(this.$route.name == 'usuarios'){
-                    this.loading = true;
-                    this.usuarios = [];
-                    this.offset = 0;
-                    this.getUsuarios();
-                }
-            }
+        mounted() {
+            this.getUsuarios();
         },
         methods:{
-            push(){
-                window.localStorage.removeItem('editar');
-                router.push("/usuarios/usuario");
-            },
             getUsuarios(){
-                this.loading=true;
-                Usuario().get(`/?limit=50&offset=${this.offset}`).then((response) => {
-                    this.total= response.data.totalCount;
+                this.loading = true;
+                Usuario().get(`/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
                     for (let i = 0; i < response.data.data.length; i++) {
                         if(response.data.data[i].perfil_id == 1){
                             response.data.data[i].perfil = 'Administrador';
@@ -123,22 +141,55 @@ import router from '@/router';
                             response.data.data[i].perfil = 'Cliente';
                         }else if(response.data.data[i].perfil_id == 4){
                             response.data.data[i].perfil = 'Bloqueado';
-                        }
-                        else if(response.data.data[i].perfil_id == 5){
+                        }else if(response.data.data[i].perfil_id == 5){
                             response.data.data[i].perfil = 'Repartidor';
                         }
                         this.usuarios.push(response.data.data[i]);
                     }
-                    this.loading=false;
+                    this.total = response.data.totalCount;
                     this.offset+=50;
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            editar(item){
-                window.localStorage.setItem('editar',item.id);
-                router.push('/usuarios/usuario');
-            },
+            editIten(item) {
+                console.log(item);
+            }
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .sombra{
+       /*box-shadow: 0px 0px 50px 20px (173, 185, 201, 0.9);*/
+        box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);
+    }
+    .fondo-table-body{
+        background: #fff;
+        height: 60px;
+        margin-top:20px;
+        margin-bottom:20px;
+    }
+    .fondo-table{
+        background: #06c;
+    }
+    .radius{
+        border-radius:5%;
+    }
+    .foco:focus{
+        border:2px solid #06c !important;
+    }
+    .quitBorder .v-table tbody tr:not(:last-child) {
+        border-bottom: none !important;
+    }
+    .mytable table tr {
+        background-color: #fff;
+        margin-top:20px !important;
+        margin-bottom:20px !important;
+        border-bottom: none !important;
+    }
+    .theme--light.v-table tbody tr:not(:last-child) {
+        border-bottom: none !important;
+    }
+</style>

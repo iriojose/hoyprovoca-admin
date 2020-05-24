@@ -112,7 +112,7 @@ import Auth from '@/services/Auth';
             head:{
                 title(){
                     return {
-                        inner:'Login',
+                        inner:'Dashboard',
                         separator:' ',
                         complement: ' '
                     }

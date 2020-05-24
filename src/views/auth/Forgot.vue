@@ -26,17 +26,30 @@
                                     v-model="email"
                                     single-line
                                     color="#2950c3"
+                                    :success-messages="success"
                                     :error-messages="errors"
                                     @input="getUser(email)"
                                     :error="error"
                                     label="Ingrese correo electrónico"
-                                ></v-text-field>
+                                >
+                                    <template v-slot:append>
+                                        <v-fade-transition leave-absolute>
+                                            <v-progress-circular
+                                                v-if="loading2"
+                                                size="24"
+                                                color="info"
+                                                indeterminate
+                                            ></v-progress-circular>
+                                            <img v-else width="24" height="24" :src="require('@/assets/logo 3.png')">
+                                        </v-fade-transition>
+                                    </template>
+                                </v-text-field>
 
                                 <v-btn
                                     rounded
                                     color="#2950c3"
                                     block
-                                    :disabled="!error"
+                                    :disabled="success == '' ? true:false "
                                     :loading="loading"
                                     height="40"
                                     @click="sendMail"
@@ -146,10 +159,11 @@ import Usuario from '@/services/Usuario';
                 mensaje:'',
                 type:'error',
                 loading:false,
+                loading2:false,
                 showMessage:false,
                 send:false,
+                success:'',
                 errors:[],
-                error:false,
                 validCode:false,
             }
         },
@@ -212,7 +226,7 @@ import Usuario from '@/services/Usuario';
             },
             async getUser(email){
                 this.errors = [];
-                this.error = false;
+                this.success = '';
 
                 if(email.length <= 0) return this.errors.push('Debe ingresar un email');
 
@@ -220,18 +234,17 @@ import Usuario from '@/services/Usuario';
                 let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/ 
                 if (!regex.test(this.email)) return this.errors.push(`Debe ingresar un email válido`);
 
+                this.loading2 = true;
                 await Usuario().get(`/?email=${email}`).then((response) => {
-                    console.log(response.data);
+                    this.loading2 = false;
                     if(!response.data.data) {
-                        return this.errors.push('Este email no esta registrado')
+                        return this.errors.push('Este email no esta registrado');
                     }else{
-                        this.error = true;
+                        this.success='Email verificado';
                     }
                 }).catch(e => {
                     console.log(e);
-                })
-
-
+                });
             }
         }
     }
