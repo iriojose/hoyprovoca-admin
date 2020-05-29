@@ -3,7 +3,7 @@
         <v-sheet color="grey" class="px-3 pt-3 mb-3" v-if="!usuarios">
             <v-skeleton-loader class="mx-auto" type="table"></v-skeleton-loader>
         </v-sheet>
-        <v-card width="100%" elevation="2" color="#fff" v-else>
+        <v-card width="100%" elevation="0" color="#f7f7f7" v-else>
             <v-card-title class="mb-2">
                 <v-btn 
                     :height="35" color="#1c3faa"
@@ -35,6 +35,7 @@
                 loading-text="Loading... Please wait" 
                 :headers="headers" 
                 :items="usuarios" 
+                hide-default-header
                 class="elevation-0 noBorder theme--light v-table" 
                 :search="search"
                 :headers-length="60"
@@ -189,26 +190,26 @@ import variables from '@/services/variables_globales';
 
     .v-data-table table {
         border-spacing: 0 15px!important;
-        background: #eeeeee;
+        background: #f7f7f7;
+        
     }
 
     .v-data-table table tr{
-        background: #fff;
+        background: #f7f7f7;
     }
 
 
     .noBorder.theme--light.v-data-table tbody tr:not(:last-child) td:last-child, .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {
         border-bottom: thin solid transparent;
-        
     }
 
     .v-table tr:hover:not(.v-table__expanded__content) {
-        background: #fff !important;
-        border-spacing: 0 15px;
+        background: #f7f7f7 !important;
+        /*border-spacing: 0 15px;*/
     }
     
     .mytable table tr {
-        background-color: #fff;
+        background-color: #f7f7f7;
         margin-top:20px !important;
         margin-bottom:20px !important;
         border-bottom: none !important;
