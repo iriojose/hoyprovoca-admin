@@ -1,8 +1,8 @@
 <template>
-    <div class="sombra">
+    <div>
         <BarraLateral />
 
-        <v-app-bar color="#fff" elevation="0" :class="$vuetify.breakpoint.smAndDown || !drawer ? '':'margen'">
+        <v-app-bar color="#f7f7f7" elevation="0" :class="$vuetify.breakpoint.smAndDown || !drawer ? '':'margen'">
             <v-btn fab class="mx-3" small elevation="2" @click="change">
                 <v-icon v-if="drawer">
                     mdi-dots-vertical
@@ -64,6 +64,6 @@ import {mapState,mapActions} from 'vuex';
         margin-left:256px;
     }
     .color{
-        color:#3b61d1;
+        color:#1f3b63;
     }
 </style>

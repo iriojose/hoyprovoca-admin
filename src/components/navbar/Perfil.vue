@@ -12,7 +12,7 @@
                 </v-avatar>
             </template>
             <!-- lista de opciones-->
-            <v-card color="#3b61d1">
+            <v-card color="#1f3b63">
                 <v-list width="200" elevation="0" color="transparent">
                     <v-list-item class="border">
                         <v-list-item-content class="white--text">
@@ -33,14 +33,14 @@
                         </v-list-item-title>        
                     </v-list-item>
 
-                    <v-list-item to="/forgot">   
+                    <!--v-list-item to="/forgot">   
                         <v-list-item-icon>
                             <v-icon color="#fff">mdi-shield-lock</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title class="white--text">
                             Cambiar contraseña
                         </v-list-item-title>        
-                    </v-list-item>
+                    </v-list-item-->
                     
                     <v-list-item @click="logOut()">   
                         <v-list-item-icon>

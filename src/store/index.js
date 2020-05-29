@@ -53,7 +53,8 @@ export default new Vuex.Store({
             state.user.token=null;
             state.user.data={};
             state.user.loggedIn=false;
-            window.localStorage.removeItem('admin_token');//se elimina el token del storage
+            window.localStorage.clear();//se elimina el cache guardado
+            //window.localStorage.removeItem('admin_token');//se elimina el token del storage
         },
     },
     actions: {

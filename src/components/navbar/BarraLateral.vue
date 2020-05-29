@@ -4,11 +4,11 @@
         hide-overlay
         class="mx-auto"
         v-model="drawers"
-        color="#3b61d1"
+        color="#1f3b63"
     >
             
-        <v-row justify="center" class="mt-4">
-            <v-img :src="require('@/assets/logo 4.png')" contain width="60" height="60"></v-img>
+        <v-row justify="center" class="mt-4 mx-5">
+            <v-img :src="require('@/assets/logo 6.png')" contain width="150" height="100"></v-img>
         </v-row>
 
         <v-divider class="mt-5 mb-2 back mx-5"></v-divider>

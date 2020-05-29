@@ -162,7 +162,7 @@ import variables from '@/services/variables_globales';
     }
 </script>
 
-<style lang="scss" >
+<style lang="scss" scoped>
 
     .sombra{
        /*box-shadow: 0px 0px 50px 20px (173, 185, 201, 0.9);*/
