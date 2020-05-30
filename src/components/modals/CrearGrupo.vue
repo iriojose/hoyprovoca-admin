@@ -21,7 +21,7 @@
                 </v-card>
 
                 <!-- formulario-->
-                <v-form v-model="valid" @submit.prevent="" class="my-5">
+                <v-form v-model="valid" @submit.prevent="" class="my-5" v-if="!showMessage">
                     <v-text-field
                         filled single-line
                         label="Nombre" dense
@@ -30,25 +30,25 @@
                         v-model="data.nombre" persistent-hint
                         color="#2950c3" :disabled="loading || showMessage ? true:false"
                     ></v-text-field>
-
-                    <!-- Agregar imagen -->
-                    <v-scroll-x-transition>
-                        <div v-show="$parent.creado" class="text-center font-weight-black my-4">
-                            ¿ Agregar una imagen?
-                        </div>
-                    </v-scroll-x-transition>
-
-                    <v-scroll-x-transition>
-                        <FilePond  
-                            v-show="$parent.creado"
-                            ref="pond"
-                            label-idle="Drop image here..."
-                            labelFileAdded = "Archivo Añadido"
-                            :server="{process}"
-                            :onaddfilestart="initProcess"
-                        />
-                    </v-scroll-x-transition>
                 </v-form>
+
+                <!-- Agregar imagen -->
+                <v-scroll-x-transition>
+                    <div v-show="$parent.creado" class="text-center font-weight-black my-4">
+                        ¿ Agregar una imagen?
+                    </div>
+                </v-scroll-x-transition>
+
+                <v-scroll-x-transition>
+                    <FilePond  
+                        v-show="$parent.creado"
+                        ref="pond"
+                        label-idle="Drop image here..."
+                        labelFileAdded = "Archivo Añadido"
+                        :server="{process}"
+                        :onaddfilestart="initProcess"
+                    />
+                </v-scroll-x-transition>
             </v-card-text>
 
             <!-- botones de acciones -->
@@ -135,18 +135,18 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 this.loading = true;
             },
             //metadata, load, error, progress,fieldName, 
-            process(fieldName, file, metadata, load, error, progress) {
-                progress(true, 0, 1);
-
+            process(fieldName, file, metadata, load, error) {
                 let formdata = new FormData();
                 formdata.append('image',file);
 
                 Images().post(`/main/grupos/${this.$parent.bandera.id}`,formdata).then((response) => {
                     this.$parent.bandera.imagen = response.data.filename;
                     this.respuesta("Imagen añadida.","success");
+                    load("Imagen añadida");
                 }).catch(e =>  {
                     console.log(e);
                     this.respuesta("Error al subir la imagen.","error");
+                    error("Erro al subir la imagen");
                 }); 
             },
         }

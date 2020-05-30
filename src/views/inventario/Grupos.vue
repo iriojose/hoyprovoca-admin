@@ -53,9 +53,9 @@
                         </v-card>
                     </template>
                     <!--template de las acciones -->
-                    <template v-slot:item.action="{}">
+                    <template v-slot:item.action="{ item }">
                         <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2">mdi-border-color</v-icon>
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true">mdi-delete</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
             </v-card-text>
@@ -73,6 +73,19 @@
                 </v-btn>
             </template>
         </CrearGrupo>
+
+        <EliminarGrupo :dialog="dialogBorrar">
+            <template v-slot:close>
+                <v-btn tile @click="dialogBorrar = false" :disabled="eliminado">
+                    Volver
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogBorrar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </EliminarGrupo>
     </div>
 </template>
 
@@ -81,16 +94,19 @@ import Grupos from '@/services/Grupos';
 import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import CrearGrupo from '@/components/modals/CrearGrupo';
+import EliminarGrupo from '@/components/modals/EliminarGrupo';
 
     export default {
         components: {
             Puntos,
-            CrearGrupo
+            CrearGrupo,
+            EliminarGrupo
         },
         data(){
             return {
                 //variables del crud
                 creado:false,
+                eliminado:false,
                 bandera:null,
                 //variables de las tablas
                 ...variables,
@@ -99,6 +115,7 @@ import CrearGrupo from '@/components/modals/CrearGrupo';
                 search:'',
                 loading:false,
                 dialogCrear:false,
+                dialogBorrar:false,
                 grupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -117,7 +134,6 @@ import CrearGrupo from '@/components/modals/CrearGrupo';
         },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('grupos'));
-            console.log(data);
 
             if(data) {
                 this.grupos = data.grupos;
@@ -129,9 +145,20 @@ import CrearGrupo from '@/components/modals/CrearGrupo';
             dialogCrear(){
                 if(!this.dialogCrear){
                     if(this.creado){
+                        this.total +=1;
                         this.grupos.unshift(this.bandera);
                         window.localStorage.setItem('grupos',JSON.stringify({grupos:this.grupos,total:this.total,offset:this.offset}));
                         this.creado = false;
+                    }
+                }
+            },
+            dialogBorrar(){
+                if (!this.dialogBorrar) {
+                    if(this.eliminado) {
+                        this.total -=1;
+                        this.grupos.filter((a,i) => a.id == this.bandera.id ? this.grupos.splice(i,1):null);
+                        window.localStorage.setItem('grupos',JSON.stringify({grupos:this.grupos,total:this.total,offset:this.offset}));
+                        this.eliminado = false;
                     }
                 }
             },
@@ -149,9 +176,10 @@ import CrearGrupo from '@/components/modals/CrearGrupo';
                     console.log(e);
                 });
             },
-            deleteGrupo(){
-
-            }
+            deleteItem(item){
+                this.dialogBorrar = true;
+                this.bandera = Object.assign({},item);
+            },
         }        
     }
 </script>
