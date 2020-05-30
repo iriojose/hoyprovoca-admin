@@ -1,133 +1,104 @@
 <template>
     <div>
-        <v-card width="100%" v-if="$route.name == 'grupos'">
+        <v-card  width="100%">
             <v-card-title>
                 <v-btn 
-                    color="#005598" dark 
-                    class="mb-2 text-capitalize caption" 
-                    @click="dialogGrupo = true"
+                    color="#2950c3" tile @click="dialogCrear = true"
+                    class="text-capitalize white--text rounded"
                 >
                     Nuevo
-                    <v-icon dark class="ml-2">mdi-plus-box</v-icon>
+                    <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
                 </v-btn>
+                <v-spacer class="hidden-sm-and-up"></v-spacer>
                 <v-btn 
-                    @click="getGrupos()" 
-                    dark 
-                    class="mb-2 mx-2 text-capitalize caption" 
-                    color="#005598"
-                    :disabled="bloqueado"
-                >
-                    Ver más 
-                    <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
+                    color="#2950c3" tile 
+                    class="mx-2 text-capitalize white--text rounded" 
+                    :loading="loading" @click="getGrupos()" :disabled="bloqueado"
+                >   
+                    Ver más
+                    <v-icon color="#fff" class="mx-2">mdi-chevron-right</v-icon>
                 </v-btn>
-                <v-spacer></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
                 <v-text-field
-                    v-model="search"
-                    label="Buscar"
-                    single-line
-                    append-icon="mdi-magnify"
-                    type="text"
-                    color="#005598"
-                    solo
-                    hide-details
-                    dense
-                />
+                    class="mx-2 mt-2" append-icon="mdi-magnify"
+                    v-model="search" dense
+                    hide-details color="#2950c3"
+                    filled single-line
+                    rounded label="Buscar..."
+                ></v-text-field>
             </v-card-title>
+
             <v-card-text>
-                <v-data-table 
-                    :loading="loading && '#005598'" 
-                    loading-text="Loading... Please wait" 
+                <v-data-table
+                    :loading="loading && '#2950c3'" 
                     :headers="headers" 
                     :items="grupos" 
                     class="elevation-0" 
                     :search="search"
-                >   
+                >
+                    <!--template de la imagen -->
                     <template v-slot:item.imagen="{item}">
-                        <v-avatar size="50">
+                        <v-avatar size="50" tile>
                             <v-img :src="image+item.imagen"></v-img>
                         </v-avatar>
                     </template>
-                    
+                    <!--template del loader -->
                     <template slot="loading">
-                        <LoaderRect class="mb-12"/> 
+                        <v-card width="100%" height="600" elevation="0">
+                            <v-row justify="center" class="fill-height" align="center">
+                                <Puntos />
+                            </v-row>
+                        </v-card>
                     </template>
-
-                    <template v-slot:item.action="{ item }">
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editar(item)" >mdi-border-color</v-icon>
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
+                    <!--template de las acciones -->
+                    <template v-slot:item.action="{}">
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2">mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
             </v-card-text>
         </v-card>
 
-        <!--modal para crear un grupo -->
-
-        <ModalCreateGrupo :dialog="dialogGrupo">
+        <CrearGrupo :dialog="dialogCrear">
             <template v-slot:close>
-                <v-btn fab small text @click="dialogGrupo = false">
-                    <v-icon>mdi-close</v-icon>
+                <v-btn tile color="#232323" text @click="dialogCrear = false">
+                    Cancelar
                 </v-btn>
             </template>
-        </ModalCreateGrupo>
-
-        <!--modal para editar un grupo -->
-        <ModalEditGrupo :dialog="dialogEditar" :grupo="bandera">
-            <template v-slot:close>
-                <v-btn fab small text @click="dialogEditar = false">
-                    <v-icon>mdi-close</v-icon>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogCrear = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </ModalEditGrupo>
-
-        <!--modal para eliminar un grupo -->
-        <ModalDeleteGrupo :dialog="dialogBorrar">
-            <template v-slot:close>
-                <v-btn fab small text @click="dialogBorrar = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </template>
-            <template v-slot:close2>  
-                <v-btn elevation="3" color="#fff" class="text-capitalize" @click="dialogBorrar = false">
-                    No, volver
-                </v-btn>
-            </template>
-        </ModalDeleteGrupo>
+        </CrearGrupo>
     </div>
 </template>
 
 <script>
 import Grupos from '@/services/Grupos';
-import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
-import ModalDeleteGrupo from '@/components/dialogs/ModalDeleteGrupo';
-import ModalCreateGrupo from '@/components/dialogs/ModalCreateGrupo';
-import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
+import Puntos from '@/components/loaders/Puntos';
+import CrearGrupo from '@/components/modals/CrearGrupo';
 
     export default {
-        components:{
-            LoaderRect,
-            ModalCreateGrupo,
-            ModalEditGrupo,
-            ModalDeleteGrupo
+        components: {
+            Puntos,
+            CrearGrupo
         },
         data(){
             return {
-                ...variables,
-                loading:false,
-                dialogGrupo:false,
-                dialogBorrar:false,
-                dialogEditar:false,
-                eliminado:false,
+                //variables del crud
                 creado:false,
-                icon:'',
-                color:'',
-                mensaje:'',
+                bandera:null,
+                //variables de las tablas
+                ...variables,
                 total:0,
                 offset:0,
                 search:'',
-                bandera:{
-                    imagen:'default.png'
-                },
+                loading:false,
+                dialogCrear:false,
                 grupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -138,58 +109,55 @@ import ModalEditGrupo from '@/components/dialogs/ModalEditGrupo';
                 ],
             }
         },
-        computed:{
+         computed:{
             bloqueado(){//bloquea el boton de ver mas segun la condicion
-                if(this.grupos.length == this.total) return true;
+                if(this.grupos.length >= this.total) return true;
                 else return false;
             }
         },
+        mounted() {
+            let data = JSON.parse(window.localStorage.getItem('grupos'));
+            console.log(data);
+
+            if(data) {
+                this.grupos = data.grupos;
+                this.total = data.total;
+                this.offset = data.offset;
+            }else this.getGrupos();
+        },
         watch: {
-            dialogBorrar(){
-                if (!this.dialogBorrar) {
-                    if(this.eliminado) {
-                        this.grupos.filter((a,i) => a.id == this.bandera.id ? this.grupos.splice(i,1):null)
-                        this.eliminado = false;
-                    }
-                }
-            },
-            dialogGrupo(){
-                if(!this.dialogGrupo){
+            dialogCrear(){
+                if(!this.dialogCrear){
                     if(this.creado){
                         this.grupos.unshift(this.bandera);
+                        window.localStorage.setItem('grupos',JSON.stringify({grupos:this.grupos,total:this.total,offset:this.offset}));
                         this.creado = false;
                     }
                 }
             },
-            dialogEditar(){
-                if (!this.dialogEditar) {
-                    this.grupos.filter(a => a.id == this.bandera.id ? Object.assign(a,this.bandera):null);
-                }
-            }
-        },
-        mounted(){
-            this.getGrupos();
         },
         methods:{
-            getGrupos(){//obtiene todos los grupos
+            getGrupos(){
                 this.loading = true;
-                Grupos().get(`/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
-                    response.data.data.filter(a => this.grupos.push(a));
+                Grupos().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                    this.total = response.data.totalCount;
                     this.offset+=50;
-                    this.total= response.data.totalCount;
+                    response.data.data.filter(a => this.grupos.push(a));
                     this.loading = false;
+                    window.localStorage.setItem('grupos',JSON.stringify({grupos:this.grupos,total:this.total,offset:this.offset}));
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            deleteItem(item){
-                this.dialogBorrar = true;
-                this.bandera = Object.assign({},item);
-            },
-            editar(item){//envia a la ruta editar
-                this.dialogEditar = true;
-                this.bandera = Object.assign({},item);
-            },
-        }  
+            deleteGrupo(){
+
+            }
+        }        
     }
 </script>
+
+<style lang="scss" scoped>
+    .rounded{
+        border-radius:5px;
+    }
+</style>
