@@ -25,11 +25,38 @@
                     <v-text-field
                         filled single-line
                         label="Nombre" dense
-                        rounded hint="Categorías de Productos"
+                        rounded hint="Subcategorías de Productos"
                         :rules="[required('Nombre')]"
                         v-model="data.nombre" persistent-hint
                         color="#2950c3" :disabled="loading || showMessage ? true:false"
                     ></v-text-field>
+
+                    <v-select
+                        dense filled single-line
+                        rounded label="Grupo"
+                        hint="Categorías de productos" persistent-hint
+                        color="#2950c3" :disabled="loading || showMessage ? true:false"
+                        :rules="[requiredObject('Grupo')]" return-object
+                        @change="changeGrupo($event)" :items="grupos"
+                        item-text="nombre" v-model="grupo"
+                    >
+                        <template v-slot:append-item>
+                            <v-row justify="center">
+                                <v-btn 
+                                    @click="getGrupos()" tile 
+                                    color="#232323" :loading="loading2"
+                                    :disabled="bloqueado"
+                                    class="white--text text-capitalize font-weight-bold"
+                                >Ver más</v-btn>
+                            </v-row>
+                        </template>
+                        <template slot='item' slot-scope='{ item }'>
+                            <v-avatar size="40" class="mr-5">
+                                <v-img :src="image+item.imagen"></v-img>
+                            </v-avatar>  
+                            {{ item.nombre }} 
+                        </template>
+                    </v-select>
                 </v-form>
 
                 <!-- Agregar imagen -->
@@ -57,7 +84,7 @@
                 <slot name="close" v-if="!loading"></slot>
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
-                    @click="postGrupo" :loading="loading"
+                    @click="postSubgrupo" :loading="loading"
                     :disabled="!valid"
                 >
                     Guardar
@@ -69,9 +96,11 @@
 
 <script>
 import validations from '@/validations/validations';
+import SubGrupos from '@/services/SubGrupos';
 import Grupos from '@/services/Grupos';
 import Images from '@/services/Images';
 import vueFilePond from 'vue-filepond';
+import variables from '@/services/variables_globales';
 
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js';
 import 'filepond/dist/filepond.min.css';
@@ -90,6 +119,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
         },
         data() {
             return {
+                ...variables,
                 ...validations,
                 type:'error',
                 showMessage:false,
@@ -99,15 +129,37 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 data:{
                     nombre:'',
                     imagen:'default.png',
+                    adm_grupos_id:null,
                     visualizar:0,
                     posicion:1
                 },
+                //variables del modal de grupos
+                grupo:null,
+                grupos:[],
+                total:0,
+                offset:0,
+                loading2:false
             }
         },
         watch: {
             dialog(){
                 if(!this.dialog) this.reset();
             }
+        },
+        computed:{
+            bloqueado(){//bloquea el boton de ver mas segun la condicion
+                if(this.grupos.length >= this.total) return true;
+                else return false;
+            }
+        },
+        mounted() {
+            let data = JSON.parse(window.localStorage.getItem('grupos'));
+
+            if(data) {
+                this.grupos = data.grupos;
+                this.total = data.total;
+                this.offset = data.offset;
+            }else this.getGrupos();
         },
         methods:{
             respuesta(mensaje,type){
@@ -120,16 +172,32 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             reset(){
                 this.showMessage = false;
                 this.data.nombre = '';
+                this.data.grupos_id = null;
+                this.grupo = null;
             },
-            postGrupo(){
+            postSubgrupo(){
                 this.loading = true;
-                Grupos().post("/",{data:this.data}).then((response) => {
+                SubGrupos().post("/",{data:this.data}).then((response) => {
                     this.$parent.creado = true;
                     this.$parent.bandera = response.data.data;
-                    this.respuesta("Grupo creado exitosamente.","success");
+                    this.respuesta("SubGrupo creado exitosamente.","success");
                 }).catch(e => {
                     console.log(e);
-                    this.respuesta("Error al crear el grupo.","error");
+                    this.respuesta("Error al crear el subgrupo.","error");
+                });
+            },
+            changeGrupo(evt){
+                this.data.adm_grupos_id = evt.id;
+            },
+            getGrupos(){
+                this.loading2=true;
+                Grupos().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                    this.total=response.data.totalCount;
+                    response.data.data.filter(a => this.grupos.push(a));
+                    this.loading2=false;
+                    this.offset+=50;
+                }).catch(e => {
+                    console.log(e);
                 });
             },
             initProcess(){
@@ -140,7 +208,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 let formdata = new FormData();
                 formdata.append('image',file);
                 abort();
-                
+
                 Images().post(`/main/grupos/${this.$parent.bandera.id}`,formdata).then((response) => {
                     this.$parent.bandera.imagen = response.data.filename;
                     this.respuesta("Imagen añadida.","success");

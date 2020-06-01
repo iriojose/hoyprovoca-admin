@@ -3,7 +3,7 @@ let required = (properType) => {
 }
 
 let requiredObject = (properType)  => {
-    return v => v && v !== null || `Debe ingresar un objeto ${properType}`
+    return v => v && v !== null || `Debe ingresar un ${properType}`
 }
 
 let minLength = (properType,minLength) => {

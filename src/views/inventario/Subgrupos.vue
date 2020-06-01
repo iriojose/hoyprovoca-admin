@@ -1,132 +1,123 @@
 <template>
     <div>
-        <v-card width="100%" v-if="$route.name == 'subgrupos'">
+        <v-card  width="100%">
             <v-card-title>
                 <v-btn 
-                    color="#005598" dark 
-                    class="mb-2 text-capitalize caption" 
-                    @click="dialogSubgrupo = true"
+                    color="#2950c3" tile @click="dialogCrear = true"
+                    class="text-capitalize white--text rounded"
                 >
                     Nuevo
-                    <v-icon dark class="ml-2">mdi-plus-box</v-icon>
+                    <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
                 </v-btn>
+                <v-spacer class="hidden-sm-and-up"></v-spacer>
                 <v-btn 
-                    @click="getSubgrupos()" 
-                    dark 
-                    class="mb-2 mx-2 text-capitalize caption" 
-                    color="#005598"
-                    :disabled="bloqueado"
-                >
-                    Ver más 
-                    <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
+                    color="#2950c3" tile 
+                    class="mx-2 text-capitalize white--text rounded" 
+                    :loading="loading" @click="getSubgrupos()" :disabled="bloqueado"
+                >   
+                    Ver más
+                    <v-icon color="#fff" class="mx-2">mdi-chevron-right</v-icon>
                 </v-btn>
-                <v-spacer></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
                 <v-text-field
-                    v-model="search"
-                    label="Buscar"
-                    single-line
-                    append-icon="mdi-magnify"
-                    type="text"
-                    color="#005598"
-                    solo
-                    hide-details
-                    dense
-                />
+                    class="mx-2 mt-2" append-icon="mdi-magnify"
+                    v-model="search" dense
+                    hide-details color="#2950c3"
+                    filled single-line
+                    rounded label="Buscar..."
+                ></v-text-field>
             </v-card-title>
+
             <v-card-text>
-                <v-data-table 
-                    :loading="loading && '#005598'" 
-                    loading-text="Loading... Please wait" 
+                <v-data-table
+                    :loading="loading && '#2950c3'" 
                     :headers="headers" 
                     :items="subgrupos" 
                     class="elevation-0" 
                     :search="search"
-                >   
+                >
+                    <!--template de la imagen -->
                     <template v-slot:item.imagen="{item}">
-                        <v-avatar size="50">
+                        <v-avatar size="50" tile>
                             <v-img :src="image+item.imagen"></v-img>
                         </v-avatar>
                     </template>
-                    
+                    <!--template del loader -->
                     <template slot="loading">
-                        <LoaderRect class="mb-12"/> 
+                        <v-card width="100%" height="600" elevation="0">
+                            <v-row justify="center" class="fill-height" align="center">
+                                <Puntos />
+                            </v-row>
+                        </v-card>
                     </template>
-
+                    <!--template de las acciones -->
                     <template v-slot:item.action="{ item }">
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editar(item)" >mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2">mdi-border-color</v-icon>
                         <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
             </v-card-text>
         </v-card>
 
+        <!--modal para crear otro subgrupo -->
+        <CrearSubgrupo :dialog="dialogCrear">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogCrear = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogCrear = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </CrearSubgrupo>
+
         <!--modal para eliminar un subgrupo -->
-
-        <ModalDeleteSubgrupo :dialog="dialogBorrar">
+        <EliminarSubgrupo :dialog="dialogBorrar">
             <template v-slot:close>
-                <v-btn fab small text @click="dialogBorrar = false">
-                    <v-icon>mdi-close</v-icon>
+                <v-btn tile @click="dialogBorrar = false" :disabled="eliminado">
+                    Volver
                 </v-btn>
             </template>
-            <template v-slot:close2>  
-                <v-btn elevation="3" color="#fff" class="text-capitalize" @click="dialogBorrar = false">
-                    No, volver
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogBorrar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </ModalDeleteSubgrupo>
-
-        <!--modal para crear un subgrupo -->
-
-        <ModalCreateSubgrupo :dialog="dialogSubgrupo">
-            <template v-slot:close>
-                <v-btn fab small text @click="dialogSubgrupo = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </template>
-        </ModalCreateSubgrupo>
-
-        <!--modal para editar un grupo -->
-        <ModalEditSubgrupo :dialog="dialogEditar" :grupo="bandera">
-            <template v-slot:close>
-                <v-btn fab small text @click="dialogEditar = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </template>
-        </ModalEditSubgrupo>
+        </EliminarSubgrupo>
     </div>
 </template>
 
 <script>
 import SubGrupos from '@/services/SubGrupos';
-import LoaderRect from '@/components/loaders/LoaderRect';
 import variables from '@/services/variables_globales';
-import ModalDeleteSubgrupo from '@/components/dialogs/ModalDeleteSubgrupo';
-import ModalCreateSubgrupo from '@/components/dialogs/ModalCreateSubgrupo';
-import ModalEditSubgrupo from '@/components/dialogs/ModalEditSubgrupo';
+import Puntos from '@/components/loaders/Puntos';
+import CrearSubgrupo from '@/components/modals/CrearSubgrupo';
+import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
 
     export default {
-        components:{
-            LoaderRect,
-            ModalDeleteSubgrupo,
-            ModalCreateSubgrupo,
-            ModalEditSubgrupo
+        components: {
+            Puntos,
+            CrearSubgrupo,
+            EliminarSubgrupo
         },
         data(){
             return {
-                ...variables,
-                loading:false,
-                dialogSubgrupo:false,
-                dialogBorrar:false,
-                dialogEditar:false,
-                showMessage:false,
-                eliminado:false,
+                //variables del crud
                 creado:false,
-                bandera:{
-                    imagen:'default.png'
-                },
-                offset:0,
+                eliminado:false,
+                bandera:null,
+                //variables de las tablas
+                ...variables,
                 total:0,
+                offset:0,
                 search:'',
+                loading:false,
+                dialogCrear:false,
+                dialogBorrar:false,
                 subgrupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -137,46 +128,52 @@ import ModalEditSubgrupo from '@/components/dialogs/ModalEditSubgrupo';
                 ],
             }
         },
-        watch:{
-            dialogBorrar(){
-                if (!this.dialogBorrar) {
-                    if(this.eliminado) {
-                        this.subgrupos.filter((a,i) => a.id == this.bandera.id ? this.subgrupos.splice(i,1):null)
-                        this.eliminado = false;
-                    }
-                }
-            },
-            dialogSubgrupo(){
-                if(!this.dialogSubgrupo){
-                    if(this.creado){
-                        this.subgrupos.unshift(this.bandera);
-                        this.creado = false;
-                    }
-                }
-            },
-            dialogEditar(){
-                if (!this.dialogEditar) {
-                    this.subgrupos.filter(a => a.id == this.bandera.id ? Object.assign(a,this.bandera):null);
-                }
-            }
-        },
         computed:{
             bloqueado(){//bloquea el boton de ver mas segun la condicion
-                if(this.subgrupos.length == this.total) return true;
+                if(this.subgrupos.length >= this.total) return true;
                 else return false;
             }
         },
         mounted() {
-            this.getSubgrupos();
+            let data = JSON.parse(window.localStorage.getItem('subgrupos'));
+
+            if(data) {
+                this.subgrupos = data.subgrupos;
+                this.total = data.total;
+                this.offset = data.offset;
+            }else this.getSubgrupos();
+        },
+        watch: {
+            dialogCrear(){
+                if(!this.dialogCrear){
+                    if(this.creado){
+                        this.total +=1;
+                        this.subgrupos.unshift(this.bandera);
+                        window.localStorage.setItem('subgrupos',JSON.stringify({subgrupos:this.subgrupos,total:this.total,offset:this.offset}));
+                        this.creado = false;
+                    }
+                }
+            },
+            dialogBorrar(){
+                if (!this.dialogBorrar) {
+                    if(this.eliminado) {
+                        this.total -=1;
+                        this.subgrupos.filter((a,i) => a.id == this.bandera.id ? this.subgrupos.splice(i,1):null);
+                        window.localStorage.setItem('subgrupos',JSON.stringify({subgrupos:this.subgrupos,total:this.total,offset:this.offset}));
+                        this.eliminado = false;
+                    }
+                }
+            },
         },
         methods:{
-            getSubgrupos(){//obtiene todos los grupos
+            getSubgrupos(){
                 this.loading = true;
-                SubGrupos().get(`/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
-                    response.data.data.filter(a => this.subgrupos.push(a));
+                SubGrupos().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                    this.total = response.data.totalCount;
                     this.offset+=50;
-                    this.total= response.data.totalCount;
+                    response.data.data.filter(a => this.subgrupos.push(a));
                     this.loading = false;
+                    window.localStorage.setItem('subgrupos',JSON.stringify({subgrupos:this.subgrupos,total:this.total,offset:this.offset}));
                 }).catch(e => {
                     console.log(e);
                 });
@@ -185,10 +182,12 @@ import ModalEditSubgrupo from '@/components/dialogs/ModalEditSubgrupo';
                 this.dialogBorrar = true;
                 this.bandera = Object.assign({},item);
             },
-            editar(item){//envia a la ruta editar
-                this.dialogEditar = true;
-                this.bandera = Object.assign({},item);
-            },
-        }
+        }        
     }
 </script>
+
+<style lang="scss" scoped>
+    .rounded{
+        border-radius:5px;
+    }
+</style>
