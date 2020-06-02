@@ -10,6 +10,9 @@ export default new Vuex.Store({
             data:{},
             loggedIn:false
         },
+        foto: '',
+        fotoChanged: false,
+        fotoFile: null,
         snackbar:false,
         modalImagen:false,
         modalMensaje:false,
@@ -19,6 +22,15 @@ export default new Vuex.Store({
         series:[0,0,0]
     },
     mutations: {
+        SET_FOTO(state, val) {
+            state.foto = val;
+        },
+        SET_FOTOFILE(state, val) {
+            state.fotoFile = val;
+        },
+        SET_CHANGEFOTO(state, val) {
+            state.fotoChanged = val;
+        },
         SET_DRAWER(state,val){
             val ? state.drawer = true:state.drawer = false;
         },
@@ -84,6 +96,15 @@ export default new Vuex.Store({
         },
         logout({commit}){
             commit('LOGOUT');
+        },
+        setFoto({ commit }, val) {
+            commit('SET_FOTO', val);
+        },
+        setFotoChanged({ commit }, val) {
+            commit('SET_CHANGEFOTO', val);
+        },
+        setFotoFile({ commit }, val) {
+            commit('SET_FOTOFILE', val);
         },
     },
     modules: {

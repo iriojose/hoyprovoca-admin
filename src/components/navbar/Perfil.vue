@@ -8,7 +8,9 @@
         >
             <template v-slot:activator="{ on }">
                 <v-avatar v-on="on" :class="$vuetify.breakpoint.smAndDown ? 'mx-1':'mx-3'" size="40">
-                    <v-img :src="image+user.data.imagen"></v-img>
+                    <v-img
+                        :src="user.data.imagen === 'default.png' && !fotoChanged? fotoChanged ? foto  : require('@/assets/user.jpg') :  fotoChanged ? foto : image+user.data.imagen"
+                    ></v-img>
                 </v-avatar>
             </template>
             <!-- lista de opciones-->
@@ -68,7 +70,7 @@ import router from '@/router';
             }
         },
         computed: {
-            ...mapState(['user'])
+            ...mapState(['user','fotoChanged'])
         },
         methods: {
             ...mapActions(['logout']),
