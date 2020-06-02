@@ -21,7 +21,7 @@
                             <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
                                 <v-col cols="9">
                                     <div :class="card.clases">{{card.text}}</div>
-                                    <div :class="i == 0 ? 'font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+                                    <div :class="i == 0 ? 'overline font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
                                 </v-col>
                                
                                <v-col cols="3">
@@ -79,23 +79,6 @@ import {mapActions} from 'vuex';
                 ]
             }
         },
-        watch: {
-            pedidos(){
-                for (let i = 0; i < this.pedidos.length; i++) {
-                    if(this.pedidos[i].rest_estatus_id == 1){
-                        this.series[0]+=+1;
-                    }else if(this.pedidos[i].rest_estatus_id == 2){
-                        this.series[1]+=+1;
-                    }else if(this.pedidos[i].rest_estatus_id == 3){
-                        this.series[2]+=+1;
-                    }
-                }
-                this.cards[3].number = this.series[1];
-                this.setSeries(this.series);
-                window.localStorage.setItem('series',JSON.stringify(this.series));
-                window.localStorage.setItem('cards',JSON.stringify(this.cards));
-            },
-        },
         mounted() {
             let series = JSON.parse(window.localStorage.getItem('series'));
             let cards = JSON.parse(window.localStorage.getItem('cards'));
@@ -142,8 +125,10 @@ import {mapActions} from 'vuex';
             },
             async getPedidos(){//obtiene todos los pedidos (funcion del administrador)
                 await Pedidos().get("/?fields=id,rest_estatus_id&limit=1000").then((response) => {
-                    if(response.data.data) this.pedidos = response.data.data;
-                    else {
+                    if(response.data.data){
+                        this.pedidos = response.data.data;
+                        this.manejoPedidos();
+                    }else {
                         this.series[0]=1;
                         this.series[1]=1;
                         this.series[2]=1;
@@ -155,6 +140,21 @@ import {mapActions} from 'vuex';
                 }).catch(e => {
                     console.log(e);
                 });
+            },
+            manejoPedidos(){
+                for (let i = 0; i < this.pedidos.length; i++) {
+                    if(this.pedidos[i].rest_estatus_id == 1){
+                        this.series[0]+=+1;
+                    }else if(this.pedidos[i].rest_estatus_id == 2){
+                        this.series[1]+=+1;
+                    }else if(this.pedidos[i].rest_estatus_id == 3){
+                        this.series[2]+=+1;
+                    }
+                }
+                this.cards[3].number = this.series[1];
+                this.setSeries(this.series);
+                window.localStorage.setItem('series',JSON.stringify(this.series));
+                window.localStorage.setItem('cards',JSON.stringify(this.cards));
             },
         }
     }
