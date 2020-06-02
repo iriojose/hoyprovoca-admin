@@ -31,6 +31,7 @@
                         color="#2950c3" :disabled="loading || showMessage ? true:false"
                     ></v-text-field>
 
+                    <!--Select para grupo -->
                     <v-select
                         dense filled single-line
                         rounded label="Grupo"
@@ -50,11 +51,17 @@
                                 >Ver más</v-btn>
                             </v-row>
                         </template>
-                        <template slot='item' slot-scope='{ item }'>
+                        <template slot="item" slot-scope="{ item }">
                             <v-avatar size="40" class="mr-5">
                                 <v-img :src="image+item.imagen"></v-img>
                             </v-avatar>  
                             {{ item.nombre }} 
+                        </template>
+                        <template v-slot:selection="{item}">
+                            <v-avatar size="30" class="mr-5">
+                                <v-img :src="image+item.imagen"></v-img>
+                            </v-avatar>  
+                            <span>{{ item.nombre }}</span>
                         </template>
                     </v-select>
                 </v-form>
@@ -209,7 +216,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 formdata.append('image',file);
                 abort();
 
-                Images().post(`/main/grupos/${this.$parent.bandera.id}`,formdata).then((response) => {
+                Images().post(`/main/subgrupos/${this.$parent.bandera.id}`,formdata).then((response) => {
                     this.$parent.bandera.imagen = response.data.filename;
                     this.respuesta("Imagen añadida.","success");
                     load("Imagen añadida");

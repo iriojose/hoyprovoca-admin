@@ -122,6 +122,7 @@ import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
                     { text: 'Nombre',sortable: true, value: 'nombre'},
+                    { text: 'Grupo', value: 'grupo.nombre'},
                     { text: 'Visualizar', value: 'visualizar'},
                     { text: 'posicion', value: 'posicion'},
                     { text: 'Acciones', value: 'action', sortable: false },
@@ -168,7 +169,7 @@ import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
         methods:{
             getSubgrupos(){
                 this.loading = true;
-                SubGrupos().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                SubGrupos().get(`/?offset=${this.offset}&order=desc&fields=grupo`).then((response) => {
                     this.total = response.data.totalCount;
                     this.offset+=50;
                     response.data.data.filter(a => this.subgrupos.push(a));
