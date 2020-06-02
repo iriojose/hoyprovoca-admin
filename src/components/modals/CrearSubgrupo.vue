@@ -179,7 +179,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             reset(){
                 this.showMessage = false;
                 this.data.nombre = '';
-                this.data.grupos_id = null;
+                this.data.adm_grupos_id = null;
                 this.grupo = null;
             },
             postSubgrupo(){
@@ -187,6 +187,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 SubGrupos().post("/",{data:this.data}).then((response) => {
                     this.$parent.creado = true;
                     this.$parent.bandera = response.data.data;
+                    this.$parent.bandera.grupo = this.grupo;
                     this.respuesta("SubGrupo creado exitosamente.","success");
                 }).catch(e => {
                     console.log(e);

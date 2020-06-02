@@ -14,7 +14,6 @@ import Subgrupos from '@/views/inventario/Subgrupos';
 import Productos from '@/views/inventario/Productos';
 import Profile from '@/views/account/Profile';
 import Notificaciones from '@/views/account/Notificaciones' 
-import NewEmpresa from '@/views/empresas/NewEmpresa';
 import NewUsuario from '@/views/usuarios/NewUsuario';
 import Tasas from '@/views/inventario/Tasas';
 
@@ -65,16 +64,6 @@ const router = new Router({
                     meta:{
                         auth:true
                     },
-                    children:[
-                        {
-                            path:'empresa',
-                            name:"nuevoempresa",
-                            component:NewEmpresa,
-                            meta:{
-                                auth:true
-                            },
-                        }
-                    ]
                 },
                 {
                     path:'profile',
