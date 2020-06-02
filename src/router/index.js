@@ -16,6 +16,7 @@ import Profile from '@/views/account/Profile';
 import Notificaciones from '@/views/account/Notificaciones' 
 import NewUsuario from '@/views/usuarios/NewUsuario';
 import Tasas from '@/views/inventario/Tasas';
+import Ayuda from '@/views/account/ayuda';
 
 Vue.use(Router);
 
@@ -72,6 +73,14 @@ const router = new Router({
                     meta:{
                         auth:true
                     },
+                },
+                {
+                    path: "ayuda",
+                    name: "ayuda",
+                    component: Ayuda,
+                    meta: {
+                        auth: true
+                    }
                 },
                 {
                     path:'notificaciones',

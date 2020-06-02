@@ -1,6 +1,6 @@
 <template>
     <v-card class="fixHeight" style="padding: 25px 45px 0 45px;background:#fdfdfd;" min-height="570px">
-        <div class="font-weight-black title" style="padding-top:10px;">Información de tu cuenta</div>
+        <div class="font-weight-black title mb-5" style="padding-top:10px;text-align:center;">Información de tu cuenta</div>
         <v-row style="position:relative;">
             <v-col cols="12" md="6">
                 <v-list>
@@ -132,6 +132,7 @@ import {mapState,mapActions} from 'vuex';
 import Usuario from '@/services/Usuario';
 import Auth from '@/services/Auth';
 import Images from '@/services/Images';
+import w from '@/services/variables_globales';
 import _ from 'lodash';
 
 export default {
@@ -139,6 +140,7 @@ export default {
     },
     data() {
         return {
+            ...w,
             fotoAux:{},
             loading:false,
             change:false,
@@ -176,8 +178,7 @@ export default {
             },
             deep:true
         },    
-    },
-    methods:{
+    },methods:{
         ...mapActions(['setFoto','setFotoChanged','setFotoFile']),
         async updateUsuario(id){
             let newUserData = {};
@@ -189,19 +190,19 @@ export default {
             : this.password === this. passwordC ?
                 Auth().post('/resetpassword',{data:{user:this.user.data.login,password: this.password}}) 
                 : this.$toasted.error("Las contraseñas no coinciden.", { 
-                    theme: "bubble", 
-                    position: "bottom-right", 
-                    duration : 2000,
-                    icon : 'error_outline'
+                        theme: "bubble", 
+                        position: "bottom-right", 
+                        duration : 2000,
+                        icon : 'error_outline'
                 });
             if(this.fotoFile !== null){
                 let formdata = new FormData();
                 formdata.append('image',this.fotoFile);
                 let fotoLocal = await Images().post(`/usuario/${this.user.data.id}/`,formdata);
-                newUserData.fotografia = fotoLocal.data.filename;
-                this.data.fotografia =  fotoLocal.data.filename;
+                newUserData.imagen = fotoLocal.data.filename;
+                this.data.imagen =  fotoLocal.data.filename;
                 this.setFotoFile(null);
-                this.setFoto(this.user.data.fotografia);
+                this.setFoto(this.user.data.imagen);
                 this.setFotoChanged(false);
                 this.$toasted.info("Foto de perfil actualizada.", { 
                     theme: "bubble", 
@@ -211,7 +212,7 @@ export default {
                 });
             }
             if(!_.isEqual(this.data,this.user.data) || this.telefono !== "" || typeof this.date !== 'undefined'){
-                Usuario().post(`/${id}`,{data:newUserData}).then(async () => {
+                Usuario().post(`/${id}`,{data:{...newUserData}}).then(async () => {
                     let updatedUser = await Usuario().get('/'+id);
                     this.user.data = {...updatedUser.data.data};
                     this.change = false;
@@ -294,8 +295,14 @@ export default {
         background-position:center center!important;
         width: 170px;
         height: 170px;
+        z-index:5!important;
         background-size: 180px !important;
     }
+
+    .bg-center svg,canvas{
+        display: none!important;
+    }
+
     .border{
          border: 2px solid #F5F5F5;
     }
@@ -303,7 +310,8 @@ export default {
         position: absolute!important;
         top: 60%;
         left: 50%;
-        transform:translate(2em,1em)
+        transform:translate(2em,1em);
+        z-index:6!important;
     }
     .abs_center:hover{
         cursor: pointer;

@@ -70,7 +70,7 @@ import router from '@/router';
             }
         },
         computed: {
-            ...mapState(['user','fotoChanged'])
+            ...mapState(['user','fotoChanged','foto'])
         },
         methods: {
             ...mapActions(['logout']),

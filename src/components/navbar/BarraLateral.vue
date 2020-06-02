@@ -82,6 +82,25 @@
                 </v-list-item-title>
             </v-list-item>
         </v-list>
+
+        <v-divider class="mt-5 mb-2 back mx-5"></v-divider>
+
+        <v-list dense nav>
+            <v-list-item 
+                v-for="item in items5" :key="item.title" link 
+                :to="item.to" class="transition white--text font-weight-black"
+                active-class="font-weight-black background color" 
+            >
+                <v-list-item-icon>
+                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
+                        {{item.icon}}
+                    </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title :class="$route.path == item.to ? 'font-weight-medium color':'font-weight-medium white--text'">
+                    {{item.title}}
+                </v-list-item-title>
+            </v-list-item>
+        </v-list>
     </v-navigation-drawer>
 </template>
 
@@ -114,6 +133,9 @@ import variables from '@/services/variables_globales';
                     { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
                     { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
                     { title: 'Cambio de tasa', icon:'mdi-currency-usd',to:'/tasas' },
+                ],
+                items5:[
+                    { title: 'Soporte', icon: 'mdi-help-circle',to:'/ayuda' },
                 ]
             }
         },
