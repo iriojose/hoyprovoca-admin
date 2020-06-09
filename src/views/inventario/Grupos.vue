@@ -54,13 +54,14 @@
                     </template>
                     <!--template de las acciones -->
                     <template v-slot:item.action="{ item }">
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2">mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editItem(item)">mdi-border-color</v-icon>
                         <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
             </v-card-text>
         </v-card>
 
+        <!--modal para crear grupo -->
         <CrearGrupo :dialog="dialogCrear">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogCrear = false">
@@ -74,6 +75,7 @@
             </template>
         </CrearGrupo>
 
+        <!--modal para eliminar grupo -->
         <EliminarGrupo :dialog="dialogBorrar">
             <template v-slot:close>
                 <v-btn tile @click="dialogBorrar = false" :disabled="eliminado">
@@ -86,6 +88,21 @@
                 </v-btn>
             </template>
         </EliminarGrupo>
+
+        <!-- modal para editar grupo -->
+
+        <EditarGrupo :dialog="dialogEditar">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogEditar = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogEditar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </EditarGrupo>
     </div>
 </template>
 
@@ -95,18 +112,21 @@ import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import CrearGrupo from '@/components/modals/CrearGrupo';
 import EliminarGrupo from '@/components/modals/EliminarGrupo';
+import EditarGrupo from '@/components/modals/EditarGrupo';
 
     export default {
         components: {
             Puntos,
             CrearGrupo,
-            EliminarGrupo
+            EliminarGrupo,
+            EditarGrupo
         },
         data(){
             return {
                 //variables del crud
                 creado:false,
                 eliminado:false,
+                editado:false,
                 bandera:null,
                 //variables de las tablas
                 ...variables,
@@ -116,6 +136,7 @@ import EliminarGrupo from '@/components/modals/EliminarGrupo';
                 loading:false,
                 dialogCrear:false,
                 dialogBorrar:false,
+                dialogEditar:false,
                 grupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -126,7 +147,7 @@ import EliminarGrupo from '@/components/modals/EliminarGrupo';
                 ],
             }
         },
-         computed:{
+        computed:{
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.grupos.length >= this.total) return true;
                 else return false;
@@ -162,6 +183,15 @@ import EliminarGrupo from '@/components/modals/EliminarGrupo';
                     }
                 }
             },
+            dialogEditar(){
+                if(!this.dialogEditar){
+                    if(this.editado){
+                        this.grupos.filter((a,i) => a.id == this.bandera.id ? Object.assign(this.grupos[i],this.bandera):null);
+                        window.localStorage.setItem('grupos',JSON.stringify({grupos:this.grupos,total:this.total,offset:this.offset}));
+                        this.editado = false;
+                    }
+                }
+            }
         },
         methods:{
             getGrupos(){
@@ -177,9 +207,13 @@ import EliminarGrupo from '@/components/modals/EliminarGrupo';
                 });
             },
             deleteItem(item){
-                this.dialogBorrar = true;
                 this.bandera = Object.assign({},item);
+                this.dialogBorrar = true;
             },
+            editItem(item){
+                this.bandera = Object.assign({},item);
+                this.dialogEditar = true;
+            }
         }        
     }
 </script>

@@ -2,7 +2,7 @@
     <v-dialog v-model="dialog" width="400" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title class="white--text font-weight-bold fondo">
-                Crear Grupo
+                Crear Empresa
                 <v-spacer></v-spacer>
                 <!-- boton de salir -->
                 <v-scroll-x-transition>
@@ -191,7 +191,6 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     pag_web:'',
                     facebook:'',
                     instagram:'',
-                    imagen:'default.png',
                 },
             }
         },
@@ -215,6 +214,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             postEmpresa(){
                 this.loading = true;
                 Empresa().post("/",{data:this.data}).then((response) => {
+                    console.log(response);
                     this.$parent.creado = true;
                     this.$parent.bandera = response.data.data;
                     this.respuesta("Empresa creada exitosamente.","success");
