@@ -90,7 +90,6 @@
         </EliminarGrupo>
 
         <!-- modal para editar grupo -->
-
         <EditarGrupo :dialog="dialogEditar">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogEditar = false">

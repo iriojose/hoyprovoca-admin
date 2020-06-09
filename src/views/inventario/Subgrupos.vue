@@ -54,7 +54,7 @@
                     </template>
                     <!--template de las acciones -->
                     <template v-slot:item.action="{ item }">
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2">mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editItem(item)">mdi-border-color</v-icon>
                         <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
@@ -88,6 +88,21 @@
                 </v-btn>
             </template>
         </EliminarSubgrupo>
+
+        <!-- modal para editar subgrupo -->
+        <EditarSubgrupo :dialog="dialogEditar">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogEditar = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogEditar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </EditarSubgrupo>
+
     </div>
 </template>
 
@@ -97,12 +112,14 @@ import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import CrearSubgrupo from '@/components/modals/CrearSubgrupo';
 import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
+import EditarSubgrupo from '@/components/modals/EditarSubgrupo';
 
     export default {
         components: {
             Puntos,
             CrearSubgrupo,
-            EliminarSubgrupo
+            EliminarSubgrupo,
+            EditarSubgrupo
         },
         data(){
             return {
@@ -110,6 +127,7 @@ import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
                 creado:false,
                 eliminado:false,
                 bandera:null,
+                editado:false,
                 //variables de las tablas
                 ...variables,
                 total:0,
@@ -118,6 +136,7 @@ import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
                 loading:false,
                 dialogCrear:false,
                 dialogBorrar:false,
+                dialogEditar:false,
                 subgrupos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -165,6 +184,15 @@ import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
                     }
                 }
             },
+            dialogEditar(){
+                if(!this.dialogEditar){
+                    if(this.editado){
+                        this.subgrupos.filter((a,i) => a.id == this.bandera.id ? Object.assign(this.subgrupos[i],this.bandera):null);
+                        window.localStorage.setItem('subgrupos',JSON.stringify({subgrupos:this.subgrupos,total:this.total,offset:this.offset}));
+                        this.editado = false;
+                    }
+                }
+            }
         },
         methods:{
             getSubgrupos(){
@@ -180,9 +208,13 @@ import EliminarSubgrupo from '@/components/modals/EliminarSubgrupo';
                 });
             },
             deleteItem(item){
-                this.dialogBorrar = true;
                 this.bandera = Object.assign({},item);
+                this.dialogBorrar = true;
             },
+            editItem(item){
+                this.bandera = Object.assign({},item);
+                this.dialogEditar = true;
+            }
         }        
     }
 </script>
