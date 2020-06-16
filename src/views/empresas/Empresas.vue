@@ -136,7 +136,8 @@ import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
         },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('empresas'));
-
+            console.log(data);
+            
             if(data) {
                 this.empresas = data.empresas;
                 this.total = data.total;

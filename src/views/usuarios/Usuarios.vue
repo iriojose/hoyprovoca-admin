@@ -1,139 +1,202 @@
 <template>
     <div>
-        <v-sheet color="grey" class="px-3 pt-3 mb-3" v-if="!usuarios">
-            <v-skeleton-loader class="mx-auto" type="table"></v-skeleton-loader>
-        </v-sheet>
-        <v-card width="100%" elevation="0" color="#f7f7f7" v-else>
-            <v-card-title class="mb-2">
+        <v-card  width="100%">
+            <v-card-title>
                 <v-btn 
-                    :height="35" color="#1c3faa"
-                    class="radius font-weight-bold text-capitalize overline white--text" 
+                    color="#2950c3" tile @click="dialogCrear = true"
+                    class="text-capitalize white--text rounded"
                 >
-                    Add new user
+                    Nuevo
+                    <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
                 </v-btn>
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
-                <v-spacer></v-spacer>
+                <v-spacer class="hidden-sm-and-up"></v-spacer>
+                <v-btn 
+                    color="#2950c3" tile 
+                    class="mx-2 text-capitalize white--text rounded" 
+                    :loading="loading" @click="getUsuarios()" :disabled="bloqueado"
+                >   
+                    Ver más
+                    <v-icon color="#fff" class="mx-2">mdi-chevron-right</v-icon>
+                </v-btn>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
                 <v-text-field
-                    dense
-                    height="30"
-                    :full-width="true"
-                    single-line
-                    hide-details
-                    filled
-                    class="foco"
-                    v-model="search"
-                    color="#1c3faa"
-                    label="search..."
-                    append-icon="mdi-magnify"
-                >
-                </v-text-field>
+                    class="mx-2 mt-2" append-icon="mdi-magnify"
+                    v-model="search" dense
+                    hide-details color="#2950c3"
+                    filled single-line
+                    rounded label="Buscar..."
+                ></v-text-field>
             </v-card-title>
 
-            <v-data-table 
-                :loading="loading && '#005598'" 
-                loading-text="Loading... Please wait" 
-                :headers="headers" 
-                :items="usuarios" 
-                hide-default-header
-                class="elevation-0 noBorder theme--light v-table" 
-                :search="search"
-                :headers-length="60"
-                
-            >   
-                <template v-slot:body="{ items }">
-                    <tbody>
-                        <tr v-for="item in items" :key="item.name">
-                            <td>
-                                <v-avatar size="50">
-                                    <v-img :src="image+item.imagen"></v-img>
-                                </v-avatar>
-                            </td>
-                            <td>{{item.nombre}}</td>
-                            <td>{{item.apellido}}</td>
-                            <td>{{item.email}}</td>
-                            <td>{{item.perfil}}</td>
-                            <td align="center">
-                                <div>
-                                    <v-icon 
-                                        :small="$vuetify.breakpoint.smAndDown ? false:true"
-                                        @click="editar(item)" color="#232323"
-                                    >
-                                        mdi-pencil-box-outline
-                                    </v-icon>
-                                    <strong  @click="editar(item)" class="black--text mr-4">Edit</strong>
-                                    <v-icon 
-                                        :small="$vuetify.breakpoint.smAndDown ? false:true"
-                                        @click="editar(item)" color="#E53935"
-                                    >
-                                        mdi-delete-sweep-outline
-                                    </v-icon>
-                                    <strong class="red--text mr-4" @click="editar(item)">Delete</strong>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </template>
-
-                <!--template v-slot:item.imagen="{item}">
-                    <v-avatar size="50">
-                        <v-img :src="image+item.imagen"></v-img>
-                    </v-avatar>
-                </template-->
-                
-                <!--template v-slot:item.action="{ item }">
-                    <div>
-                        <v-icon 
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                            @click="editar(item)" color="#232323"
-                        >
-                            mdi-pencil-box-outline
-                        </v-icon>
-                        <strong  @click="editar(item)" class="black--text mr-4">Edit</strong>
-                        <v-icon 
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                            @click="editar(item)" color="#E53935"
-                        >
-                            mdi-delete-sweep-outline
-                        </v-icon>
-                        <strong class="red--text mr-4" @click="editar(item)">Delete</strong>
-                    </div>
-                </template-->
-            </v-data-table>
+            <v-card-text>
+                <v-data-table
+                    :loading="loading && '#2950c3'" 
+                    :headers="headers" 
+                    :items="usuarios" 
+                    class="elevation-0" 
+                    :search="search"
+                >
+                    <!--template de la imagen -->
+                    <template v-slot:item.imagen="{item}">
+                        <v-avatar size="50" tile>
+                            <v-img :src="image+item.imagen"></v-img>
+                        </v-avatar>
+                    </template>
+                    <!--template del loader -->
+                    <template slot="loading">
+                        <v-card width="100%" height="600" elevation="0">
+                            <v-row justify="center" class="fill-height" align="center">
+                                <Puntos />
+                            </v-row>
+                        </v-card>
+                    </template>
+                    <!--template de las acciones -->
+                    <template v-slot:item.action="{ item }">
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editItem(item)">mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
+                    </template>
+                </v-data-table>
+            </v-card-text>
         </v-card>
-    </div>      
+
+        <!--modal para crear usuario -->
+        <CrearUsuario :dialog="dialogCrear">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogCrear = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogCrear = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </CrearUsuario>
+
+        <!--modal para eliminar grupo -->
+        <EliminarUsuario :dialog="dialogBorrar">
+            <template v-slot:close>
+                <v-btn tile @click="dialogBorrar = false" :disabled="eliminado">
+                    Volver
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogBorrar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </EliminarUsuario>
+
+        <!-- modal para editar grupo -->
+        <!--EditarGrupo :dialog="dialogEditar">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogEditar = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogEditar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </EditarGrupo-->
+    </div>
 </template>
 
 <script>
 import Usuario from '@/services/Usuario';
 import variables from '@/services/variables_globales';
+import Puntos from '@/components/loaders/Puntos';
+import CrearUsuario from '@/components/modals/CrearUsuario';
+import EliminarUsuario from '@/components/modals/EliminarUsuario';
+//import EditarGrupo from '@/components/modals/EditarGrupo';
 
     export default {
-        data() {
+        components: {
+            Puntos,
+            CrearUsuario,
+            EliminarUsuario,
+            //EditarGrupo
+        },
+        data(){
             return {
+                //variables del crud
+                creado:false,
+                eliminado:false,
+                editado:false,
+                bandera:null,
+                //variables de las tablas
                 ...variables,
-                loading:false,
-                search:'',
-                tota:0,
+                total:0,
                 offset:0,
+                search:'',
+                loading:false,
+                dialogCrear:false,
+                dialogBorrar:false,
+                dialogEditar:false,
                 usuarios:[],
                 headers: [
-                    { text: 'IMAGEN',align: 'center',value: 'imagen'},
-                    { text: 'Nombre', value: 'nombre'},
-                    { text: 'Apellido', value: 'apellido' },
-                    { text: 'Email', value: 'email' },
-                    { text: 'Perfil', value: 'perfil' },
-                    { text: 'Acciones', align: 'center',value: 'action'},
+                    { text: 'Imagen', value: 'imagen'},
+                    { text: 'Nombre',sortable: true, value: 'nombre'},
+                    { text: 'Apellido', value: 'apellido'},
+                    { text: 'Email', value: 'email'},
+                    { text: 'Nivel de usuario', value: 'perfil'},
+                    { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
         },
+        computed:{
+            bloqueado(){//bloquea el boton de ver mas segun la condicion
+                if(this.usuarios.length >= this.total) return true;
+                else return false;
+            }
+        },
         mounted() {
-            this.getUsuarios();
+            let data = JSON.parse(window.localStorage.getItem('usuarios'));
+
+            if(data) {
+                this.usuarios = data.usuarios;
+                this.total = data.total;
+                this.offset = data.offset;
+            }else this.getUsuarios();
+        },
+        watch: {
+            dialogCrear(){
+                if(!this.dialogCrear){
+                    if(this.creado){
+                        this.total +=1;
+                        this.usuarios.unshift(this.bandera);
+                        window.localStorage.setItem('usuarios',JSON.stringify({usuarios:this.usuarios,total:this.total,offset:this.offset}));
+                        this.creado = false;
+                    }
+                }
+            },
+            dialogBorrar(){
+                if (!this.dialogBorrar) {
+                    if(this.eliminado) {
+                        this.total -=1;
+                        this.usuarios.filter((a,i) => a.id == this.bandera.id ? this.usuarios.splice(i,1):null);
+                        window.localStorage.setItem('usuarios',JSON.stringify({usuarios:this.usuarios,total:this.total,offset:this.offset}));
+                        this.eliminado = false;
+                    }
+                }
+            },
+            dialogEditar(){
+                if(!this.dialogEditar){
+                    if(this.editado){
+                        this.usuarios.filter((a,i) => a.id == this.bandera.id ? Object.assign(this.usuarios[i],this.bandera):null);
+                        window.localStorage.setItem('usuarios',JSON.stringify({usuarios:this.usuarios,total:this.total,offset:this.offset}));
+                        this.editado = false;
+                    }
+                }
+            }
         },
         methods:{
             getUsuarios(){
                 this.loading = true;
-                Usuario().get(`/?limit=50&offset=${this.offset}&order=desc`).then((response) => {
+                Usuario().get(`/?offset=${this.offset}&order=desc`).then((response) => {
                     for (let i = 0; i < response.data.data.length; i++) {
                         if(response.data.data[i].perfil_id == 1){
                             response.data.data[i].perfil = 'Administrador';
@@ -151,71 +214,25 @@ import variables from '@/services/variables_globales';
                     this.total = response.data.totalCount;
                     this.offset+=50;
                     this.loading = false;
+                    window.localStorage.setItem('usuarios',JSON.stringify({usuarios:this.usuarios,total:this.total,offset:this.offset}));
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            editIten(item) {
-                console.log(item);
+            deleteItem(item){
+                this.bandera = Object.assign({},item);
+                this.dialogBorrar = true;
+            },
+            editItem(item){
+                this.bandera = Object.assign({},item);
+                this.dialogEditar = true;
             }
-        }
+        }        
     }
 </script>
 
 <style lang="scss" scoped>
-
-    .sombra{
-       /*box-shadow: 0px 0px 50px 20px (173, 185, 201, 0.9);*/
-        box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);
-    }
-
-    .fondo-table-body{
-        background: #fff;
-        height: 60px;
-        margin-top:20px;
-        margin-bottom:20px;
-    }
-
-    .fondo-table{
-        background: #06c;
-    }
-
-    .radius{
-        border-radius:5%;
-    }
-
-    .foco:focus{
-        border:2px solid #06c !important;
-    }
-
-    .v-data-table table {
-        border-spacing: 0 15px!important;
-        background: #f7f7f7;
-        
-    }
-
-    .v-data-table table tr{
-        background: #f7f7f7;
-    }
-
-
-    .noBorder.theme--light.v-data-table tbody tr:not(:last-child) td:last-child, .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {
-        border-bottom: thin solid transparent;
-    }
-
-    .v-table tr:hover:not(.v-table__expanded__content) {
-        background: #f7f7f7 !important;
-        /*border-spacing: 0 15px;*/
-    }
-    
-    .mytable table tr {
-        background-color: #f7f7f7;
-        margin-top:20px !important;
-        margin-bottom:20px !important;
-        border-bottom: none !important;
-    }
-
-    .theme--light.v-table tbody tr:not(:last-child) {
-        border-bottom: none !important;
+    .rounded{
+        border-radius:5px;
     }
 </style>

@@ -124,14 +124,20 @@ import {mapActions} from 'vuex';
                 });
             },
             async getPedidos(){//obtiene todos los pedidos (funcion del administrador)
-                await Pedidos().get("/?fields=id,rest_estatus_id&limit=1000").then((response) => {
-                    if(response.data.data){
-                        this.pedidos = response.data.data;
-                        this.manejoPedidos();
+                await Pedidos().get("/stats").then((response) => {
+                    if(response.data){
+                        this.series[0]=response.data.statusNuevo;
+                        this.series[1]=response.data.statusPorFacturar;
+                        this.series[2]=response.data.statusFacturado;
+                        this.cards[3].number = this.series[1];
+                        this.setSeries(this.series);
+                        window.localStorage.setItem('series',JSON.stringify(this.series));
+                        window.localStorage.setItem('cards',JSON.stringify(this.cards));
                     }else {
                         this.series[0]=1;
                         this.series[1]=1;
                         this.series[2]=1;
+                        this.cards[3].number = 0;
                         this.setSeries(this.series);
                         window.localStorage.setItem('series',JSON.stringify(this.series));
                         window.localStorage.setItem('cards',JSON.stringify(this.cards));
@@ -140,21 +146,6 @@ import {mapActions} from 'vuex';
                 }).catch(e => {
                     console.log(e);
                 });
-            },
-            manejoPedidos(){
-                for (let i = 0; i < this.pedidos.length; i++) {
-                    if(this.pedidos[i].rest_estatus_id == 1){
-                        this.series[0]+=+1;
-                    }else if(this.pedidos[i].rest_estatus_id == 2){
-                        this.series[1]+=+1;
-                    }else if(this.pedidos[i].rest_estatus_id == 3){
-                        this.series[2]+=+1;
-                    }
-                }
-                this.cards[3].number = this.series[1];
-                this.setSeries(this.series);
-                window.localStorage.setItem('series',JSON.stringify(this.series));
-                window.localStorage.setItem('cards',JSON.stringify(this.cards));
             },
         }
     }

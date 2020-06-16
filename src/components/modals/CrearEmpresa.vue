@@ -27,7 +27,8 @@
                             filled single-line
                             label="Rif" dense
                             rounded hint="format: J-00000000-0"
-                            :rules="[required('Rif')]"
+                            @input="changeRif()"
+                            :rules="[required('Rif'),minLength('Rif',12),maxLength('Rif',12)]"
                             v-model="data.rif" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
@@ -54,7 +55,8 @@
                             filled single-line
                             label="Telefono" dense
                             rounded hint="format: 0000-000-0000"
-                            :rules="[required('Telefono')]"
+                            @input="changeNumber()"
+                            :rules="[required('Telefono'),minLength('Rif',13),maxLength('Rif',13)]"
                             v-model="data.telefono1" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
@@ -68,7 +70,7 @@
                             filled single-line
                             label="Facebook" dense
                             rounded hint="Url"
-                            :rules="[required('Facebook')]"
+                            :rules="[urlFormat()]"
                             v-model="data.facebook" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
@@ -77,6 +79,7 @@
                             filled single-line
                             label="Correo electrónico" dense
                             rounded hint="Correo electrónico"
+                            :rules="[emailFormat()]"
                             v-model="data.correo_electronico" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
@@ -85,6 +88,7 @@
                             filled single-line
                             label="Pagina web" dense
                             rounded hint="Url"
+                            :rules="[urlFormat()]"
                             v-model="data.pag_web" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
@@ -93,6 +97,7 @@
                             filled single-line
                             label="Instagram" dense
                             rounded hint="Url"
+                            :rules="[urlFormat()]"
                             v-model="data.instagram" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
@@ -210,6 +215,20 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             reset(){
                 this.showMessage = false;
                 this.data.nombre = '';
+            },
+            changeRif(){
+                if(this.data.rif.length == 1){
+                    this.data.rif+='-';
+                }else if(this.data.rif.length == 10){
+                    this.data.rif+='-';
+                }
+            },
+            changeNumber(){
+                if(this.data.telefono1.length == 4){
+                    this.data.telefono1+='-';
+                }else if(this.data.telefono1.length == 8){
+                    this.data.telefono1+='-';
+                }
             },
             postEmpresa(){
                 this.loading = true;
