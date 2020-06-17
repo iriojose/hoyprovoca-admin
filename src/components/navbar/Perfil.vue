@@ -14,23 +14,23 @@
                 </v-avatar>
             </template>
             <!-- lista de opciones-->
-            <v-card color="#1f3b63">
-                <v-list width="200" elevation="0" color="transparent">
+            <v-card>
+                <v-list width="200" elevation="0">
                     <v-list-item class="border">
-                        <v-list-item-content class="white--text">
+                        <v-list-item-content>
                             <v-list-item-title v-text="user.data.nombre+' '+user.data.apellido"></v-list-item-title>
-                            <v-list-item-subtitle class="white--text" v-if="user.data.perfil_id==2">Super usuario</v-list-item-subtitle>
-                            <v-list-item-subtitle class="white--text" v-if="user.data.perfil_id==1">Administrador</v-list-item-subtitle>
+                            <v-list-item-subtitle v-if="user.data.perfil_id==2">Super usuario</v-list-item-subtitle>
+                            <v-list-item-subtitle v-if="user.data.perfil_id==1">Administrador</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
-                <v-divider dark></v-divider>
+                <v-divider></v-divider>
                 <v-list dense color="transparent">
                     <v-list-item to="/profile">   
                         <v-list-item-icon>
-                            <v-icon color="#fff">mdi-cogs</v-icon>
+                            <v-icon>mdi-cogs</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title class="white--text">
+                        <v-list-item-title>
                             Ajustes
                         </v-list-item-title>        
                     </v-list-item>
@@ -46,9 +46,9 @@
                     
                     <v-list-item @click="logOut()">   
                         <v-list-item-icon>
-                            <v-icon color="#fff">mdi-exit-to-app</v-icon>
+                            <v-icon>mdi-exit-to-app</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title class="white--text">
+                        <v-list-item-title>
                             Cerrar sesión
                         </v-list-item-title>        
                     </v-list-item>
