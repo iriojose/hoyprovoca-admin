@@ -8,7 +8,8 @@ export default () => {
         headers:{
             Accept:'application/json',
             'Content-Type':'application/json',
-            "x-access-control":w.header
+            "x-access-control":w.header,
+            "tenant-id":w.tenant_id
         }
     });
 };

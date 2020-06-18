@@ -3,7 +3,7 @@ import w from './variables_globales';
 
 export default () => {
     return axios.create({
-        baseURL:`${w.http}://${w.data}/api/conceptos`,
+        baseURL:`${w.http}://${w.data}/api/direcciones`,
         withCredentials:false,
         headers:{
             Accept:'application/json',

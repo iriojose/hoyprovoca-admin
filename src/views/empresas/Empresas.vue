@@ -54,7 +54,7 @@
                     </template>
                     <!--template de las acciones -->
                     <template v-slot:item.action="{ item }">
-                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2">mdi-border-color</v-icon>
+                        <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" class="mr-2" @click="editItem(item)">mdi-border-color</v-icon>
                         <v-icon :small="$vuetify.breakpoint.smAndDown ? false:true" @click="deleteItem(item)">mdi-delete</v-icon>
                     </template>
                 </v-data-table>
@@ -86,6 +86,20 @@
                 </v-btn>
             </template>
         </EliminarEmpresa>
+
+        <!-- modal para editar empresa -->
+        <EditarEmpresa :dialog="dialogEditar">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogEditar = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogEditar = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </EditarEmpresa>
     </div>
 </template>
 
@@ -95,12 +109,14 @@ import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import CrearEmpresa from '@/components/modals/CrearEmpresa';
 import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
+import EditarEmpresa from '@/components/modals/EditarEmpresa';
 
     export default {
         components: {
             Puntos,
             CrearEmpresa,
-            EliminarEmpresa
+            EliminarEmpresa,
+            EditarEmpresa
         },
         data(){
             return {
@@ -108,6 +124,7 @@ import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
                 creado:false,
                 eliminado:false,
                 bandera:null,
+                editado:false,
                 //variables de las tablas
                 ...variables,
                 total:0,
@@ -116,12 +133,12 @@ import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
                 loading:false,
                 dialogCrear:false,
                 dialogBorrar:false,
+                dialogEditar:false,
                 empresas:[],
                 headers: [
                     { text: 'Imagen',align:'left',sortable: true,value:'imagen',},
                     { text: 'Rif',sortable: true, value: 'rif' },
                     { text: 'Nombre', value: 'nombre_comercial' },
-                    { text: 'Direccion', value: 'direccion' },
                     { text: 'Registrada', value: 'fecha_registro'},
                     { text: 'Telefono', value: 'telefono1' },
                     { text: 'Acciones', value: 'action', sortable: false },
@@ -137,7 +154,7 @@ import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('empresas'));
             console.log(data);
-            
+
             if(data) {
                 this.empresas = data.empresas;
                 this.total = data.total;
@@ -165,11 +182,20 @@ import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
                     }
                 }
             },
+            dialogEditar(){
+                if(!this.dialogEditar){
+                    if(this.editado){
+                        this.empresas.filter((a,i) => a.id == this.bandera.id ? Object.assign(this.empresas[i],this.bandera):null);
+                        window.localStorage.setItem('empresas',JSON.stringify({empresas:this.empresas,total:this.total,offset:this.offset}));
+                        this.editado = false;
+                    }
+                }
+            }
         },
         methods:{
             getEmpresas(){
                 this.loading = true;
-                Empresa().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                Empresa().get(`/?offset=${this.offset}&order=desc&fields=direcciones`).then((response) => {
                     response.data.data.filter(a => a.fecha_registro = a.fecha_registro.substr(0,10));
                     response.data.data.filter(a => this.empresas.push(a));
                     this.total = response.data.totalCount;
@@ -184,6 +210,10 @@ import EliminarEmpresa from '@/components/modals/EliminarEmpresa';
                 this.dialogBorrar = true;
                 this.bandera = Object.assign({},item);
             },
+            editItem(item){
+                this.bandera = Object.assign({},item);
+                this.dialogEditar = true;
+            }
         }        
     }
 </script>

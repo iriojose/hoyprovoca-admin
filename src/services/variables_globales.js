@@ -6,5 +6,6 @@ const auth      = process.env.VUE_APP_SERVICIO_AUTH;
 const image     = process.env.VUE_APP_SERVICIO_IMAGES;
 const imagen    = process.env.VUE_APP_SERVICIO_IMAGEN;
 const talkjs    = process.env.VUE_APP_TALKJS_ID;
+const tenant_id = process.env.VUE_APP_TENANT_ID;
 
-export default { image, data, auth, header, imagen, http, talkjs };
+export default { image, data, auth, header, imagen, http, talkjs,tenant_id };

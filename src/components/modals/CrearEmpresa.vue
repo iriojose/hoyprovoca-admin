@@ -44,15 +44,6 @@
 
                         <v-text-field
                             filled single-line
-                            label="Dirección" dense
-                            rounded hint="Dirección fisica"
-                            :rules="[required('Dirección')]"
-                            v-model="data.direccion" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
-
-                        <v-text-field
-                            filled single-line
                             label="Telefono" dense
                             rounded hint="format: 0000-000-0000"
                             @input="changeNumber()"
@@ -60,6 +51,16 @@
                             v-model="data.telefono1" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
+
+                        <v-select
+                            dense filled single-line
+                            rounded label="Ubicacion"
+                            hint="Ubicacion" persistent-hint
+                            color="#2950c3" :disabled="loading"
+                            :rules="[requiredObject('Direccion')]" return-object
+                            @change="changeUbicacion($event)" :items="municipios"
+                            item-text="municipio"
+                        ></v-select>
                     </v-form>
                 </v-scroll-x-transition>
 
@@ -157,6 +158,7 @@
 <script>
 import validations from '@/validations/validations';
 import Empresa from '@/services/Empresa';
+import Direcciones from '@/services/Direcciones';
 import Images from '@/services/Images';
 import vueFilePond from 'vue-filepond';
 
@@ -186,18 +188,23 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 view:1,
                 loading:false,
                 date:null,
+                municipios:[],
                 data:{
                     rif:'',
                     nombre_comercial:'',
-                    direccion:'',
                     fecha_registro:new Date().toISOString().substr(0, 10),
                     telefono1:'',
                     correo_electronico:'',
                     pag_web:'',
                     facebook:'',
                     instagram:'',
+                    estados_id:"16",
+                    municipios_id:null
                 },
             }
+        },
+        mounted(){
+            this.getMunicipios();
         },
         watch: {
             dialog(){
@@ -214,7 +221,14 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             },
             reset(){
                 this.showMessage = false;
-                this.data.nombre = '';
+                this.data.nombre_comercial = '';
+                this.data.rif = "";
+                this.data.telefono1 = '';
+                this.data.correo_electronico = '';
+                this.data.pag_web = '';
+                this.data.facebook = '';
+                this.data.instagram = '';
+                this.data.municipios_id = null
             },
             changeRif(){
                 if(this.data.rif.length == 1){
@@ -230,6 +244,13 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     this.data.telefono1+='-';
                 }
             },
+            getMunicipios(){
+                Direcciones().get("/16").then((response) => {
+                    this.municipios = response.data.data.detalles;
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             postEmpresa(){
                 this.loading = true;
                 Empresa().post("/",{data:this.data}).then((response) => {
@@ -241,6 +262,9 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     console.log(e);
                     this.respuesta("Error al crear la empresa.","error");
                 });
+            },
+            changeUbicacion(evt){
+                this.data.municipios_id = evt.id;
             },
             next(){
                 this.view = 2;
