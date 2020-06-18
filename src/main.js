@@ -19,10 +19,10 @@ token = window.localStorage.getItem('admin_token');
 
 if(token){
     Auth().post("/sesion",{token:token}).then((response) => {
-        if(response.data.data.perfil_id == 4){
+        if(response.data.response.data.perfil_id == 4){
             store.state.bloqueado = true;
         }else{
-            store.state.user.data = response.data.data;
+            store.state.user.data = response.data.response.data;
             store.state.user.loggedIn = true;
             store.state.user.token = token;
         }

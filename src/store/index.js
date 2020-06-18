@@ -59,7 +59,7 @@ export default new Vuex.Store({
             let data = {};
             data.loggedIn = true;
             data.token = val.token;
-            data.data = val.data;
+            data.data = val.response.data;
             state.user = data;
             window.localStorage.setItem('admin_token',val.token);
         },
