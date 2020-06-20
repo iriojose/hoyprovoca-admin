@@ -123,7 +123,9 @@ import EditarEmpresa from '@/components/modals/EditarEmpresa';
                 //variables del crud
                 creado:false,
                 eliminado:false,
-                bandera:null,
+                bandera:{
+                    imagen:"default.png"
+                },
                 editado:false,
                 //variables de las tablas
                 ...variables,
@@ -154,7 +156,7 @@ import EditarEmpresa from '@/components/modals/EditarEmpresa';
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('empresas'));
             console.log(data);
-
+            
             if(data) {
                 this.empresas = data.empresas;
                 this.total = data.total;
@@ -195,7 +197,7 @@ import EditarEmpresa from '@/components/modals/EditarEmpresa';
         methods:{
             getEmpresas(){
                 this.loading = true;
-                Empresa().get(`/?offset=${this.offset}&order=desc&fields=direcciones`).then((response) => {
+                Empresa().get(`/?offset=${this.offset}&order=desc`).then((response) => {
                     response.data.data.filter(a => a.fecha_registro = a.fecha_registro.substr(0,10));
                     response.data.data.filter(a => this.empresas.push(a));
                     this.total = response.data.totalCount;

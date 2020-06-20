@@ -44,6 +44,15 @@
 
                         <v-text-field
                             filled single-line
+                            label="Correo electrónico" dense
+                            rounded hint="Correo electrónico"
+                            :rules="[required('Correo electrónico'),emailFormat()]"
+                            v-model="data.correo_electronico" persistent-hint
+                            color="#2950c3" :disabled="loading || showMessage ? true:false"
+                        ></v-text-field>
+
+                        <v-text-field
+                            filled single-line
                             label="Telefono" dense
                             rounded hint="format: 0000-000-0000"
                             @input="changeNumber()"
@@ -78,15 +87,6 @@
 
                         <v-text-field
                             filled single-line
-                            label="Correo electrónico" dense
-                            rounded hint="Correo electrónico"
-                            :rules="[emailFormat()]"
-                            v-model="data.correo_electronico" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
-
-                        <v-text-field
-                            filled single-line
                             label="Pagina web" dense
                             rounded hint="Url"
                             :rules="[urlFormat()]"
@@ -100,6 +100,15 @@
                             rounded hint="Url"
                             :rules="[urlFormat()]"
                             v-model="data.instagram" persistent-hint
+                            color="#2950c3" :disabled="loading || showMessage ? true:false"
+                        ></v-text-field>
+
+                        <v-text-field
+                            filled single-line
+                            label="Twitter" dense
+                            rounded hint="Url"
+                            :rules="[urlFormat()]"
+                            v-model="data.twitter" persistent-hint
                             color="#2950c3" :disabled="loading || showMessage ? true:false"
                         ></v-text-field>
                     </v-form>
@@ -137,13 +146,12 @@
                 <v-btn 
                     v-if="view == 1"
                     color="#2950c3" class="text-capitalize white--text" 
-                    :loading="loading" :disabled="!valid" 
+                    :loading="loading"
                     @click="view = 2"
                 >
                     Siguiente
                 </v-btn>
                 <v-btn 
-                    v-if="view == 2"
                     color="#2950c3" class="text-capitalize white--text" 
                     @click="postEmpresa" :loading="loading"
                     :disabled="!valid"
@@ -195,11 +203,14 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     fecha_registro:new Date().toISOString().substr(0, 10),
                     telefono1:'',
                     correo_electronico:'',
-                    pag_web:'',
-                    facebook:'',
-                    instagram:'',
-                    estados_id:"16",
-                    municipios_id:null
+                    direccion:"",
+                    pag_web:"",
+                    facebook:"",
+                    instagram:"",
+                    twitter: "",
+                    estado_id:"16",
+                    municipio_id:null,
+                    imagen:'default.png'
                 },
             }
         },
@@ -221,6 +232,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             },
             reset(){
                 this.showMessage = false;
+                this.view = 1;
                 this.data.nombre_comercial = '';
                 this.data.rif = "";
                 this.data.telefono1 = '';
@@ -264,13 +276,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 });
             },
             changeUbicacion(evt){
-                this.data.municipios_id = evt.id;
-            },
-            next(){
-                this.view = 2;
-            },
-            back(){
-                this.view = 1;
+                this.data.municipio_id = evt.id;
             },
             initProcess(){
                 this.loading = true;
