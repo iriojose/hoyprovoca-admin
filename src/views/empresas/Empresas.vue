@@ -61,6 +61,7 @@
             </v-card-text>
         </v-card>
 
+        <!-- modal para crear empresa -->
         <CrearEmpresa :dialog="dialogCrear">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogCrear = false">
@@ -74,6 +75,7 @@
             </template>
         </CrearEmpresa>
 
+        <!-- modal para eliminar empresa -->
         <EliminarEmpresa :dialog="dialogBorrar">
             <template v-slot:close>
                 <v-btn tile @click="dialogBorrar = false" :disabled="eliminado">

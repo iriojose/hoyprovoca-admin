@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" width="400" transition="dialog-bottom-transition" persistent>
+    <v-dialog v-model="dialog" width="800" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title class="white--text font-weight-bold fondo">
                 Editar Empresa
@@ -22,49 +22,125 @@
 
                 <!--imagen-->
                 <v-row justify="center">
-                    <v-avatar tile size="200" v-if="!cambiarImagen">
-                        <v-img :src="image+$parent.bandera.imagen"></v-img>
-                    </v-avatar>
+                    <v-col cols="12" md="4" sm="12">
+                        <v-avatar tile size="200" v-if="!cambiarImagen">
+                            <v-img :src="image+$parent.bandera.imagen"></v-img>
+                        </v-avatar>
+
+                         <!-- boton -->
+                        <v-row justify="center" class="mt-2">
+                            <v-btn fab color="#1f3b63" small @click="cambiarImagen = !cambiarImagen" :disabled="loading">
+                                <v-icon v-if="!cambiarImagen" color="#fff">mdi-border-color</v-icon>
+                                <v-icon v-else color="#fff">mdi-chevron-left</v-icon>
+                            </v-btn>
+                        </v-row>
+
+                        <!-- Agregar imagen -->
+                        <v-scroll-x-transition>
+                            <div v-show="cambiarImagen" class="text-center font-weight-black my-4">
+                                Actualizar imagen
+                            </div>
+                        </v-scroll-x-transition>
+
+                        <v-scroll-x-transition>
+                            <FilePond  
+                                v-show="cambiarImagen"
+                                ref="pond"
+                                label-idle="Arrastrar imagen aquí"
+                                labelFileAdded = "Archivo Añadido"
+                                :server="{process}"
+                                :onaddfilestart="initProcess"
+                            />
+                        </v-scroll-x-transition>
+
+                        <!-- formulario-->
+                        <v-form v-model="valid" @submit.prevent="" class="my-5">
+                            <v-text-field
+                                filled single-line
+                                label="Rif" dense
+                                rounded hint="Rif de la empresa"
+                                :rules="[required('Rif')]"
+                                v-model="$parent.bandera.rif" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+
+                            <v-text-field
+                                filled single-line
+                                label="Nombre" dense
+                                rounded hint="Nombre comercial"
+                                :rules="[required('Nombre')]"
+                                v-model="$parent.bandera.nombre_comercial" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+
+                            <v-text-field
+                                filled single-line
+                                label="Correo electrónico" dense
+                                rounded hint="Correo electrónico"
+                                :rules="[required('Correo electrónico'),emailFormat()]"
+                                v-model="$parent.bandera.correo_electronico" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+                        </v-form>
+                    </v-col>
+
+                    <v-col cols="12" md="6" sm="12">
+                        <v-form v-model="valid1" @submit.prevent="" class="my-5">
+
+                            <v-text-field
+                                filled single-line
+                                label="Telefono" dense
+                                rounded hint="format: 0000-000-0000"
+                                @input="changeNumber()"
+                                :rules="[required('Telefono'),minLength('Rif',13),maxLength('Rif',13)]"
+                                v-model="$parent.bandera.telefono1" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+
+                            <v-select
+                                dense filled single-line
+                                rounded label="Ubicacion"
+                                hint="Ubicacion" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                                :rules="[requiredObject('Direccion')]" return-object
+                                @change="changeUbicacion($event)" :items="municipios"
+                                item-text="municipio" v-model="municipio"
+                            ></v-select>
+
+                            <v-text-field
+                                filled single-line
+                                label="Facebook" dense
+                                rounded hint="Url"
+                                v-model="$parent.bandera.facebook" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+
+                            <v-text-field
+                                filled single-line
+                                label="Pagina web" dense
+                                rounded hint="Url"
+                                v-model="$parent.bandera.pag_web" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+
+                            <v-text-field
+                                filled single-line
+                                label="Instagram" dense
+                                rounded hint="Url"
+                                v-model="$parent.bandera.instagram" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+
+                            <v-text-field
+                                filled single-line
+                                label="Twitter" dense
+                                rounded hint="Url"
+                                v-model="$parent.bandera.twitter" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                            ></v-text-field>
+                        </v-form>
+                    </v-col>
                 </v-row>
-                 <!-- boton -->
-                <v-row justify="center" class="mt-2">
-                    <v-btn fab color="#1f3b63" small @click="cambiarImagen = !cambiarImagen" :disabled="loading">
-                        <v-icon v-if="!cambiarImagen" color="#fff">mdi-border-color</v-icon>
-                        <v-icon v-else color="#fff">mdi-chevron-left</v-icon>
-                    </v-btn>
-                </v-row>
-
-                 <!-- Agregar imagen -->
-                <v-scroll-x-transition>
-                    <div v-show="cambiarImagen" class="text-center font-weight-black my-4">
-                        Actualizar imagen
-                    </div>
-                </v-scroll-x-transition>
-
-                <v-scroll-x-transition>
-                    <FilePond  
-                        v-show="cambiarImagen"
-                        ref="pond"
-                        label-idle="Drop image here..."
-                        labelFileAdded = "Archivo Añadido"
-                        :server="{process}"
-                        :onaddfilestart="initProcess"
-                    />
-                </v-scroll-x-transition>
-
-                <!-- formulario-->
-                <v-form v-model="valid" @submit.prevent="" class="my-5">
-                    <v-text-field
-                        filled single-line
-                        label="Nombre" dense
-                        rounded hint="Sub Categorías de Productos"
-                        :rules="[required('Nombre')]"
-                        v-model="$parent.bandera.nombre" persistent-hint
-                        color="#2950c3" :disabled="loading"
-                    ></v-text-field>
-
-                    
-                </v-form>
             </v-card-text>
 
             <!-- botones de acciones -->
@@ -74,7 +150,7 @@
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
                     @click="editEmpresa" :loading="loading"
-                    :disabled="!valid"
+                    :disabled="valid && valid1 ? false:true"
                 >
                     Editar
                 </v-btn>
@@ -86,6 +162,7 @@
 <script>
 import validations from '@/validations/validations';
 import Empresa from '@/services/Empresa';
+import Direcciones from '@/services/Direcciones';
 import Images from '@/services/Images';
 import vueFilePond from 'vue-filepond';
 import variables from '@/services/variables_globales';
@@ -114,13 +191,20 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 cambiarImagen:false,
                 mensaje:'',
                 valid:false,
+                valid1:false,
                 loading:false,
+                municipios:[],
+                municipio:null
             }
         },
         watch: {
             dialog(){
                 if(!this.dialog) this.reset();
+                else this.municipios.filter(a => this.$parent.bandera.municipio_id == a.id ? this.municipio = a:null);
             }
+        },
+        mounted() {
+            this.getDirecciones();
         },
         methods:{
             respuesta(mensaje,type){
@@ -129,6 +213,16 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 this.loading = false;
                 this.showMessage = true;
                 //setTimeout(() => {this.showMessage = false}, 2000);
+            },
+            changeNumber(){
+                if(this.$parent.bandera.telefono1.length == 4){
+                    this.$parent.bandera.telefono1+='-';
+                }else if(this.$parent.bandera.telefono1.length == 8){
+                    this.$parent.bandera.telefono1+='-';
+                }
+            },
+            changeUbicacion(evt){
+                this.$parent.bandera.municipio_id = evt.id;
             },
             reset(){
                 this.showMessage = false;
@@ -145,6 +239,13 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("Error al actualizar la empresa.","error");
+                });
+            },
+            getDirecciones(){
+                Direcciones().get("/16").then((response) => {
+                    this.municipios = response.data.data.detalles;
+                }).catch(e => {
+                    console.log(e);
                 });
             },
             initProcess(){
