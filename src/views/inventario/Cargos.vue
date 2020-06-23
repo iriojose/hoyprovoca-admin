@@ -45,24 +45,10 @@
                 </template>
             </v-data-table>
         </v-card>
-
-        <ModalCreateCargo :dialog="dialogCargo">
-            <template v-slot:close>
-                <v-btn fab small text @click="dialogCargo = false">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-            </template>
-            <template v-slot:close2>
-                <v-btn tile @click="dialogCargo = false" class="white--text text-capitalize" color="#232323">
-                    volver
-                </v-btn>
-            </template>
-        </ModalCreateCargo>
     </div>
 </template>
 
 <script>
-import ModalCreateCargo from '@/components/dialogs/ModalCreateCargo';
 import Empresa from '@/services/Empresa';
 import {mapState} from 'vuex';
 import LoaderRect from '@/components/loaders/LoaderRect';
@@ -70,7 +56,6 @@ import LoaderRect from '@/components/loaders/LoaderRect';
     export default {
         components:{
             LoaderRect,
-            ModalCreateCargo
         },
         data(){
             return {
