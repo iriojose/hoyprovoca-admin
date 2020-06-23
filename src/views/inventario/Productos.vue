@@ -61,7 +61,7 @@
             </v-card-text>
         </v-card>
 
-        <!--modal para crear grupo -->
+        <!--modal para crear producto -->
         <!--CrearGrupo :dialog="dialogCrear">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogCrear = false">
@@ -75,8 +75,8 @@
             </template>
         </CrearGrupo-->
 
-        <!--modal para eliminar grupo -->
-        <!--EliminarGrupo :dialog="dialogBorrar">
+        <!--modal para eliminar producto -->
+        <EliminarProducto :dialog="dialogBorrar">
             <template v-slot:close>
                 <v-btn tile @click="dialogBorrar = false" :disabled="eliminado">
                     Volver
@@ -87,7 +87,7 @@
                     <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </EliminarGrupo-->
+        </EliminarProducto>
 
         <!-- modal para editar grupo -->
         <!--EditarGrupo :dialog="dialogEditar">
@@ -112,14 +112,14 @@ import Puntos from '@/components/loaders/Puntos';
 import accounting from 'accounting';
 import {mapState} from 'vuex';
 //import CrearGrupo from '@/components/modals/CrearGrupo';
-//import EliminarGrupo from '@/components/modals/EliminarGrupo';
+import EliminarProducto from '@/components/modals/EliminarProducto';
 //import EditarGrupo from '@/components/modals/EditarGrupo';
 
     export default {
         components: {
             Puntos,
             //CrearGrupo,
-            //EliminarGrupo,
+            EliminarProducto,
             //EditarGrupo
         },
         data(){
@@ -157,7 +157,7 @@ import {mapState} from 'vuex';
         },
         computed:{
             ...mapState(['user']),
-            
+
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.productos.length >= this.total) return true;
                 else return false;
