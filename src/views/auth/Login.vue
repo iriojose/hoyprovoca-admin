@@ -164,13 +164,13 @@ import {mapActions} from 'vuex';
             login(){
                 this.loading = true;
                 Auth().post("/login",{data:this.data}).then((response) =>{
-                    if(response.data.response.data.perfil_id < 3 || response.data.response.data.perfil_id > 4){
+                    if(response.data.response.data.bloqueado == 1){
+                        this.setModalBloqueado(true);
+                        this.loading = false;
+                    }else if(response.data.response.data.perfil_id < 3){
                         this.logged(response.data);
                         this.respuesta("Bienvenido",'success');
                         setTimeout(() => {router.push('/');},500);
-                    }else if(response.data.response.data.perfil_id == 4){
-                        this.setModalBloqueado(true);
-                        this.loading = false;
                     }else{
                         this.respuesta('Este usuario no pertenece a este sistema','error');
                     }
