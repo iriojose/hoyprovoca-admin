@@ -73,9 +73,11 @@ import Usuario from '@/services/Usuario';
                 //setTimeout(() => {this.showMessage = false}, 2000);
             },
             deleteUsuario(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
+                this.loading = true;
                 Usuario().delete(`/${this.$parent.bandera.id}`).then(() => {
                     this.$parent.eliminado = true;
                     this.respuesta("Usuario eliminado exitosamente.","success");
+                    this.loading = false;
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("Error de conección.","#D32F2F");

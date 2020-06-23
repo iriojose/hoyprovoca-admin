@@ -143,6 +143,7 @@ import EliminarUsuario from '@/components/modals/EliminarUsuario';
                     { text: 'Apellido', value: 'apellido'},
                     { text: 'Email', value: 'email'},
                     { text: 'Nivel de usuario', value: 'perfil'},
+                    { text: 'Estado', value: 'estado'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
@@ -197,6 +198,7 @@ import EliminarUsuario from '@/components/modals/EliminarUsuario';
             getUsuarios(){
                 this.loading = true;
                 Usuario().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                    console.log(response);
                     for (let i = 0; i < response.data.data.length; i++) {
                         if(response.data.data[i].perfil_id == 1){
                             response.data.data[i].perfil = 'Administrador';
@@ -204,11 +206,9 @@ import EliminarUsuario from '@/components/modals/EliminarUsuario';
                             response.data.data[i].perfil = 'Super usuario';
                         }else if(response.data.data[i].perfil_id == 3){
                             response.data.data[i].perfil = 'Cliente';
-                        }else if(response.data.data[i].perfil_id == 4){
-                            response.data.data[i].perfil = 'Bloqueado';
-                        }else if(response.data.data[i].perfil_id == 5){
-                            response.data.data[i].perfil = 'Repartidor';
                         }
+                        if(response.data.data[i].bloqueado == 0) response.data.data[i].estado = "Activo";
+                        else response.data.data[i].estado = "Bloqueado";
                         this.usuarios.push(response.data.data[i]);
                     }
                     this.total = response.data.totalCount;
