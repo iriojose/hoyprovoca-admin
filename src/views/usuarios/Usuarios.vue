@@ -89,8 +89,8 @@
             </template>
         </EliminarUsuario>
 
-        <!-- modal para editar grupo -->
-        <!--EditarGrupo :dialog="dialogEditar">
+        <!-- modal para editar usuario -->
+        <EditarUsuario :dialog="dialogEditar">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogEditar = false">
                     Cancelar
@@ -101,7 +101,7 @@
                     <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </EditarGrupo-->
+        </EditarUsuario>
     </div>
 </template>
 
@@ -111,14 +111,14 @@ import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import CrearUsuario from '@/components/modals/CrearUsuario';
 import EliminarUsuario from '@/components/modals/EliminarUsuario';
-//import EditarGrupo from '@/components/modals/EditarGrupo';
+import EditarUsuario from '@/components/modals/EditarUsuario';
 
     export default {
         components: {
             Puntos,
             CrearUsuario,
             EliminarUsuario,
-            //EditarGrupo
+            EditarUsuario
         },
         data(){
             return {
