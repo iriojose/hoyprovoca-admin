@@ -210,6 +210,7 @@ import validations from '@/validations/validations';
 import Usuario from '@/services/Usuario';
 import Auth from '@/services/Auth';
 import Empresa from '@/services/Empresa';
+import variables from '@/services/variables_globales';
 //import Clientes from '@/services/Clientes';
 //import Vendedores from '@/services/Vendedores';
 import Images from '@/services/Images';
@@ -233,6 +234,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
         data() {
             return {
                 e1:1,
+                ...variables,
                 ...validations,
                 type:'error',
                 showMessage:false,
@@ -346,14 +348,14 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     this.$parent.creado = true;
                     this.$parent.bandera = response.data.response.data;
                     this.$parent.bandera.estado = "Activo";
-                    this.items.filter(a => a.id == this.$parent.bandera.perfil_id ? this.$parent.bandera.perfil = a.nombre:null)
+                    this.items.filter(a => a.id == this.$parent.bandera.perfil_id ? this.$parent.bandera.perfil = a.nombre:null);
                     this.respuesta("Usuario creado exitosamente.","success");
 
-                    if(this.$parent.bandera.perfil_id == 2){
+                    /*if(this.$parent.bandera.perfil_id == 2){
                         this.postVendedor();
                     }else if(this.$parent.bandera.perfil_id == 3){
                         this.postClientes();
-                    }
+                    }*/
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("Error al crear el usuario.","error");
