@@ -126,7 +126,9 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                 creado:false,
                 eliminado:false,
                 editado:false,
-                bandera:null,
+                bandera:{
+                    imagen:"default.png"
+                },
                 //variables de las tablas
                 ...variables,
                 total:0,

@@ -21,7 +21,7 @@
                 </v-card>
 
                 <!-- formulario-->
-                <v-form v-model="valid" @submit.prevent="" class="my-5" v-if="!showMessage">
+                <v-form v-model="valid" @submit.prevent="" class="my-5">
                     <v-stepper v-model="e1" class="elevation-0" non-linear>
                         <v-stepper-header class="elevation-0">
                             <v-stepper-step color="#2950c3" step="1" editable></v-stepper-step>
@@ -116,7 +116,7 @@
                                     dense :disabled="loading"
                                     v-model="$parent.bandera.login" single-line
                                     type="text" color="#0f2441"
-                                    :rules="[required('Nombre de usuario'),minLength('Nombre de usuario',6)]"
+                                    :rules="[required('Nombre de usuario'),minLength('Nombre de usuario',4)]"
                                     label="Nombre de usuario" hint="Ej: prueba2121" 
                                 ></v-text-field>
 
@@ -185,7 +185,7 @@
                 </v-btn>   
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
-                    @click="BloquearUsuario" :loading="loading"
+                    @click="DesbloquearUsuario" :loading="loading"
                     v-else
                 >
                     Desbloquear
@@ -262,6 +262,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 this.showMessage = true;
             },
             init(){
+                this.$parent.bandera.fecha_nac.substr(0, 10); 
                 this.items.filter(a => a.id == this.$parent.bandera.perfil_id ? this.nivel=a:null);
                 if(this.$parent.bandera.perfil_id == 2){
                     this.ver = true;
@@ -284,9 +285,15 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 }
             },
             editUsuario(){
+                let auxPerfil = this.$parent.bandera.perfil;
+                let auxEstado = this.$parent.bandera.estado;
+                delete this.$parent.bandera.estado;
+                delete this.$parent.bandera.perfil;
                 this.loading = true;
                 Usuario().post(`/${this.$parent.bandera.id}`,{data:this.$parent.bandera}).then(() => {
                     this.$parent.editado = true;
+                    this.$parent.bandera.estado = auxEstado;
+                    this.$parent.bandera.perfil = auxPerfil;
                     this.respuesta("Usuario actualizado exitosamente.","success");
                 }).catch(e => {
                     console.log(e);
