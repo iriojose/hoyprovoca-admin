@@ -14,7 +14,6 @@ import Subgrupos from '@/views/inventario/Subgrupos';
 import Productos from '@/views/inventario/Productos';
 import Profile from '@/views/account/Profile';
 import Notificaciones from '@/views/account/Notificaciones' 
-import Tasas from '@/views/inventario/Tasas';
 import Ayuda from '@/views/account/ayuda';
 
 Vue.use(Router);
@@ -111,14 +110,6 @@ const router = new Router({
                         auth:true
                     },
                 },
-                {
-                    path:'tasas',
-                    name:"tasas",
-                    component:Tasas,
-                    meta:{
-                        auth:true
-                    },
-                }
             ]
 
 		},

@@ -194,7 +194,3 @@ import ModalCreateProducto from '@/components/dialogs/ModalCreateProducto';
         }        
     }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
