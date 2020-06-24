@@ -21,7 +21,7 @@
                             <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
                                 <v-col cols="9">
                                     <div :class="card.clases">{{card.text}}</div>
-                                    <div :class="i == 0 ? 'overline font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+                                    <div :class="i == 0 ? 'subtitle-1 font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
                                 </v-col>
                                
                                <v-col cols="3">
@@ -39,10 +39,10 @@
 
         <v-row justify="center">
             <v-col cols="12" md="7" sm="12">
-                <ChartLine />
+                <ChartDonut />
             </v-col>
             <v-col cols="12" md="5" sm="12">
-                <ChartDonut />
+                <CardTasa />
             </v-col>
         </v-row>
     </div>
@@ -50,21 +50,20 @@
 
 <script>
 import ChartDonut from '@/components/charts/ChartDonut';
-import ChartLine from '@/components/charts/ChartLine';
 import Puntos from '@/components/loaders/Puntos';
 import Usuario from '@/services/Usuario';
 import Pedidos from '@/services/Pedidos';
 import Empresa from '@/services/Empresa';
 import Factura from '@/services/Factura';
-//import Cambio from '@/services/Cambio';
+import CardTasa from '@/components/cards/CardTasa';
 import accounting from 'accounting';
 import {mapActions} from 'vuex';
 
     export default {
         components:{
             ChartDonut,
-            ChartLine,
-            Puntos
+            Puntos,
+            CardTasa
         },
         data() {
             return {

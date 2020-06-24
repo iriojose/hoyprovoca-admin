@@ -152,7 +152,6 @@ import CrearCargo from '@/components/modals/CrearCargo';
                         this.cargos = [];
                     }
                     this.loading = false;
-                    console.log(response);
                 }).catch(e => {
                     console.log(e);
                 });

@@ -92,6 +92,6 @@ import {mapState} from 'vuex';
         box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);
     }
     .color{
-        color:#3b61d1;
+        color:#232323;
     }
 </style>

@@ -294,7 +294,7 @@ import accounting from 'accounting';
                     this.$parent.bandera.subgrupo = auxSubgrupo;
                     this.$parent.bandera.existencias = auxExistencia;
                     this.$parent.bandera.precio_bs = accounting.formatMoney(+this.$parent.bandera.precio_a,{symbol:"Bs ",thousand:'.',decimal:','});
-                    this.$parent.bandera.precio_do = accounting.formatMoney(+this.$parent.bandera.precio_dolar,{symbol:"$",thousand:',',decimal:'.'})
+                    this.$parent.bandera.precio_do = accounting.formatMoney(+this.$parent.bandera.precio_dolar,{symbol:"$",thousand:',',decimal:'.'});
                     this.respuesta("Producto actualizado exitosamente.","success");
                 }).catch(e => {
                     console.log(e);
