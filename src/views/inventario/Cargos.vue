@@ -1,70 +1,102 @@
 <template>
     <div>
-        <v-card width="100%">
-            <v-toolbar flat color="#fff">
+        <v-card  width="100%">
+            <v-card-title>
                 <v-btn 
-                    @click="getCargos(user.data.adm_empresa_id)" 
-                    dark 
-                    class="mb-2 mx-2 text-capitalize caption" 
-                    color="#005598"
-                    :disabled="cargos.length == total || loading ? true:false"
-                >
-                    Ver más 
-                    <v-icon dark class="ml-2">mdi-chevron-right-box</v-icon>
-                </v-btn>
-                <v-btn 
-                    color="#005598" dark 
-                    class="mb-2 text-capitalize caption" 
-                    @click="dialogCargo = true"
+                    color="#2950c3" tile @click="dialogCrear = true"
+                    class="text-capitalize white--text rounded"
                 >
                     Nuevo
-                    <v-icon dark class="ml-2">mdi-plus-box</v-icon>
+                    <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
                 </v-btn>
-                <v-spacer></v-spacer>
+                <v-spacer class="hidden-sm-and-up"></v-spacer>
+                <v-btn 
+                    color="#2950c3" tile 
+                    class="mx-2 text-capitalize white--text rounded" 
+                    :loading="loading" @click="getCargos()" :disabled="bloqueado"
+                >   
+                    Ver más
+                    <v-icon color="#fff" class="mx-2">mdi-chevron-right</v-icon>
+                </v-btn>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
+                <v-spacer class="hidden-sm-and-down"></v-spacer>
                 <v-text-field
-                    v-model="search"
-                    label="Buscar"
-                    single-line
-                    append-icon="mdi-magnify"
-                    type="text"
-                    color="#005598"
-                    hide-details
-                    dense
-                />
-            </v-toolbar>
-            <v-data-table 
-                :loading="loading && '#005598'" 
-                loading-text="Loading... Please wait" 
-                :headers="headers" 
-                :items="cargos" 
-                class="elevation-0" 
-                :search="search"
-            >   
-                <template slot="loading">
-                    <LoaderRect class="mb-12"/> 
-                </template>
-            </v-data-table>
+                    class="mx-2 mt-2" append-icon="mdi-magnify"
+                    v-model="search" dense
+                    hide-details color="#2950c3"
+                    filled single-line
+                    rounded label="Buscar..."
+                ></v-text-field>
+            </v-card-title>
+
+            <v-card-text>
+                <v-data-table
+                    :loading="loading && '#2950c3'" 
+                    :headers="headers" 
+                    :items="cargos" 
+                    class="elevation-0" 
+                    :search="search"
+                >
+                    <!--template de la imagen -->
+                    <template v-slot:item.imagen="{item}">
+                        <v-avatar size="50" tile>
+                            <v-img :src="image+item.imagen"></v-img>
+                        </v-avatar>
+                    </template>
+                    <!--template del loader -->
+                    <template slot="loading">
+                        <v-card width="100%" height="600" elevation="0">
+                            <v-row justify="center" class="fill-height" align="center">
+                                <Puntos />
+                            </v-row>
+                        </v-card>
+                    </template>
+                </v-data-table>
+            </v-card-text>
         </v-card>
+
+        <!--modal para crear cargo -->
+        <!--CrearGrupo :dialog="dialogCrear">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialogCrear = false">
+                    Cancelar
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialogCrear = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </CrearGrupo-->
     </div>
 </template>
 
 <script>
 import Empresa from '@/services/Empresa';
+import variables from '@/services/variables_globales';
+import Puntos from '@/components/loaders/Puntos';
 import {mapState} from 'vuex';
-import LoaderRect from '@/components/loaders/LoaderRect';
+//import CrearGrupo from '@/components/modals/CrearGrupo';
 
     export default {
-        components:{
-            LoaderRect,
+        components: {
+            Puntos,
+            //CrearGrupo,
         },
         data(){
             return {
-                loading:false,
-                dialogCargo:false,
-                search:'',
-                offset:0,
+                //variables del crud
+                creado:false,
+                bandera:null,
+                //variables de las tablas
+                ...variables,
                 total:0,
-                cargos:[],
+                offset:0,
+                search:'',
+                loading:false,
+                dialogCrear:false,
+                grupos:[],
                 headers: [
                     { text: 'Fecha', value: 'fecha_at',align:'center'},
                     { text: 'Producto',sortable: true, value:'concepto.nombre'},
@@ -73,16 +105,34 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                 ],
             }
         },
-        watch: {
-            dialogCargo(){
-                if (!this.dialogCargo) this.mostRecent(this.user.data.adm_empresa_id);
-            }
+        mounted() {
+            let data = JSON.parse(window.localStorage.getItem('cargos'));
+
+            if(data) {
+                this.cargos = data.cargos;
+                this.total = data.total;
+                this.offset = data.offset;
+            }else this.getCargos(this.user.data.adm_empresa_id);
         },
         computed:{
-            ...mapState(['user'])
+            ...mapState(['user']),
+
+            bloqueado(){//bloquea el boton de ver mas segun la condicion
+                if(this.cargos.length >= this.total) return true;
+                else return false;
+            }
         },
-        mounted() {
-            this.getCargos(this.user.data.adm_empresa_id)
+        watch: {
+            dialogCrear(){
+                if(!this.dialogCrear){
+                    if(this.creado){
+                        this.total +=1;
+                        this.cargos.unshift(this.bandera);
+                        window.localStorage.setItem('cargos',JSON.stringify({cargos:this.cargos,total:this.total,offset:this.offset}));
+                        this.creado = false;
+                    }
+                }
+            },
         },
         methods:{
             getCargos(id){
@@ -97,6 +147,7 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                         response.data.data.filter(a => this.cargos.push(a));
                         this.offset+=50;
                         this.total= response.data.totalCount;
+                        window.localStorage.setItem('cargos',JSON.stringify({cargos:this.cargos,total:this.total,offset:this.offset}));
                     }else{
                         this.cargos = [];
                     }
@@ -105,17 +156,12 @@ import LoaderRect from '@/components/loaders/LoaderRect';
                     console.log(e);
                 });
             },
-            mostRecent(id){
-                Empresa().get(`${id}/cargos/?limit=1&order=desc`).then((response) => {
-                    if(response.data.data[0].id !== this.cargos[0].id){
-                        response.data.data[0].usuario = this.user.data.nombre + this.user.data.apellido;
-                        response.data.data[0].fecha_at = response.data.data[0].fecha_at.substr(0,10);
-                        this.cargos.unshift(response.data.data[0]);
-                    }
-                }).catch(e => {
-                    console.log(e);
-                });
-            },
-        }  
+        }        
     }
 </script>
+
+<style lang="scss" scoped>
+    .rounded{
+        border-radius:5px;
+    }
+</style>
