@@ -24,11 +24,11 @@
                 <v-form v-model="valid" @submit.prevent="" class="my-5" v-if="!showMessage">
                     <v-stepper v-model="e1" class="elevation-0" non-linear>
                         <v-stepper-header class="elevation-0">
-                            <v-stepper-step color="#2950c3" step="1" editable>Datos</v-stepper-step>
+                            <v-stepper-step color="#2950c3" step="1" editable></v-stepper-step>
                             <v-divider></v-divider>
-                            <v-stepper-step color="#2950c3" step="2" editable>Privados</v-stepper-step>
+                            <v-stepper-step color="#2950c3" step="2" editable></v-stepper-step>
                             <v-divider></v-divider>
-                            <v-stepper-step color="#2950c3" step="3" editable>Nivel</v-stepper-step>
+                            <v-stepper-step color="#2950c3" step="3" editable></v-stepper-step>
                         </v-stepper-header>
 
                         <v-stepper-items>

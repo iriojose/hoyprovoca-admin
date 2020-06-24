@@ -127,12 +127,11 @@ import variables from '@/services/variables_globales';
                 ],
                 items3:[
                     { title: 'Grupos', icon: 'mdi-account-group',to:'/grupos' },
-                    { title: 'Sub grupos', icon: 'mdi-sitemap',to:'/subgrupos' },
+                    { title: 'Subgrupos', icon: 'mdi-sitemap',to:'/subgrupos' },
                 ],
                 items4:[
                     { title: 'Productos', icon: 'mdi-food-fork-drink',to:'/productos' },
                     { title: 'Cargos', icon: 'mdi-package-down',to:'/cargos' },
-                    { title: 'Cambio de tasa', icon:'mdi-currency-usd',to:'/tasas' },
                 ],
                 items5:[
                     { title: 'Soporte', icon: 'mdi-help-circle',to:'/ayuda' },

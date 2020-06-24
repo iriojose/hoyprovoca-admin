@@ -62,7 +62,7 @@
         </v-card>
 
         <!--modal para crear producto -->
-        <!--CrearGrupo :dialog="dialogCrear">
+        <CrearProducto :dialog="dialogCrear">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogCrear = false">
                     Cancelar
@@ -73,7 +73,7 @@
                     <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </CrearGrupo-->
+        </CrearProducto>
 
         <!--modal para eliminar producto -->
         <EliminarProducto :dialog="dialogBorrar">
@@ -111,14 +111,14 @@ import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import accounting from 'accounting';
 import {mapState} from 'vuex';
-//import CrearGrupo from '@/components/modals/CrearGrupo';
+import CrearProducto from '@/components/modals/CrearProducto';
 import EliminarProducto from '@/components/modals/EliminarProducto';
 //import EditarGrupo from '@/components/modals/EditarGrupo';
 
     export default {
         components: {
             Puntos,
-            //CrearGrupo,
+            CrearProducto,
             EliminarProducto,
             //EditarGrupo
         },
@@ -206,7 +206,7 @@ import EliminarProducto from '@/components/modals/EliminarProducto';
         methods:{
             getConceptos(){
                 this.loading = true;
-                Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&offset=${this.offset}&fields=grupo,subgrupo,existencias`).then((response) => {
+                Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&order=desc&offset=${this.offset}&fields=grupo,subgrupo,existencias`).then((response) => {
                     this.total= response.data.totalCount;
                     this.offset+=50;
                     response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
