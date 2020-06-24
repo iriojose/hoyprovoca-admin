@@ -57,7 +57,7 @@
         </v-card>
 
         <!--modal para crear cargo -->
-        <!--CrearGrupo :dialog="dialogCrear">
+        <CrearCargo :dialog="dialogCrear">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogCrear = false">
                     Cancelar
@@ -68,7 +68,7 @@
                     <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </CrearGrupo-->
+        </CrearCargo>
     </div>
 </template>
 
@@ -77,12 +77,12 @@ import Empresa from '@/services/Empresa';
 import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import {mapState} from 'vuex';
-//import CrearGrupo from '@/components/modals/CrearGrupo';
+import CrearCargo from '@/components/modals/CrearCargo';
 
     export default {
         components: {
             Puntos,
-            //CrearGrupo,
+            CrearCargo,
         },
         data(){
             return {
@@ -96,7 +96,7 @@ import {mapState} from 'vuex';
                 search:'',
                 loading:false,
                 dialogCrear:false,
-                grupos:[],
+                cargos:[],
                 headers: [
                     { text: 'Fecha', value: 'fecha_at',align:'center'},
                     { text: 'Producto',sortable: true, value:'concepto.nombre'},
@@ -152,6 +152,7 @@ import {mapState} from 'vuex';
                         this.cargos = [];
                     }
                     this.loading = false;
+                    console.log(response);
                 }).catch(e => {
                     console.log(e);
                 });
