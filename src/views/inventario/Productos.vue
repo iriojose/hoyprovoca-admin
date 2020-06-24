@@ -90,7 +90,7 @@
         </EliminarProducto>
 
         <!-- modal para editar grupo -->
-        <!--EditarGrupo :dialog="dialogEditar">
+        <EditarProducto :dialog="dialogEditar">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialogEditar = false">
                     Cancelar
@@ -101,7 +101,7 @@
                     <v-icon color="#232323">mdi-close</v-icon>
                 </v-btn>
             </template>
-        </EditarGrupo-->
+        </EditarProducto>
     </div>
 </template>
 
@@ -113,14 +113,14 @@ import accounting from 'accounting';
 import {mapState} from 'vuex';
 import CrearProducto from '@/components/modals/CrearProducto';
 import EliminarProducto from '@/components/modals/EliminarProducto';
-//import EditarGrupo from '@/components/modals/EditarGrupo';
+import EditarProducto from '@/components/modals/EditarProducto';
 
     export default {
         components: {
             Puntos,
             CrearProducto,
             EliminarProducto,
-            //EditarGrupo
+            EditarProducto
         },
         data(){
             return {
@@ -148,8 +148,8 @@ import EliminarProducto from '@/components/modals/EliminarProducto';
                     //{ text: 'Referencia', value: 'referencia'},
                     { text: 'Grupo', value: 'grupo.nombre'},
                     { text: 'Subgrupo', value: 'subgrupo.nombre'},
-                    { text: 'Precio Bs', value: 'precio_a'},
-                    { text: 'Precio $', value: 'precio_dolar'},
+                    { text: 'Precio Bs', value: 'precio_bs'},
+                    { text: 'Precio $', value: 'precio_do'},
                     { text: 'Existencia', value: 'existencias[0].existencia'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
@@ -209,8 +209,8 @@ import EliminarProducto from '@/components/modals/EliminarProducto';
                 Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=50&order=desc&offset=${this.offset}&fields=grupo,subgrupo,existencias`).then((response) => {
                     this.total= response.data.totalCount;
                     this.offset+=50;
-                    response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
-                    response.data.data.filter(a => a.precio_dolar = accounting.formatMoney(+a.precio_dolar,{symbol:"$",thousand:',',decimal:'.'}));
+                    response.data.data.filter(a => a.precio_bs = accounting.formatMoney(+a.precio_a,{symbol:"Bs ",thousand:'.',decimal:','}));
+                    response.data.data.filter(a => a.precio_do = accounting.formatMoney(+a.precio_dolar,{symbol:"$",thousand:',',decimal:'.'}));
                     response.data.data.filter(a => this.productos.push(a));
                     window.localStorage.setItem('productos',JSON.stringify({productos:this.productos,total:this.total,offset:this.offset}));
                     this.loading=false;

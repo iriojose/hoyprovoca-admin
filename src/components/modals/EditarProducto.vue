@@ -2,7 +2,7 @@
     <v-dialog v-model="dialog" width="400" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title class="white--text font-weight-bold fondo">
-                Crear Producto
+                Editar Producto
                 <v-spacer></v-spacer>
                 <!-- boton de salir -->
                 <v-scroll-x-transition>
@@ -21,7 +21,7 @@
                 </v-card>
 
                 <!-- formulario-->
-                <v-form v-model="valid" @submit.prevent="" class="my-5" v-if="!showMessage">
+                <v-form v-model="valid" @submit.prevent="" class="my-5">
                     <v-stepper v-model="e1" class="elevation-0" non-linear>
                         <v-stepper-header class="elevation-0">
                             <v-stepper-step color="#2950c3" step="1" editable></v-stepper-step>
@@ -29,16 +29,52 @@
                             <v-stepper-step color="#2950c3" step="2" editable></v-stepper-step>
                             <v-divider></v-divider>
                             <v-stepper-step color="#2950c3" step="3" editable></v-stepper-step>
+                            <v-divider></v-divider>
+                            <v-stepper-step color="#2950c3" step="4" editable></v-stepper-step>
                         </v-stepper-header>
 
                         <v-stepper-items>
                             <v-stepper-content step="1">
+                                <!--imagen-->
+                                <v-row justify="center">
+                                    <v-avatar tile size="200" v-if="!cambiarImagen">
+                                        <v-img :src="image+$parent.bandera.imagen"></v-img>
+                                    </v-avatar>
+                                </v-row>
+                                <!-- boton -->
+                                <v-row justify="center" class="mt-2">
+                                    <v-btn fab color="#1f3b63" small @click="cambiarImagen = !cambiarImagen" :disabled="loading">
+                                        <v-icon v-if="!cambiarImagen" color="#fff">mdi-border-color</v-icon>
+                                        <v-icon v-else color="#fff">mdi-chevron-left</v-icon>
+                                    </v-btn>
+                                </v-row>
+
+                                <!-- Agregar imagen -->
+                                <v-scroll-x-transition>
+                                    <div v-show="cambiarImagen" class="text-center font-weight-black my-4">
+                                        Actualizar imagen
+                                    </div>
+                                </v-scroll-x-transition>
+
+                                <v-scroll-x-transition>
+                                    <FilePond  
+                                        v-show="cambiarImagen"
+                                        ref="pond"
+                                        label-idle="Drop image here..."
+                                        labelFileAdded = "Archivo Añadido"
+                                        :server="{process}"
+                                        :onaddfilestart="initProcess"
+                                    />
+                                </v-scroll-x-transition>
+                            </v-stepper-content>
+
+                            <v-stepper-content step="2">
                                 <v-text-field
                                     filled single-line
                                     label="Nombre" dense
                                     rounded hint="Nombre"
                                     :rules="[required('Nombre')]"
-                                    v-model="data.nombre" persistent-hint
+                                    v-model="$parent.bandera.nombre" persistent-hint
                                     color="#2950c3" :disabled="loading"
                                 ></v-text-field>
 
@@ -47,7 +83,7 @@
                                     label="Codigo" dense
                                     rounded hint="Codigo"
                                     :rules="[required('Codigo')]"
-                                    v-model="data.codigo" persistent-hint
+                                    v-model="$parent.bandera.codigo" persistent-hint
                                     color="#2950c3" :disabled="loading"
                                 ></v-text-field>
 
@@ -56,7 +92,7 @@
                                     label="Referencia" dense
                                     rounded hint="Referencia"
                                     :rules="[required('Referencia')]"
-                                    v-model="data.referencia" persistent-hint
+                                    v-model="$parent.bandera.referencia" persistent-hint
                                     color="#2950c3" :disabled="loading"
                                 ></v-text-field>
 
@@ -65,12 +101,13 @@
                                     label="Descripción" dense
                                     rounded hint="Descripción"
                                     :rules="[required('Descripción')]"
-                                    v-model="data.descripcion" persistent-hint
+                                    v-model="$parent.bandera.descripcion" persistent-hint
                                     color="#2950c3" :disabled="loading"
                                 >
                                 </v-textarea>
                             </v-stepper-content>
-                            <v-stepper-content step="2">
+
+                            <v-stepper-content step="3">
 
                                 <!--Select para grupo -->
                                 <v-select
@@ -129,15 +166,15 @@
                                     </template>
                                 </v-select>
                             </v-stepper-content>
-                            
-                            <v-stepper-content step="3">
+
+                            <v-stepper-content step="4">
 
                                 <v-text-field
                                     filled single-line
                                     label="Precio" dense
                                     rounded hint="Bs."
                                     :rules="[required('Precio'),positivo('Precio')]"
-                                    v-model="data.precio_a" persistent-hint
+                                    v-model="$parent.bandera.precio_a" persistent-hint
                                     color="#2950c3" :disabled="loading"
                                     @input="changeBolivar"
                                 ></v-text-field>
@@ -147,7 +184,7 @@
                                     label="Precio" dense
                                     rounded hint="$"
                                     :rules="[required('Precio dolar'),positivo('Precio dolar')]"
-                                    v-model="data.precio_dolar" persistent-hint
+                                    v-model="$parent.bandera.precio_dolar" persistent-hint
                                     color="#2950c3" :disabled="loading"
                                     @input="changeDolar"
                                 ></v-text-field>
@@ -156,50 +193,32 @@
                         </v-stepper-items>
                     </v-stepper>
                 </v-form>
-
-                <!-- Agregar imagen -->
-                <v-scroll-x-transition>
-                    <div v-show="$parent.creado" class="text-center font-weight-black my-4">
-                        ¿ Agregar una imagen?
-                    </div>
-                </v-scroll-x-transition>
-
-                <v-scroll-x-transition>
-                    <FilePond  
-                        v-show="$parent.creado"
-                        ref="pond"
-                        label-idle="Arrastrar imagen aquí..."
-                        labelFileAdded = "Archivo Añadido"
-                        :server="{process}"
-                        :onaddfilestart="initProcess"
-                    />
-                </v-scroll-x-transition>
             </v-card-text>
 
             <!-- botones de acciones -->
-            <v-card-actions v-if="!showMessage">
+            <v-card-actions>
                 <v-spacer></v-spacer>
                 <slot name="close" v-if="!loading"></slot>
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
-                    @click="postConcepto" :loading="loading"
+                    @click="editConcepto" :loading="loading"
                     :disabled="!valid"
                 >
-                    Guardar
+                    Editar
                 </v-btn>
             </v-card-actions>
         </v-card>
-    </v-dialog>      
+    </v-dialog>
 </template>
 
 <script>
+import Images from '@/services/Images';
+import Grupos from "@/services/Grupos";
 import Conceptos from '@/services/Conceptos';
-import Grupos from '@/services/Grupos';
-import Cambio from '@/services/Cambio';
 import validations from '@/validations/validations';
 import variables from '@/services/variables_globales';
-import Images from '@/services/Images';
-import {mapState} from 'vuex';
+import Cambio from '@/services/Cambio';
+import accounting from 'accounting';
 
     export default {
         props:{
@@ -216,49 +235,35 @@ import {mapState} from 'vuex';
                 ...validations,
                 type:'error',
                 showMessage:false,
+                cambiarImagen:false,
                 mensaje:'',
                 valid:false,
                 loading:false,
-                data:{
-                    nombre:'',
-                    codigo:'',
-                    referencia:'',
-                    descripcion:'',
-                    adm_grupos_id:null,
-                    adm_subgrupos_id:null,
-                    adm_empresa_id:null,
-                    adm_tipos_conceptos_id:2,
-                    precio_a:null,
-                    precio_dolar:null,
-                    imagen:'default.png',
-                },
-                //para select de grupos
+                loading2:false,
+                //para el select de grupos
                 grupos:[],
                 grupo:null,
                 total:0,
                 offset:0,
-                //para select de subgrupos
+                //para el select subgrupos
                 subgrupos:[],
-                subgrupo:null,
-                //loadings
-                loading2:false,
+                subgrupo:null
             }
         },
         watch: {
             dialog(){
                 if(!this.dialog) this.reset();
+                else this.init();
             }
         },
         computed:{
-            ...mapState(['user']),
-
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.grupos.length >= this.total) return true;
                 else return false;
             }
         },
         mounted() {
-            this.data.adm_empresa_id = this.user.data.adm_empresa_id;
+            this.init();
             this.getGrupos();
             this.getCambio();
         },
@@ -269,38 +274,56 @@ import {mapState} from 'vuex';
                 this.loading = false;
                 this.showMessage = true;
             },
+            init(){
+                this.grupo = this.$parent.bandera.grupo;
+                this.subgrupo =  this.$parent.bandera.subgrupo;
+            },
+            editConcepto(){
+                let auxGrupo = this.$parent.bandera.grupo;
+                let auxSubgrupo = this.$parent.bandera.subgrupo;
+                let auxExistencia = this.$parent.bandera.existencias;
+                delete this.$parent.bandera.grupo;
+                delete this.$parent.bandera.subgrupo;
+                delete this.$parent.bandera.existencias;
+                delete this.$parent.bandera.precio_bs;
+                delete this.$parent.bandera.precio_do;
+                this.loading = true;
+                Conceptos().post(`/${this.$parent.bandera.id}`,{data:this.$parent.bandera}).then(() => {
+                    this.$parent.editado = true;
+                    this.$parent.bandera.grupo = auxGrupo;
+                    this.$parent.bandera.subgrupo = auxSubgrupo;
+                    this.$parent.bandera.existencias = auxExistencia;
+                    this.$parent.bandera.precio_bs = accounting.formatMoney(+this.$parent.bandera.precio_a,{symbol:"Bs ",thousand:'.',decimal:','});
+                    this.$parent.bandera.precio_do = accounting.formatMoney(+this.$parent.bandera.precio_dolar,{symbol:"$",thousand:',',decimal:'.'})
+                    this.respuesta("Producto actualizado exitosamente.","success");
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta("Error al actualizar el Producto.","error");
+                });
+            },
             reset(){
                 this.showMessage = false;
-                this.data.nombre = "";
-                this.data.codigo = "";
-                this.data.referencia = "";
-                this.data.descripcion = "";
-                this.data.precio_a = null;
-                this.data.precio_dolar = null;
-                this.data.adm_grupos_id = null;
-                this.data.adm_subgrupos_id = null;
-                this.grupo = null;
-                this.subgrupo = null;
+                this.cambiarImagen = false;
                 this.e1 = 1;
+            },
+            changeBolivar(){
+                this.$parent.bandera.precio_dolar = this.$parent.bandera.precio_a / this.tasa;
+                this.$parent.bandera.precio_dolar = this.$parent.bandera.precio_dolar.toFixed(2);
+            },
+            changeDolar(){
+                this.$parent.bandera.precio_a = this.tasa * this.$parent.bandera.precio_dolar
+                this.$parent.bandera.precio_a = this.$parent.bandera.precio_a.toFixed(2);
             },
             changeGrupo(evt){
                 this.grupo = evt;
-                this.data.adm_grupos_id = evt.id;
+                this.$parent.bandera.adm_grupos_id = evt.id;
                 this.subgrupo = null;
-                this.data.adm_subgrupos_id = null;
+                this.$parent.bandera.adm_subgrupos_id = null;
                 this.subgrupos = evt.subgrupos;
             },
             changeSubgrupo(evt){
                 this.subgrupo = evt;
-                this.data.adm_subgrupos_id = evt.id;
-            },
-            changeBolivar(){
-                this.data.precio_dolar = this.data.precio_a / this.tasa;
-                this.data.precio_dolar = this.data.precio_dolar.toFixed(2);
-            },
-            changeDolar(){
-                this.data.precio_a = this.tasa * this.data.precio_dolar
-                this.data.precio_a = this.data.precio_a.toFixed(2);
+                this.$parent.bandera.adm_subgrupos_id = evt.id;
             },
             getGrupos(){
                 Grupos().get(`/?offset=${this.offset}&order=desc&fields=subgrupos`).then((response) => {
@@ -311,28 +334,13 @@ import {mapState} from 'vuex';
                     console.log(e);
                 });
             },
-            postConcepto(){
-                this.loading = true;
-                Conceptos().post("/",{data:this.data}).then((response) => {
-                    this.$parent.creado = true;
-                    this.$parent.bandera = response.data.data;
-                    this.$parent.bandera.grupo = this.grupo;
-                    this.$parent.bandera.subgrupo = this.subgrupo;
-                    let data = {existencia:0};
-                    this.$parent.bandera.existencias = [data];
-                    this.respuesta("Producto creado exitosamente.","success");
-                }).catch(e => {
-                    console.log(e);
-                    this.respuesta("Error al crear el producto.","error");
-                });
-            },
-            initProcess(){
-                this.loading = true;
-            },
             getCambio(){
                 Cambio().get(`/`).then((response) => {
                     this.tasa = response.data.data[0].tasa;
                 });
+            },
+            initProcess(){
+                this.loading = true;
             },
             //metadata, load, error, progress,fieldName, 
             process(fieldName, file, metadata, load, error,abort) {
@@ -342,7 +350,9 @@ import {mapState} from 'vuex';
                 
                 Images().post(`/main/conceptos/${this.$parent.bandera.id}`,formdata).then((response) => {
                     this.$parent.bandera.imagen = response.data.filename;
-                    this.respuesta("Imagen añadida.","success");
+                    this.$parent.editado = true;
+                    this.respuesta("Imagen actualizada.","success");
+                    setTimeout(() => {this.cambiarImagen = false},500);
                     load("Imagen añadida");
                 }).catch(e =>  {
                     console.log(e);
