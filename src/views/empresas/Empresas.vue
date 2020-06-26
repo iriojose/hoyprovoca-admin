@@ -166,7 +166,6 @@ import EditarEmpresa from '@/components/modals/EditarEmpresa';
         },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('empresas'));
-            console.log(data);
             
             if(data) {
                 this.empresas = data.empresas;

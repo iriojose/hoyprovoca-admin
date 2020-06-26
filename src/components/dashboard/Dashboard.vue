@@ -84,6 +84,7 @@ import Usuario from '@/services/Usuario';
 import Pedidos from '@/services/Pedidos';
 import Empresa from '@/services/Empresa';
 import Factura from '@/services/Factura';
+import Vendedores from '@/services/Vendedores';
 import CardTasa from '@/components/cards/CardTasa';
 import accounting from 'accounting';
 import {mapActions,mapState} from 'vuex';
@@ -106,7 +107,7 @@ import {mapActions,mapState} from 'vuex';
                     {id:3,number:'0',clases:'yellow--text darken-4 ',text:'PENDIENTES',icon:'mdi-chat'},
                 ],
                 cards1:[
-                    {id:0,number:'0',clases:'blue--text darken-4 ',text:'GANANCIAS',icon:'mdi-calendar-blank'},
+                    {id:0,number:'0',clases:'blue--text darken-4 ',text:'VENTAS',icon:'mdi-calendar-blank'},
                     {id:1,number:'0',clases:'green--text darken-4 ',text:'PRODUCTOS',icon:'mdi-food'},
                     //{id:2,number:'0',clases:'teal--text darken-4 ',text:'',icon:'mdi-domain'},
                     {id:2,number:'0',clases:'yellow--text darken-4 ',text:'PENDIENTES',icon:'mdi-chat'},
@@ -119,7 +120,8 @@ import {mapActions,mapState} from 'vuex';
 
             if (cards && series){
                 this.setSeries(series);
-                this.cards = cards;
+                if(this.user.data.adm_empresa_id == null || this.user.data.adm_empresa_id == 0) this.cards = cards
+                else this.cards1 = cards;
             }else this.init();
         },
         computed: {
@@ -134,7 +136,7 @@ import {mapActions,mapState} from 'vuex';
             init(){
                 this.loading = true;
                 if(this.user.data.adm_empresa_id == null || this.user.data.adm_empresa_id == 0) this.getUsuarios();
-                else this.getProductos();
+                else this.getSeller();
             },
             //Administradores
             async getUsuarios(){//obtiene todos los usuario (funcion del administrador)
@@ -185,7 +187,23 @@ import {mapActions,mapState} from 'vuex';
                 }).catch(e => {
                     console.log(e);
                 });
-            },//Super Usuario
+            },
+            //Super Usuario
+            async getSeller(){
+                Vendedores().get(`/?adm_empresa_id=${this.user.data.adm_empresa_id}`).then((response) => {
+                    this.getSellerBySell(response.data.data[0].id);
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
+            async getSellerBySell(id){
+                Vendedores().get(`/${id}/sell`).then((response) => {
+                    this.cards1[0].number = response.data.ventas;
+                    this.getProductos();
+                }).catch(e => {
+                    console.log(e);
+                });
+            },
             async getProductos(){
                 await Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=1`).then((response) => {
                     this.cards1[1].number = response.data.totalCount;
@@ -196,12 +214,23 @@ import {mapActions,mapState} from 'vuex';
             },
             async getPedidos(){
                 await Empresa().get(`/${this.user.data.adm_empresa_id}/pedidos/?limit=500`).then((response) => {
-                    console.log(response);
+                    this.processPedidos(response.data.data);
                     this.loading = false;
                 }).catch(e => {
                     console.log(e);
                 });
-            }
+            },
+            processPedidos(pedidos){
+                let series = [0,0,0];
+                for (let i = 0; i < pedidos.length; i++) {
+                    if(pedidos[i].rest_estatus_id == 1) series[0] +=1;
+                    if(pedidos[i].rest_estatus_id == 2) series[1] +=1;
+                    if(pedidos[i].rest_estatus_id == 2) series[2] +=1;
+                }
+                this.setSeries(series);
+                window.localStorage.setItem('series',JSON.stringify(series));
+                window.localStorage.setItem('cards',JSON.stringify(this.cards1));
+            },
         }
     }
 </script>
