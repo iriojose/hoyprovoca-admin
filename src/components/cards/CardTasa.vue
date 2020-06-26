@@ -39,7 +39,7 @@
                 </v-row>
             </v-card-text>
 
-            <v-card-actions>
+            <v-card-actions v-if="user.data.adm_empresa_id == null || user.data.adm_empresa_id == 0">
                 <v-spacer></v-spacer>
                 <v-btn elevation="0" fab small @click="dialogEditar = !dialogEditar">
                     <v-icon>mdi-chevron-up</v-icon>
@@ -67,6 +67,7 @@
 import Cambio from '@/services/Cambio';
 import accounting from 'accounting';
 import EditarTasa from '@/components/modals/EditarTasa';
+import {mapState} from 'vuex';
 
     export default {
         components:{
@@ -95,6 +96,9 @@ import EditarTasa from '@/components/modals/EditarTasa';
         },
         mounted() {
             this.getCambio();
+        },
+        computed: {
+            ...mapState(['user'])
         },
         methods: {
             getCambio(){

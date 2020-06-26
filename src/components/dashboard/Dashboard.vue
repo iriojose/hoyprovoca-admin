@@ -8,8 +8,37 @@
             </v-btn>
         </v-card-actions>
         
-        <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null">
+        <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-if="user.data.adm_empresa_id == null || user.data.adm_empresa_id == 0">
             <v-col cols="12" sm="12" md="3" v-for="(card,i) in cards" :key="i">
+                <div class="sombre">
+                    <v-card elevation="0">
+                        <v-alert
+                            border="left"
+                            colored-border
+                            :color="card.clases"
+                            elevation="0"
+                        >
+                            <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
+                                <v-col cols="9">
+                                    <div :class="card.clases">{{card.text}}</div>
+                                    <div :class="i == 0 ? 'subtitle-1 font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+                                </v-col>
+                               
+                               <v-col cols="3">
+                                   <v-icon size="40" color="grey lighten-2">{{card.icon}}</v-icon>
+                               </v-col>
+                            </v-row>
+                            <v-row v-else justify="center">
+                                <Puntos />
+                            </v-row>
+                        </v-alert>
+                    </v-card>
+                </div>
+            </v-col>
+        </v-row>
+
+        <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-else>
+            <v-col cols="12" sm="12" md="4" v-for="(card,i) in cards1" :key="i">
                 <div class="sombre">
                     <v-card elevation="0">
                         <v-alert
@@ -57,7 +86,7 @@ import Empresa from '@/services/Empresa';
 import Factura from '@/services/Factura';
 import CardTasa from '@/components/cards/CardTasa';
 import accounting from 'accounting';
-import {mapActions} from 'vuex';
+import {mapActions,mapState} from 'vuex';
 
     export default {
         components:{
@@ -75,6 +104,12 @@ import {mapActions} from 'vuex';
                     {id:1,number:'0',clases:'green--text darken-4 ',text:'USUARIOS',icon:'mdi-account-circle'},
                     {id:2,number:'0',clases:'teal--text darken-4 ',text:'EMPRESAS',icon:'mdi-domain'},
                     {id:3,number:'0',clases:'yellow--text darken-4 ',text:'PENDIENTES',icon:'mdi-chat'},
+                ],
+                cards1:[
+                    {id:0,number:'0',clases:'blue--text darken-4 ',text:'GANANCIAS',icon:'mdi-calendar-blank'},
+                    {id:1,number:'0',clases:'green--text darken-4 ',text:'PRODUCTOS',icon:'mdi-food'},
+                    //{id:2,number:'0',clases:'teal--text darken-4 ',text:'',icon:'mdi-domain'},
+                    {id:2,number:'0',clases:'yellow--text darken-4 ',text:'PENDIENTES',icon:'mdi-chat'},
                 ]
             }
         },
@@ -87,6 +122,9 @@ import {mapActions} from 'vuex';
                 this.cards = cards;
             }else this.init();
         },
+        computed: {
+            ...mapState(['user'])
+        },
         methods:{
             ...mapActions(['setSeries']),
 
@@ -95,8 +133,10 @@ import {mapActions} from 'vuex';
             },
             init(){
                 this.loading = true;
-                this.getUsuarios();
+                if(this.user.data.adm_empresa_id == null || this.user.data.adm_empresa_id == 0) this.getUsuarios();
+                else this.getProductos();
             },
+            //Administradores
             async getUsuarios(){//obtiene todos los usuario (funcion del administrador)
                 await Usuario().get("/?limit=1").then((response) => {
                     this.cards[1].number = response.data.totalCount;
@@ -117,12 +157,12 @@ import {mapActions} from 'vuex';
                 await Factura().get(`/total/?limit=67010&after-fecha_at=2018-01-01&before-fecha_at=2020-01-01`).then((response) => {
                     if (response.data !== 'This entity is empty') this.cards[0].number = accounting.formatMoney(+response.data.data.subtotal,{symbol:"Bs ",thousand:'.',decimal:','});
                     else this.cards[0].number = accounting.formatMoney(+this.cards[0].number,{symbol:"Bs ",thousand:'.',decimal:','});
-                    this.getPedidos();
+                    this.getStats();
                 }).catch(e => {
                     console.log(e)
                 });
             },
-            async getPedidos(){//obtiene todos los pedidos (funcion del administrador)
+            async getStats(){//obtiene todos los pedidos (funcion del administrador)
                 await Pedidos().get("/stats").then((response) => {
                     if(response.data){
                         this.series[0]=response.data.statusNuevo;
@@ -145,7 +185,23 @@ import {mapActions} from 'vuex';
                 }).catch(e => {
                     console.log(e);
                 });
+            },//Super Usuario
+            async getProductos(){
+                await Empresa().get(`/${this.user.data.adm_empresa_id}/conceptos/?limit=1`).then((response) => {
+                    this.cards1[1].number = response.data.totalCount;
+                    this.getPedidos();
+                }).catch(e => {
+                    console.log(e);
+                });
             },
+            async getPedidos(){
+                await Empresa().get(`/${this.user.data.adm_empresa_id}/pedidos/?limit=500`).then((response) => {
+                    console.log(response);
+                    this.loading = false;
+                }).catch(e => {
+                    console.log(e);
+                });
+            }
         }
     }
 </script>

@@ -169,6 +169,7 @@ import Empresa from '@/services/Empresa';
 import Direcciones from '@/services/Direcciones';
 import Images from '@/services/Images';
 import vueFilePond from 'vue-filepond';
+import Vendedores from '@/services/Vendedores';
 
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js';
 import 'filepond/dist/filepond.min.css';
@@ -216,6 +217,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
         },
         mounted(){
             this.getMunicipios();
+            this.getVendedores();
         },
         watch: {
             dialog(){
@@ -262,6 +264,13 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 }).catch(e => {
                     console.log(e);
                 });
+            },
+            getVendedores(){
+                Vendedores().get("/").then((response) =>{
+                    console.log(response);
+                }).catch(e => {
+                    console.log(e);
+                })
             },
             postEmpresa(){
                 this.loading = true;
