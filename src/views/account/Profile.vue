@@ -8,7 +8,7 @@
                 <v-col cols="12" md="6" sm="12" class="px-12">
                     <v-row justify="center" class="mb-10">
                         <v-avatar size="200">
-                            <v-img :src="image+data.imagen"></v-img>
+                            <v-img :src="image+user.data.imagen"></v-img>
                         </v-avatar>
                         <v-avatar @click="dialog = !dialog" 
                             :class="$vuetify.breakpoint.smAndDown ? 'abs_center2':'abs_center'" 
@@ -144,7 +144,6 @@ import CambiarImagen from '@/components/dialogs/CambiarImagen';
                 mensaje:'',
                 type:'error',
                 showMessage:false,
-                imagenUpdate:false,
                 data:{
                     imagen:'default.png'
                 },
@@ -167,16 +166,6 @@ import CambiarImagen from '@/components/dialogs/CambiarImagen';
         },
         computed:{
             ...mapState(['user']),
-        },
-        watch: {
-            dialog(){
-                if(!this.dialog){
-                    if(this.imagenUpdate){
-                        this.init();
-                        this.imagenUpdate = false;
-                    }
-                }
-            },
         },
         mounted() {
             this.init();
