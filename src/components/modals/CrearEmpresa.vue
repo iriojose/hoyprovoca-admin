@@ -20,99 +20,122 @@
                     </v-scroll-x-transition> 
                 </v-card>
 
-                <!-- formulario parte 1 -->
-                <v-scroll-x-transition>
-                    <v-form v-model="valid" @submit.prevent="" class="my-5" v-show="!showMessage && view == 1">
-                        <v-text-field
-                            filled single-line
-                            label="Rif" dense
-                            rounded hint="format: J-00000000-0"
-                            @input="changeRif()"
-                            :rules="[required('Rif'),minLength('Rif',12),maxLength('Rif',12)]"
-                            v-model="data.rif" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                <!--formulario parte 1-->
+                <v-stepper v-model="e1" class="elevation-0" non-linear v-if="!showMessage">
+                    <v-stepper-header class="elevation-0">
+                        <v-stepper-step color="#2950c3" step="1" editable></v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step color="#2950c3" step="2" editable></v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step color="#2950c3" step="3" editable></v-stepper-step>
+                    </v-stepper-header>
 
-                        <v-text-field
-                            filled single-line
-                            label="Nombre" dense
-                            rounded hint="Nombre comercial"
-                            :rules="[required('Nombre')]"
-                            v-model="data.nombre_comercial" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                    <v-stepper-items>
+                        <v-stepper-content step="1">
+                            <v-form v-model="valid" @submit.prevent="">
+                                <v-text-field
+                                    filled single-line
+                                    label="Rif" dense
+                                    rounded hint="format: J-00000000-0"
+                                    @input="changeRif()"
+                                    :rules="[required('Rif'),minLength('Rif',12),maxLength('Rif',12)]"
+                                    v-model="data.rif" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
 
-                        <v-text-field
-                            filled single-line
-                            label="Correo electrónico" dense
-                            rounded hint="Correo electrónico"
-                            :rules="[required('Correo electrónico'),emailFormat()]"
-                            v-model="data.correo_electronico" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                                <v-text-field
+                                    filled single-line
+                                    label="Nombre" dense
+                                    rounded hint="Nombre comercial"
+                                    :rules="[required('Nombre')]"
+                                    v-model="data.nombre_comercial" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
 
-                        <v-text-field
-                            filled single-line
-                            label="Telefono" dense
-                            rounded hint="format: 0000-000-0000"
-                            @input="changeNumber()"
-                            :rules="[required('Telefono'),minLength('Rif',13),maxLength('Rif',13)]"
-                            v-model="data.telefono1" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                                <v-text-field
+                                    filled single-line
+                                    label="Correo electrónico" dense
+                                    rounded hint="Correo electrónico"
+                                    :rules="[required('Correo electrónico'),emailFormat()]"
+                                    v-model="data.correo_electronico" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
 
-                        <v-select
-                            dense filled single-line
-                            rounded label="Ubicacion"
-                            hint="Ubicacion" persistent-hint
-                            color="#2950c3" :disabled="loading"
-                            :rules="[requiredObject('Direccion')]" return-object
-                            @change="changeUbicacion($event)" :items="municipios"
-                            item-text="municipio"
-                        ></v-select>
-                    </v-form>
-                </v-scroll-x-transition>
+                                <v-text-field
+                                    filled single-line
+                                    label="Telefono" dense
+                                    rounded hint="format: 0000-000-0000"
+                                    @input="changeNumber()"
+                                    :rules="[required('Telefono'),minLength('Rif',13),maxLength('Rif',13)]"
+                                    v-model="data.telefono1" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
+                            </v-form>
+                        </v-stepper-content>
+                        <v-stepper-content step="2">
+                            <v-form v-model="valid2" @submit.prevent="">
+                                <v-select
+                                    dense filled single-line
+                                    rounded label="Ubicacion Estado"
+                                    hint="Estado" persistent-hint
+                                    color="#2950c3" :disabled="loading"
+                                    :rules="[requiredObject('Estado')]" return-object
+                                    @change="changeEstados($event)" :items="estados"
+                                    item-text="nombre"
+                                ></v-select>
 
-                <!-- formulario parte 2 -->
-                <v-scroll-x-transition>
-                    <v-form v-model="valid" @submit.prevent="" class="my-5" v-show="!showMessage && view == 2">
-                        <v-text-field
-                            filled single-line
-                            label="Facebook" dense
-                            rounded hint="Url"
-                            :rules="[urlFormat()]"
-                            v-model="data.facebook" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                                <v-select
+                                    dense filled single-line
+                                    rounded label="Municipio"
+                                    hint="Municipio" persistent-hint
+                                    color="#2950c3" :disabled="loading"
+                                    :rules="[requiredObject('Municipio')]" return-object
+                                    @change="changeMunicipios($event)" :items="municipios"
+                                    item-text="municipio"
+                                ></v-select>
+                            </v-form>
+                        </v-stepper-content>
+                        <v-stepper-content step="3">
+                            <v-form v-model="valid3" @submit.prevent="">
+                                <v-text-field
+                                    filled single-line
+                                    label="Facebook" dense
+                                    rounded hint="Url"
+                                    :rules="[urlFormat()]"
+                                    v-model="data.facebook" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
 
-                        <v-text-field
-                            filled single-line
-                            label="Pagina web" dense
-                            rounded hint="Url"
-                            :rules="[urlFormat()]"
-                            v-model="data.pag_web" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                                <v-text-field
+                                    filled single-line
+                                    label="Pagina web" dense
+                                    rounded hint="Url"
+                                    :rules="[urlFormat()]"
+                                    v-model="data.pag_web" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
 
-                        <v-text-field
-                            filled single-line
-                            label="Instagram" dense
-                            rounded hint="Url"
-                            :rules="[urlFormat()]"
-                            v-model="data.instagram" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
+                                <v-text-field
+                                    filled single-line
+                                    label="Instagram" dense
+                                    rounded hint="Url"
+                                    :rules="[urlFormat()]"
+                                    v-model="data.instagram" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
 
-                        <v-text-field
-                            filled single-line
-                            label="Twitter" dense
-                            rounded hint="Url"
-                            :rules="[urlFormat()]"
-                            v-model="data.twitter" persistent-hint
-                            color="#2950c3" :disabled="loading || showMessage ? true:false"
-                        ></v-text-field>
-                    </v-form>
-                </v-scroll-x-transition>
+                                <v-text-field
+                                    filled single-line
+                                    label="Twitter" dense
+                                    rounded hint="Url"
+                                    :rules="[urlFormat()]"
+                                    v-model="data.twitter" persistent-hint
+                                    color="#2950c3" :disabled="loading || showMessage ? true:false"
+                                ></v-text-field>
+                            </v-form>
+                        </v-stepper-content>
+                    </v-stepper-items>
+                </v-stepper>
 
                 <!-- Agregar imagen -->
                 <v-scroll-x-transition>
@@ -135,26 +158,12 @@
 
             <!-- botones de acciones -->
             <v-card-actions v-if="!showMessage">
-                <v-scroll-x-transition>
-                    <v-btn fab color="#2950c3" small v-show="view == 2" @click="view = 1"> 
-                        <v-icon color="#fff">mdi-chevron-left</v-icon>
-                    </v-btn>
-                </v-scroll-x-transition>
-
                 <v-spacer></v-spacer>
                 <slot name="close" v-if="!loading"></slot>
                 <v-btn 
-                    v-if="view == 1"
-                    color="#2950c3" class="text-capitalize white--text" 
-                    :loading="loading"
-                    @click="view = 2"
-                >
-                    Siguiente
-                </v-btn>
-                <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
                     @click="postEmpresa" :loading="loading"
-                    :disabled="!valid"
+                    :disabled="valid && valid2 ? false:true"
                 >
                     Guardar
                 </v-btn>
@@ -188,15 +197,17 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
         },
         data() {
             return {
+                e1:1,
                 ...validations,
                 type:'error',
                 showMessage:false,
                 mensaje:'',
                 valid:false,
                 valid2:false,
-                view:1,
+                valid3:false,
                 loading:false,
                 date:null,
+                estados:[],
                 municipios:[],
                 data:{
                     rif:'',
@@ -213,11 +224,14 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     municipio_id:null,
                     imagen:'default.png'
                 },
+                data2:{
+                    nombre:"",
+                    adm_empresa_id:null
+                }
             }
         },
         mounted(){
-            this.getMunicipios();
-            this.getVendedores();
+            this.getDirecciones();
         },
         watch: {
             dialog(){
@@ -233,8 +247,8 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 //setTimeout(() => {this.showMessage = false}, 2000);
             },
             reset(){
+                this.e1 = 1;
                 this.showMessage = false;
-                this.view = 1;
                 this.data.nombre_comercial = '';
                 this.data.rif = "";
                 this.data.telefono1 = '';
@@ -242,7 +256,10 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 this.data.pag_web = '';
                 this.data.facebook = '';
                 this.data.instagram = '';
-                this.data.municipios_id = null
+                this.data.municipio_id = null,
+                this.data.estado_id = null;
+                this.data2.nombre = null;
+                this.data2.adm_empresa_id = null;
             },
             changeRif(){
                 if(this.data.rif.length == 1){
@@ -258,34 +275,40 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     this.data.telefono1+='-';
                 }
             },
-            getMunicipios(){
-                Direcciones().get("/16").then((response) => {
-                    this.municipios = response.data.data.detalles;
+            changeEstados(evt){
+                this.data.estado_id = evt.id;
+                this.municipios = evt.detalles;
+            },
+            changeMunicipios(evt){
+                this.data.municipio_id = evt.id;
+            },
+            getDirecciones(){
+                Direcciones().get("/").then((response) => {
+                    this.estados = response.data.data;
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getVendedores(){
-                Vendedores().get("/").then((response) =>{
-                    console.log(response);
-                }).catch(e => {
-                    console.log(e);
-                })
-            },
             postEmpresa(){
                 this.loading = true;
                 Empresa().post("/",{data:this.data}).then((response) => {
-                    console.log(response);
-                    this.$parent.creado = true;
-                    this.$parent.bandera = response.data.data;
-                    this.respuesta("Empresa creada exitosamente.","success");
+                    this.data2.nombre = this.data.nombre_comercial;
+                    this.data2.adm_empresa_id = response.data.data.id;
+                    this.postVendedor(response.data.data);
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("Error al crear la empresa.","error");
                 });
             },
-            changeUbicacion(evt){
-                this.data.municipio_id = evt.id;
+            postVendedor(empresa){
+                Vendedores().post("/",{data:this.data2}).then(() => {
+                    this.$parent.creado = true;
+                    this.$parent.bandera = empresa;
+                    this.respuesta("Empresa creada exitosamente.","success");
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta("Error al crear la empresa.","error");
+                })
             },
             initProcess(){
                 this.loading = true;
