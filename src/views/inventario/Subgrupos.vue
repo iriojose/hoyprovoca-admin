@@ -126,7 +126,9 @@ import EditarSubgrupo from '@/components/modals/EditarSubgrupo';
                 //variables del crud
                 creado:false,
                 eliminado:false,
-                bandera:null,
+                bandera:{
+                    imagen:''
+                },
                 editado:false,
                 //variables de las tablas
                 ...variables,
