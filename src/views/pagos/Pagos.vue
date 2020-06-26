@@ -118,6 +118,15 @@ import accounting from 'accounting';
                 }
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Pagos'
+                };
+            }
+        },
         computed:{
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.pagos.length >= this.total) return true;

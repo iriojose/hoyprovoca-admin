@@ -203,6 +203,15 @@ import EditarProducto from '@/components/modals/EditarProducto';
                 }
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Productos'
+                };
+            }
+        },
         methods:{
             getConceptos(){
                 this.loading = true;

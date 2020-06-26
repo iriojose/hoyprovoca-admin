@@ -155,6 +155,15 @@ import EditarEmpresa from '@/components/modals/EditarEmpresa';
                 else return false;
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Empresas'
+                };
+            }
+        },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('empresas'));
             console.log(data);

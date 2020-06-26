@@ -156,6 +156,15 @@ import EditarSubgrupo from '@/components/modals/EditarSubgrupo';
                 else return false;
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Subgrupos'
+                };
+            }
+        },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('subgrupos'));
 

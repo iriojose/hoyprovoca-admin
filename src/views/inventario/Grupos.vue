@@ -154,6 +154,15 @@ import EditarGrupo from '@/components/modals/EditarGrupo';
                 else return false;
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Grupos'
+                };
+            }
+        },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('grupos'));
 

@@ -105,6 +105,15 @@ import CrearCargo from '@/components/modals/CrearCargo';
                 ],
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Cargos'
+                };
+            }
+        },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('cargos'));
 

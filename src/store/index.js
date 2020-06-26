@@ -52,6 +52,12 @@ export default new Vuex.Store({
         SET_SERIES(state,val){
             state.series = val;
         },
+        SET_DATA(state,val){
+            state.user.data = val;
+        },
+        SET_FOTO_PROFILE(state,val){
+            state.user.data.imagen = val;
+        },
         //autenticacion
         SET_LOGGED(state,val){//logea al usuario
             window.localStorage.clear();//se elimina el cache guardado
@@ -97,6 +103,12 @@ export default new Vuex.Store({
         },
         logout({commit}){
             commit('LOGOUT');
+        },
+        setData({commit},val){
+            commit('SET_DATA',val);
+        },
+        setFotoProfile({commit},val){
+            commit('SET_FOTO_PROFILE',val);
         },
         setFoto({ commit }, val) {
             commit('SET_FOTO', val);

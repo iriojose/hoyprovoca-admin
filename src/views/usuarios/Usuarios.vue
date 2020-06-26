@@ -156,6 +156,15 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                 else return false;
             }
         },
+        head: {
+            title() {
+                return {
+                    inner: "Admin",
+                    separator:'|',
+                    complement:'Usuarios'
+                };
+            }
+        },
         mounted() {
             let data = JSON.parse(window.localStorage.getItem('usuarios'));
 
@@ -200,7 +209,6 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
             getUsuarios(){
                 this.loading = true;
                 Usuario().get(`/?offset=${this.offset}&order=desc`).then((response) => {
-                    console.log(response);
                     for (let i = 0; i < response.data.data.length; i++) {
                         if(response.data.data[i].perfil_id == 1){
                             response.data.data[i].perfil = 'Administrador';

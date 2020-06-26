@@ -140,7 +140,6 @@ import {mapActions} from 'vuex';
                 this.type = type
                 this.loading = false;
                 this.showMessage = true;
-                setTimeout(() => {this.showMessage = false}, 2000);
             },
             getUser(email){
                 this.errors = [];
@@ -163,6 +162,7 @@ import {mapActions} from 'vuex';
             },
             login(){
                 this.loading = true;
+                this.showMessage = false;
                 Auth().post("/login",{data:this.data}).then((response) =>{
                     if(response.data.data.bloqueado == 1){
                         this.setModalBloqueado(true);

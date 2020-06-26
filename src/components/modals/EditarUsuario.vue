@@ -262,7 +262,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 this.showMessage = true;
             },
             init(){
-                this.$parent.bandera.fecha_nac.substr(0, 10); 
+                this.$parent.bandera.fecha_nac = this.$parent.bandera.fecha_nac.substr(0, 10); 
                 this.items.filter(a => a.id == this.$parent.bandera.perfil_id ? this.nivel=a:null);
                 if(this.$parent.bandera.perfil_id == 2){
                     this.ver = true;
