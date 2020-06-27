@@ -2,12 +2,11 @@
     <div>
         <v-card  width="100%">
             <v-card-title>
-                <v-btn 
-                    color="#2950c3" tile @click="dialogCrear = true"
-                    class="text-capitalize white--text rounded"
-                >
-                    Nuevo
+                <v-btn color="#2950c3" @click="dialogCrear = true" fab small>
                     <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
+                </v-btn>
+                <v-btn color="#2950c3" @click="reload()" fab small class="mx-2">
+                    <v-icon color="#fff" :loading="loading" class="mx-2">mdi-reload</v-icon>
                 </v-btn>
                 <v-spacer class="hidden-sm-and-up"></v-spacer>
                 <v-btn 
@@ -205,6 +204,12 @@ import EditarEmpresa from '@/components/modals/EditarEmpresa';
             }
         },
         methods:{
+            reload(){
+                this.empresas=[];
+                this.total = 0;
+                this.offset = 0;
+                this.getEmpresas();
+            },
             getEmpresas(){
                 this.loading = true;
                 Empresa().get(`/?offset=${this.offset}&order=desc`).then((response) => {
