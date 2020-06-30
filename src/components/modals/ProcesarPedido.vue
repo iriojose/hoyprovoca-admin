@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" width="400" transition="dialog-bottom-transition" persistent>
+    <v-dialog v-model="dialog" width="500" transition="dialog-bottom-transition" persistent>
         <v-card>
             <v-card-title class="white--text font-weight-bold fondo">
                 <v-spacer></v-spacer>
@@ -8,6 +8,15 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
+                <!-- mensajes -->
+                <v-card elevation="0" height="50" class="mt-5" v-if="loading || showMessage">
+                    <v-scroll-x-transition>
+                        <v-alert border="left" colored-border elevation="2"  dense :type="type" v-show="showMessage">
+                            {{mensaje}}
+                        </v-alert>
+                    </v-scroll-x-transition> 
+                </v-card>
+
                 <v-row justify="center" v-if="loading">
                     <LoaderRect />
                 </v-row>
@@ -34,6 +43,13 @@
                                     <v-expansion-panel-header>Productos</v-expansion-panel-header>
                                     <v-expansion-panel-content>
                                         <ListProductos :productos="conceptos" />
+                                    </v-expansion-panel-content>
+                                </v-expansion-panel>
+
+                                <v-expansion-panel>
+                                    <v-expansion-panel-header>Pagos</v-expansion-panel-header>
+                                    <v-expansion-panel-content>
+                                        <ListPagos :pagos="pagos" />
                                     </v-expansion-panel-content>
                                 </v-expansion-panel>
                             </v-expansion-panels>
@@ -67,13 +83,15 @@ import LoaderRect from '@/components/loaders/LoaderRect';
 import ListVendedor from '@/components/lists/ListVendedor';
 import ListCliente from '@/components/lists/ListCliente';
 import ListProductos from '@/components/lists/ListProductos';
+import ListPagos from '@/components/lists/ListPagos';
 
     export default {
         components:{
             LoaderRect,
             ListVendedor,
             ListCliente,
-            ListProductos
+            ListProductos,
+            ListPagos
         },
         props:{
             dialog:{
@@ -164,6 +182,7 @@ import ListProductos from '@/components/lists/ListProductos';
             getPagos(){
                 Pedidos().get(`/${this.$parent.bandera.id}/pagos`).then((response) => {
                     this.pagos = response.data.data;
+                    console.log(this.pagos);
                     this.getConceptos();
                 }).catch(e => {
                     console.log(e);

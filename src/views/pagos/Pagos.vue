@@ -158,6 +158,7 @@ import ProcesarPedido from '@/components/modals/ProcesarPedido';
                 });
             },
             reload(){
+                this.pedidos = [];
                 this.total = 0;
                 this.offset = 0;
                 this.getPedidos();
