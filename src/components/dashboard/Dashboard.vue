@@ -222,10 +222,12 @@ import {mapActions,mapState} from 'vuex';
             },
             processPedidos(pedidos){
                 let series = [0,0,0];
-                for (let i = 0; i < pedidos.length; i++) {
-                    if(pedidos[i].rest_estatus_id == 1) series[0] +=1;
-                    if(pedidos[i].rest_estatus_id == 2) series[1] +=1;
-                    if(pedidos[i].rest_estatus_id == 2) series[2] +=1;
+                if(pedidos){
+                    for (let i = 0; i < pedidos.length; i++) {
+                        if(pedidos[i].rest_estatus_id == 1) series[0] +=1;
+                        if(pedidos[i].rest_estatus_id == 2) series[1] +=1;
+                        if(pedidos[i].rest_estatus_id == 2) series[2] +=1;
+                    }
                 }
                 this.setSeries(series);
                 window.localStorage.setItem('series',JSON.stringify(series));

@@ -2,18 +2,14 @@
     <div>
         <v-card  width="100%">
             <v-card-title>
-                <v-btn 
-                    color="#2950c3" tile @click="reload()"
-                    class="text-capitalize white--text rounded"
-                >
-                    Reload
-                    <v-icon color="#fff" class="mx-2">mdi-reload</v-icon>
+                <v-btn color="#2950c3" @click="reload()" fab small class="mx-2">
+                    <v-icon color="#fff" :loading="loading" class="mx-2">mdi-reload</v-icon>
                 </v-btn>
                 <v-spacer class="hidden-sm-and-up"></v-spacer>
                 <v-btn 
                     color="#2950c3" tile 
                     class="mx-2 text-capitalize white--text rounded" 
-                    :loading="loading" @click="getPagos()" :disabled="bloqueado"
+                    :loading="loading" @click="getPedidos()" :disabled="bloqueado"
                 >   
                     Ver más
                     <v-icon color="#fff" class="mx-2">mdi-chevron-right</v-icon>
@@ -34,7 +30,7 @@
                 <v-data-table
                     :loading="loading && '#2950c3'" 
                     :headers="headers" 
-                    :items="pagos" 
+                    :items="pedidos" 
                     class="elevation-0" 
                     :search="search"
                 >
@@ -58,64 +54,59 @@
                             :small="$vuetify.breakpoint.smAndDown ? false:true" 
                             @click="verPago(item)"
                         >mdi-eye</v-icon>
-                        <v-icon 
-                            v-if="item.estatus_id == 1"
-                            class="mx-2" color="warning"
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                        >mdi-bell-ring</v-icon>
-                        <v-icon 
-                            v-if="item.estatus_id == 2"
-                            class="mx-2" color="red"
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                        >mdi-block-helper</v-icon>
-                        <v-icon 
-                            v-if="item.estatus_id == 3"
-                            class="mx-2" color="green"
-                            :small="$vuetify.breakpoint.smAndDown ? false:true"
-                        >mdi-check-bold</v-icon>
                     </template>
                 </v-data-table>
             </v-card-text>
         </v-card>
+
+        <!--modal para ver el pedido -->
+        <ProcesarPedido :dialog="dialog" :pedido="bandera">
+            <template v-slot:close>
+                <v-btn tile color="#232323" text @click="dialog = false">
+                    Salir
+                </v-btn>
+            </template>
+            <template v-slot:salir>
+                <v-btn fab small color="#fff" @click="dialog = false">
+                    <v-icon color="#232323">mdi-close</v-icon>
+                </v-btn>
+            </template>
+        </ProcesarPedido>
     </div>
 </template>
 
 <script>
-import Pagos from '@/services/Pagos';
+import Pedidos from '@/services/Pedidos';
 import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import accounting from 'accounting';
+import ProcesarPedido from '@/components/modals/ProcesarPedido';
 
     export default {
         components: {
             Puntos,
+            ProcesarPedido
         },
         data(){
             return {
                 bandera:null,
+                dialog:false,
                 //variables de las tablas
                 ...variables,
                 total:0,
                 offset:0,
                 search:'',
                 loading:false,
-                pagos:[],
+                pedidos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
-                    { text: 'Emisor',sortable: true, value: 'emisor'},
-                    { text: 'Receptor', value: 'receptor'},
+                    { text: 'fecha',sortable: true, value: 'fecha_at'},
+                    { text: 'Estado', value: 'estado'},
+                    { text: 'Productos', value: 'items',align:'center'},
                     { text: 'Monto', value: 'monto'},
-                    { text: 'Referecia', value: 'codigo_referencia'},
-                    { text: 'Acciones', value: 'action', sortable: false },
+                    { text: 'Proceso', value: 'estatus'},
+                    { text: 'Acciones', value: 'action', sortable: false ,align:'center'},
                 ],
-                prueba:{
-                    imagen:"default.png",
-                    emisor:"Cliente",
-                    receptor:"somossistemas",
-                    monto:"2000000",
-                    codigo_referencia:"2821222121",
-                    estatus_id:"3"
-                }
             }
         },
         head: {
@@ -129,30 +120,37 @@ import accounting from 'accounting';
         },
         computed:{
             bloqueado(){//bloquea el boton de ver mas segun la condicion
-                if(this.pagos.length >= this.total) return true;
+                if(this.pedidos.length >= this.total) return true;
                 else return false;
             }
         },
         mounted() {
-            let data = JSON.parse(window.localStorage.getItem('pagos'));
+            let data = JSON.parse(window.localStorage.getItem('pedidos'));
 
             if(data) {
-                this.pagos = data.pagos;
+                this.pedidos = data.pedidos;
                 this.total = data.total;
                 this.offset = data.offset;
-            }else this.getPagos();
+            }else this.getPedidos();
         },
         methods:{
-            getPagos(){
-                this.pagos.push(this.prueba);
+            getPedidos(){
                 this.loading = true;
-                Pagos().get(`/?offset=${this.offset}&order=desc`).then((response) => {
+                Pedidos().get(`/?offset=${this.offset}&order=desc`).then((response) => {
                     if(response.data.data){
-                        this.total = response.data.totalCount;
-                        this.offset+=50;
-                        response.data.data.filter(a => a.precio_a = accounting.formatMoney(+a.monto,{symbol:"Bs ",thousand:'.',decimal:','}));
-                        response.data.data.filter(a => this.pagos.push(a));
-                        window.localStorage.setItem('pagos',JSON.stringify({pagos:this.pagos,total:this.total,offset:this.offset}));
+                        response.data.data.filter(a => a.fecha_at = a.fecha_at.substr(0,10));
+                        response.data.data.filter(a => a.items = a.detalles.length);
+                        for (let i = 0; i < response.data.data.length; i++) {
+                           let suma = 0;
+                           response.data.data[i].detalles.filter(a => suma+= a.precio);
+                           response.data.data[i].monto = accounting.formatMoney(+suma,{symbol:"Bs ",thousand:'.',decimal:','});
+                        }
+                        for (let i = 0; i < response.data.data.length; i++) {
+                           if(response.data.data[i].rest_estatus_id == 1) response.data.data[i].estatus = "Por pagar";
+                           if(response.data.data[i].rest_estatus_id == 2) response.data.data[i].estatus = "Por verificar";
+                           if(response.data.data[i].rest_estatus_id == 3) response.data.data[i].estatus = "Verificado";
+                        }
+                        response.data.data.filter(a => this.pedidos.push(a));
                     }
                     this.loading = false;
                 }).catch(e => {
@@ -162,10 +160,11 @@ import accounting from 'accounting';
             reload(){
                 this.total = 0;
                 this.offset = 0;
-                this.getPagos();
+                this.getPedidos();
             },
             verPago(item){
-                console.log(item);
+                this.bandera = Object.assign({},item);
+                this.dialog = true;
             }
         }        
     }
