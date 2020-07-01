@@ -28,7 +28,7 @@
                     <v-btn 
                         elevation="3" color="#232323" 
                         class="text-capitalize white--text" 
-                        @click="getConcepto()" :loading="loading"
+                        @click="getVendedor()" :loading="loading"
                         :disabled="$parent.eliminado"
                     >
                         Sí, seguro
@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import Conceptos from '@/services/Conceptos';
 import Empresa from '@/services/Empresa';
+import Vendedores from '@/services/Vendedores';
 
     export default {
         props:{
@@ -73,15 +73,25 @@ import Empresa from '@/services/Empresa';
                 this.showMessage = true;
                 //setTimeout(() => {this.showMessage = false}, 2000);
             },
-            getConcepto(){//se determina si la empresa tiene conceptos indexados
+            getVendedor(){
                 this.loading = true;
-                this.showMessage = false;
-                Conceptos().get(`/?limit=1&adm_empresa_id=${this.$parent.bandera.id}`).then((response) => {
-                    if(response.data.data) this.respuesta("No se puede eliminar esta Empresa.","error");   
-                    else this.deleteEmpresa();
+                Vendedores().get(`/?adm_empresa_id=${this.$parent.bandera.id}`).then((response) => {
+                    this.getSalesVendedor(response.data.data[0].id);
                 }).catch(e => {
                     console.log(e);
-                    this.respuesta("Error de conección.","#D32F2F");
+                    this.respuesta("Error de conección.","#D32F2F");  
+                });
+            },
+            getSalesVendedor(id){
+                Vendedores().get(`/${id}/sell`).then((response) => {
+                    if(response.data.data.ventas == 0){
+                        this.deleteEmpresa();
+                    }else{
+                        this.respuesta("Esta empresa no puede ser eliminada.","#D32F2F");  
+                    }
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta("Error de conección.","#D32F2F");  
                 });
             },
             deleteEmpresa(){//elimina la empresa (solo si la empresa no tiene conceptos indexados)
