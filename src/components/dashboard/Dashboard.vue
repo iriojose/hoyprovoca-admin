@@ -198,7 +198,6 @@ import {mapActions,mapState} from 'vuex';
             },
             async getSellerBySell(id){
                 Vendedores().get(`/${id}/sell`).then((response) => {
-                    console.log(response);
                     this.cards1[2].number = accounting.formatMoney(+response.data.total_ventas,{symbol:"Bs ",thousand:'.',decimal:','});
                     this.cards1[0].number = response.data.ventas;
                     this.getProductos();

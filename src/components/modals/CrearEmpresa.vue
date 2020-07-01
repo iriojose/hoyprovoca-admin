@@ -148,7 +148,7 @@
                     <FilePond  
                         v-show="$parent.creado"
                         ref="pond"
-                        label-idle="Drop image here..."
+                        label-idle="Arrastrar imagen aquí..."
                         labelFileAdded = "Archivo Añadido"
                         :server="{process}"
                         :onaddfilestart="initProcess"

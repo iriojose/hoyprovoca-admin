@@ -43,7 +43,7 @@
                                 </v-row>
                                 <!-- boton -->
                                 <v-row justify="center" class="mt-2">
-                                    <v-btn fab color="#1f3b63" small @click="cambiarImagen = !cambiarImagen" :disabled="loading">
+                                    <v-btn class="my-2" fab color="#1f3b63" small @click="cambiarImagen = !cambiarImagen" :disabled="loading">
                                         <v-icon v-if="!cambiarImagen" color="#fff">mdi-border-color</v-icon>
                                         <v-icon v-else color="#fff">mdi-chevron-left</v-icon>
                                     </v-btn>
@@ -60,7 +60,7 @@
                                     <FilePond  
                                         v-show="cambiarImagen"
                                         ref="pond"
-                                        label-idle="Drop image here..."
+                                        label-idle="arrastrar imagen aquí..."
                                         labelFileAdded = "Archivo Añadido"
                                         :server="{process}"
                                         :onaddfilestart="initProcess"

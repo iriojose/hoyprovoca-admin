@@ -45,7 +45,7 @@
                     <FilePond  
                         v-show="cambiarImagen"
                         ref="pond"
-                        label-idle="Drop image here..."
+                        label-idle="Arrastrar imagen aquí..."
                         labelFileAdded = "Archivo Añadido"
                         :server="{process}"
                         :onaddfilestart="initProcess"
