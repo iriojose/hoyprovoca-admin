@@ -28,7 +28,7 @@
                     <v-btn 
                         elevation="3" color="#232323" 
                         class="text-capitalize white--text" 
-                        @click="deleteUsuario()" :loading="loading"
+                        @click="eliminar()" :loading="loading"
                         :disabled="$parent.eliminado"
                     >
                         Sí, seguro
@@ -43,6 +43,7 @@
 
 <script>
 import Usuario from '@/services/Usuario';
+import Clientes from '@/services/Clientes';
 
     export default {
         props:{
@@ -72,8 +73,29 @@ import Usuario from '@/services/Usuario';
                 this.showMessage = true;
                 //setTimeout(() => {this.showMessage = false}, 2000);
             },
-            deleteUsuario(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
+            eliminar(){
+                if(this.$parent.bandera.perfil_id == 3) this.getCliente();
+                else this.deleteUsuario();
+            },
+            getCliente(){
                 this.loading = true;
+                Clientes().get(`/?usuario_id=${this.$parent.bandera.id}`).then((response) => {
+                    this.getClienteBuys(response.data.data[0].id);
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta("Error de conección.","#D32F2F");
+                });
+            },
+            getClienteBuys(id){
+                Clientes().get(`/${id}/buys`).then((response) => {
+                    if(response.data.response.data.compras == 0) this.deleteUsuario();
+                    else this.respuesta("No se puede eliminar este Usuario.","#D32F2F");
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta("Error de conección.","#D32F2F");
+                });
+            },
+            deleteUsuario(){//elimina el grupo (solo si el grupo no tiene conceptos indexados)
                 Usuario().delete(`/${this.$parent.bandera.id}`).then(() => {
                     this.$parent.eliminado = true;
                     this.respuesta("Usuario eliminado exitosamente.","success");

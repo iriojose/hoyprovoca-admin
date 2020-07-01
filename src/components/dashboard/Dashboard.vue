@@ -109,7 +109,7 @@ import {mapActions,mapState} from 'vuex';
                 cards1:[
                     {id:0,number:'0',clases:'blue--text darken-4 ',text:'VENTAS',icon:'mdi-calendar-blank'},
                     {id:1,number:'0',clases:'green--text darken-4 ',text:'PRODUCTOS',icon:'mdi-food'},
-                    //{id:2,number:'0',clases:'teal--text darken-4 ',text:'',icon:'mdi-domain'},
+                    {id:2,number:'0',clases:'teal--text darken-4 ',text:'GANANCIAS',icon:'mdi-cash'},
                     {id:2,number:'0',clases:'yellow--text darken-4 ',text:'PENDIENTES',icon:'mdi-chat'},
                 ]
             }
@@ -198,6 +198,8 @@ import {mapActions,mapState} from 'vuex';
             },
             async getSellerBySell(id){
                 Vendedores().get(`/${id}/sell`).then((response) => {
+                    console.log(response);
+                    this.cards1[2].number = accounting.formatMoney(+response.data.total_ventas,{symbol:"Bs ",thousand:'.',decimal:','});
                     this.cards1[0].number = response.data.ventas;
                     this.getProductos();
                 }).catch(e => {
