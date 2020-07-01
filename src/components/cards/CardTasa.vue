@@ -1,27 +1,17 @@
 <template>
     <div :class="$vuetify.breakpoint.smAndDown ? 'sombra mx-2':'sombra'">
-        <v-card elevation="0" width="100%" height="400">
+        <v-card elevation="0" width="100%">
             <v-card-title class="color title font-weight-bold">
-                Tasa de cambio
+                Tasa actual de dolar
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text class="my-10">
                 <v-row justify="center">
                     <v-list flat v-if="!loading">
                         <v-list-item two-line>
-                            <v-list-item-icon>
-                                <v-icon>mdi-currency-usd-circle-outline</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title class="font-weight-bold">{{dolar}}</v-list-item-title>
-                                <v-list-item-subtitle class="font-weight-bold">Dolares</v-list-item-subtitle>
-                            </v-list-item-content>
-                        </v-list-item>
-                        
-                        <v-list-item two-line>
-                            <v-list-item-icon>
-                                <v-icon>mdi-cash</v-icon>
-                            </v-list-item-icon>
+                            <v-list-item-avatar size="50">
+                                <v-img :src="require('@/assets/tasa.png')"></v-img>
+                            </v-list-item-avatar>
                             <v-list-item-content>
                                 <v-list-item-title class="font-weight-bold">{{bolivar}}</v-list-item-title>
                                 <v-list-item-subtitle class="font-weight-bold">Bolivares</v-list-item-subtitle>
@@ -89,6 +79,7 @@ import {mapState} from 'vuex';
             dialogEditar(){
                 if(!this.dialogEditar){
                     if(this.editado){
+                        this.bolivar = accounting.formatMoney(+this.bandera.tasa,{symbol:"Bs ",thousand:'.',decimal:','});
                         this.editado = false;
                     }
                 }
@@ -106,7 +97,6 @@ import {mapState} from 'vuex';
                 Cambio().get(`/`).then((response) => {
                     this.bandera = response.data.data[0];
                     this.bolivar = accounting.formatMoney(+response.data.data[0].tasa,{symbol:"Bs ",thousand:'.',decimal:','});
-                    this.dolar = accounting.formatMoney(+this.dolar,{symbol:"$",thousand:',',decimal:'.'});
                     this.loading = false;
                 }).catch(e => {
                     console.log(e);
