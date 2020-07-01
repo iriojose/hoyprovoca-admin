@@ -17,45 +17,36 @@
                     </v-scroll-x-transition> 
                 </v-card>
 
-                <v-row justify="center" v-if="loading">
+                <v-row justify="center" v-if="loading" class="mb-10">
                     <LoaderRect />
                 </v-row>
 
-                <v-row v-else justify="center">
-                    <v-col cols="12" md="10" sm="12">
-                        <v-row justify="center">
-                            <v-expansion-panels>
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>Cliente</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        <ListCliente :usuario="usuario" />
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
+                <v-stepper v-model="e1" class="elevation-0" non-linear v-else>
+                    <v-stepper-header class="elevation-0">
+                        <v-stepper-step color="#2950c3" step="1" editable>Cliente</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step color="#2950c3" step="2" editable>Vendedor</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step color="#2950c3" step="3" editable>Productos</v-stepper-step>
+                        <v-divider></v-divider>
+                        <v-stepper-step color="#2950c3" step="4" editable>Pagos</v-stepper-step>
+                    </v-stepper-header>
 
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>Vendedor</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        <ListVendedor :empresa="empresa" />
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
-
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>Productos</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        <ListProductos :productos="conceptos" />
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
-
-                                <v-expansion-panel>
-                                    <v-expansion-panel-header>Pagos</v-expansion-panel-header>
-                                    <v-expansion-panel-content>
-                                        <ListPagos :pagos="pagos" />
-                                    </v-expansion-panel-content>
-                                </v-expansion-panel>
-                            </v-expansion-panels>
-                        </v-row>
-                    </v-col>
-                </v-row>
+                    <v-stepper-items>
+                        <v-stepper-content step="1">
+                            <ListCliente :usuario="usuario" />
+                        </v-stepper-content>
+                        <v-stepper-content step="2">
+                            <ListVendedor :empresa="empresa" />
+                        </v-stepper-content>
+                        <v-stepper-content step="3">
+                            <ListProductos :productos="conceptos" />
+                        </v-stepper-content>
+                        <v-stepper-content step="4">
+                            <ListPagos :pagos="pagos" />
+                        </v-stepper-content>
+                    </v-stepper-items>
+                </v-stepper>
             </v-card-text>
             
             <v-card-actions>
@@ -101,6 +92,7 @@ import ListPagos from '@/components/lists/ListPagos';
         },
         data() {
             return {
+                e1:1,
                 pagos:[],
                 mensaje:'',
                 type:'error',
