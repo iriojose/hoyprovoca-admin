@@ -79,16 +79,13 @@ import Vendedores from '@/services/Vendedores';
                     this.getSalesVendedor(response.data.data[0].id);
                 }).catch(e => {
                     console.log(e);
-                    this.respuesta("Error de conección.","#D32F2F");  
+                    this.respuesta("Error de conección.","error");  
                 });
             },
             getSalesVendedor(id){
                 Vendedores().get(`/${id}/sell`).then((response) => {
-                    if(response.data.data.ventas == 0){
-                        this.deleteEmpresa();
-                    }else{
-                        this.respuesta("Esta empresa no puede ser eliminada.","#D32F2F");  
-                    }
+                    if(response.data.ventas == 0) this.deleteEmpresa();
+                    else this.respuesta("Esta empresa no puede ser eliminada.","error");  
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("Error de conección.","#D32F2F");  
@@ -100,7 +97,7 @@ import Vendedores from '@/services/Vendedores';
                     this.respuesta("Empresa eliminada exitosamente.","success");
                 }).catch(e => {
                     console.log(e);
-                    this.respuesta("Error de conección.","#D32F2F");
+                    this.respuesta("Error de conección.","error");
                 });
             },
         }

@@ -38,7 +38,7 @@
         </v-row>
 
         <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-else>
-            <v-col cols="12" sm="12" md="4" v-for="(card,i) in cards1" :key="i">
+            <v-col cols="12" sm="12" md="3" v-for="(card,i) in cards1" :key="i">
                 <div class="sombre">
                     <v-card elevation="0">
                         <v-alert

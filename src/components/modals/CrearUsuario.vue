@@ -211,8 +211,6 @@ import Usuario from '@/services/Usuario';
 import Auth from '@/services/Auth';
 import Empresa from '@/services/Empresa';
 import variables from '@/services/variables_globales';
-//import Clientes from '@/services/Clientes';
-//import Vendedores from '@/services/Vendedores';
 import Images from '@/services/Images';
 import vueFilePond from 'vue-filepond';
 
@@ -249,6 +247,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                     email:'',
                     fecha_nac:new Date().toISOString().substr(0, 10),
                     telefono:'',
+                    usuario_in:new Date().toISOString().substr(0, 10),
                     imagen:'default.png',
                     perfil_id:null,
                     adm_empresa_id:null,
@@ -269,7 +268,6 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 items:[
                     {id:1,nombre:"Administrador"},
                     {id:2,nombre:"Super Usuario"},
-                    {id:3,nombre:"Cliente"}
                 ],
                 nivel:null
             }
@@ -344,29 +342,16 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
             postUsuario(){
                 this.loading = true;
                 Auth().post("/signup",{data:this.data}).then((response) => {
-                    console.log(response);
                     this.$parent.creado = true;
                     this.$parent.bandera = response.data.response.data;
                     this.$parent.bandera.estado = "Activo";
                     this.items.filter(a => a.id == this.$parent.bandera.perfil_id ? this.$parent.bandera.perfil = a.nombre:null);
                     this.respuesta("Usuario creado exitosamente.","success");
-
-                    /*if(this.$parent.bandera.perfil_id == 2){
-                        this.postVendedor();
-                    }else if(this.$parent.bandera.perfil_id == 3){
-                        this.postClientes();
-                    }*/
                 }).catch(e => {
                     console.log(e);
                     this.respuesta("Error al crear el usuario.","error");
                 });
             },
-            /*postVendedor(){
-                Vendedores().post("/",{data:{nombre:this.empresa.nombre_comercial}});
-            },
-            /*postCliente(){
-                Clientes().post("/",{data:{}});
-            },*/
             getEmpresas(){
                 Empresa().get("/").then((response) => {
                     this.empresas = response.data.data;

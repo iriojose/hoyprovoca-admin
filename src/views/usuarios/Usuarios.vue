@@ -145,6 +145,8 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                     { text: 'Email', value: 'email'},
                     { text: 'Nivel de usuario', value: 'perfil'},
                     { text: 'Estado', value: 'estado'},
+                    { text: 'Cuenta', value: 'cuenta'},
+                    { text: 'Fecha', value: 'fecha_at'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
@@ -178,6 +180,8 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                 if(!this.dialogCrear){
                     if(this.creado){
                         this.total +=1;
+                        this.bandera.usuario_in = this.bandera.usuario_in.substr(0,10);
+                        this.bandera.cuenta = "No verificada"; 
                         this.usuarios.unshift(this.bandera);
                         window.localStorage.setItem('usuarios',JSON.stringify({usuarios:this.usuarios,total:this.total,offset:this.offset}));
                         this.creado = false;
@@ -224,6 +228,9 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                         }
                         if(response.data.data[i].bloqueado == 0) response.data.data[i].estado = "Activo";
                         else response.data.data[i].estado = "Bloqueado";
+                        if(response.data.data[i].verificado == 0) response.data.data[i].cuenta = "No verificada";
+                        else response.data.data[i].cuenta = "Verificada";
+                        response.data.data.filter(a => a.usuario_in !== null ? a.usuario_in = a.usuario_in.substr(0,10):null);
                         this.usuarios.push(response.data.data[i]);
                     }
                     this.total = response.data.totalCount;

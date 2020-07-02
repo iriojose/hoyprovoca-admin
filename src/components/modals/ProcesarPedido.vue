@@ -17,7 +17,7 @@
                     </v-scroll-x-transition> 
                 </v-card>
 
-                <v-row justify="center" v-if="loading" class="mb-10">
+                <v-row justify="center" v-if="loading2" class="mb-10">
                     <LoaderRect />
                 </v-row>
 
@@ -54,9 +54,9 @@
                 <slot name="close"></slot>
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
-                    :loading="loading"
+                    :loading="loading" @click="sendNots()"
                 >
-                    Facturar
+                    Verificar
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -65,6 +65,7 @@
 
 <script>
 import Clientes from '@/services/Clientes';
+import Nots from '@/services/Nots';
 import Usuario from '@/services/Usuario';
 import Empresa from '@/services/Empresa';
 import Pedidos from '@/services/Pedidos';
@@ -97,6 +98,7 @@ import ListPagos from '@/components/lists/ListPagos';
                 mensaje:'',
                 type:'error',
                 loading:false,
+                loading2:false,
                 showMessage:false,
                 usuario:{
                     imagen:'default.png'
@@ -123,7 +125,7 @@ import ListPagos from '@/components/lists/ListPagos';
                 this.showMessage = true;
             },
             init(){
-                this.loading = true;
+                this.loading2 = true;
                 this.getUsuario();
             },
             reset(){
@@ -183,7 +185,7 @@ import ListPagos from '@/components/lists/ListPagos';
             getConceptos(){
                 Pedidos().get(`/${this.$parent.bandera.id}/conceptos/?fields=id,nombre,imagen`).then((response) => {
                     this.conceptos = response.data.data;
-                    this.loading = false;
+                    this.loading2 = false;
                 }).catch(e => {
                     console.log(e);
                 });
@@ -198,8 +200,21 @@ import ListPagos from '@/components/lists/ListPagos';
                 }).catch(e => {
                     console.log(e);
                 });
-            }
+            },
+            sendNots(){
+                this.loading = true;
+                let data = {
+                    message:"te llego ?",
+                    usuario_id:this.usuario.id
+                };
 
+                Nots().post("/push/new-message",{data:{subscription_data:data}}).then((response) => {
+                    console.log(response);
+                    this.loading = false;
+                }).catch(e => {
+                    console.log(e);
+                });
+            }
         },
     }
 </script>
