@@ -146,7 +146,7 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                     { text: 'Nivel de usuario', value: 'perfil'},
                     { text: 'Estado', value: 'estado'},
                     { text: 'Cuenta', value: 'cuenta'},
-                    { text: 'Fecha', value: 'fecha_at'},
+                    { text: 'Fecha', value: 'usuario_in'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
@@ -230,7 +230,7 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                         else response.data.data[i].estado = "Bloqueado";
                         if(response.data.data[i].verificado == 0) response.data.data[i].cuenta = "No verificada";
                         else response.data.data[i].cuenta = "Verificada";
-                        response.data.data.filter(a => a.usuario_in !== null ? a.usuario_in = a.usuario_in.substr(0,10):null);
+                        response.data.data.filter(a => a.usuario_in !== null ? a.usuario_in = a.usuario_in.substr(0,10):a.usuario_in=" - ");
                         this.usuarios.push(response.data.data[i]);
                     }
                     this.total = response.data.totalCount;
