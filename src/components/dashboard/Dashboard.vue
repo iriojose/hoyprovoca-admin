@@ -157,7 +157,8 @@ import {mapActions,mapState} from 'vuex';
             },
             async getSale(){
                 await Factura().get(`/total/?limit=67010&after-fecha_at=2018-01-01&before-fecha_at=2020-01-01`).then((response) => {
-                    if (response.data !== 'This entity is empty') this.cards[0].number = accounting.formatMoney(+response.data.data.subtotal,{symbol:"Bs ",thousand:'.',decimal:','});
+                    console.log(response);
+                    if (response.data.data[0].subtotal !== null) this.cards[0].number = accounting.formatMoney(+response.data.data[0].subtotal,{symbol:"Bs ",thousand:'.',decimal:','});
                     else this.cards[0].number = accounting.formatMoney(+this.cards[0].number,{symbol:"Bs ",thousand:'.',decimal:','});
                     this.getStats();
                 }).catch(e => {

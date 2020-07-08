@@ -268,6 +268,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 items:[
                     {id:1,nombre:"Administrador"},
                     {id:2,nombre:"Super Usuario"},
+                    {id:4,nombre:"Repartidor"},
                 ],
                 nivel:null
             }
@@ -343,7 +344,7 @@ const FilePond = vueFilePond(FilePondPluginImagePreview);
                 this.loading = true;
                 Auth().post("/signup",{data:this.data}).then((response) => {
                     this.$parent.creado = true;
-                    this.$parent.bandera = response.data.response.data;
+                    this.$parent.bandera = response.data.data;
                     this.$parent.bandera.estado = "Activo";
                     this.items.filter(a => a.id == this.$parent.bandera.perfil_id ? this.$parent.bandera.perfil = a.nombre:null);
                     this.respuesta("Usuario creado exitosamente.","success");

@@ -142,11 +142,11 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                     { text: 'Imagen', value: 'imagen'},
                     { text: 'Nombre',sortable: true, value: 'nombre'},
                     { text: 'Apellido', value: 'apellido'},
-                    { text: 'Email', value: 'email'},
-                    { text: 'Nivel de usuario', value: 'perfil'},
+                    { text: 'Email', value: 'email',align:'center'},
+                    { text: 'Nivel de usuario', value: 'perfil',align:'center'},
                     { text: 'Estado', value: 'estado'},
                     { text: 'Cuenta', value: 'cuenta'},
-                    { text: 'Fecha', value: 'usuario_in'},
+                    { text: 'Fecha', value: 'usuario_in',align:'center'},
                     { text: 'Acciones', value: 'action', sortable: false },
                 ],
             }
@@ -225,6 +225,8 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                             response.data.data[i].perfil = 'Super usuario';
                         }else if(response.data.data[i].perfil_id == 3){
                             response.data.data[i].perfil = 'Cliente';
+                        }else if(response.data.data[i].perfil_id == 4){
+                            response.data.data[i].perfil = 'Repartidor';
                         }
                         if(response.data.data[i].bloqueado == 0) response.data.data[i].estado = "Activo";
                         else response.data.data[i].estado = "Bloqueado";

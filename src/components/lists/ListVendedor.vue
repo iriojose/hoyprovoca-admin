@@ -1,30 +1,36 @@
 <template>
-    <v-list flat dense>
-        <v-list-item>
-            <v-list-item-avatar size="50">
-                <v-img :src="image+empresa.imagen"></v-img>
-            </v-list-item-avatar>
-            <v-list-item-title>
-                {{empresa.nombre_comercial}}
-            </v-list-item-title>
-        </v-list-item>
-        <v-list-item>
-            <v-list-item-icon>
-                <v-icon>mdi-email</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>
-                {{empresa.correo_electronico}}
-            </v-list-item-title>
-        </v-list-item>
-        <v-list-item>
-            <v-list-item-icon>
-                <v-icon>mdi-cellphone</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>
-                {{empresa.telefono1}}
-            </v-list-item-title>
-        </v-list-item>
-    </v-list>
+    <v-card elevation="0">
+        <v-card-text>
+            <v-row justify="center">
+                <v-avatar size="100">
+                    <v-img :src="image+empresa.imagen"></v-img>
+                </v-avatar>
+            </v-row>
+            <v-list flat dense>
+                <v-list-item>
+                    <v-list-item-title class="body-1 font-weight-bold">
+                        Nombre: {{empresa.nombre_comercial}}
+                    </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-icon>
+                        <v-icon>mdi-email</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="body-1 font-weight-bold">
+                        {{empresa.correo_electronico}}
+                    </v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                    <v-list-item-icon>
+                        <v-icon>mdi-cellphone</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="body-1 font-weight-bold">
+                        {{empresa.telefono1}}
+                    </v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>

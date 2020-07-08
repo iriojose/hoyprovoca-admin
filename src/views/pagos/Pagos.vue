@@ -60,7 +60,7 @@
         </v-card>
 
         <!--modal para ver el pedido -->
-        <ProcesarPedido :dialog="dialog" :pedido="bandera">
+        <ProcesarPedido :dialog="dialog" :pedido="bandera" :tasa="tasa" :repartidores="usuarios">
             <template v-slot:close>
                 <v-btn tile color="#232323" text @click="dialog = false">
                     Salir
@@ -77,10 +77,12 @@
 
 <script>
 import Pedidos from '@/services/Pedidos';
+import Usuario from '@/services/Usuario';
 import variables from '@/services/variables_globales';
 import Puntos from '@/components/loaders/Puntos';
 import accounting from 'accounting';
 import ProcesarPedido from '@/components/modals/ProcesarPedido';
+import Cambio from '@/services/Cambio';
 
     export default {
         components: {
@@ -95,8 +97,10 @@ import ProcesarPedido from '@/components/modals/ProcesarPedido';
                 ...variables,
                 total:0,
                 offset:0,
+                tasa:0,
                 search:'',
                 loading:false,
+                usuarios:[],
                 pedidos:[],
                 headers: [
                     { text: 'Imagen', value: 'imagen'},
@@ -132,6 +136,8 @@ import ProcesarPedido from '@/components/modals/ProcesarPedido';
                 this.total = data.total;
                 this.offset = data.offset;
             }else this.getPedidos();
+            this.getCambio();
+            this.getUsuarios();
         },
         methods:{
             getPedidos(){
@@ -142,7 +148,8 @@ import ProcesarPedido from '@/components/modals/ProcesarPedido';
                         response.data.data.filter(a => a.items = a.detalles.length);
                         for (let i = 0; i < response.data.data.length; i++) {
                            let suma = 0;
-                           response.data.data[i].detalles.filter(a => suma+= a.precio);
+                           response.data.data[i].detalles.filter(a => suma+= +a.precio);
+                           
                            response.data.data[i].monto = accounting.formatMoney(+suma,{symbol:"Bs ",thousand:'.',decimal:','});
                         }
                         for (let i = 0; i < response.data.data.length; i++) {
@@ -166,6 +173,16 @@ import ProcesarPedido from '@/components/modals/ProcesarPedido';
             verPago(item){
                 this.bandera = Object.assign({},item);
                 this.dialog = true;
+            },
+            getCambio(){
+                Cambio().get(`/`).then((response) => {
+                    this.tasa = Number.parseInt(response.data.data[0].tasa);
+                });
+            },
+            getUsuarios(){
+                Usuario().get(`/?perfil_id=4`).then((response) => {
+                    this.usuarios = response.data.data;
+                });
             }
         }        
     }

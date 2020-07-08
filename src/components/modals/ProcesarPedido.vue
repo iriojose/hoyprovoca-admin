@@ -27,9 +27,9 @@
                         <v-divider></v-divider>
                         <v-stepper-step color="#2950c3" step="2" editable>Vendedor</v-stepper-step>
                         <v-divider></v-divider>
-                        <v-stepper-step color="#2950c3" step="3" editable>Productos</v-stepper-step>
+                        <v-stepper-step color="#2950c3" step="3" editable>Pagos</v-stepper-step>
                         <v-divider></v-divider>
-                        <v-stepper-step color="#2950c3" step="4" editable>Pagos</v-stepper-step>
+                        <v-stepper-step color="#2950c3" step="4" editable>Repartidores</v-stepper-step>
                     </v-stepper-header>
 
                     <v-stepper-items>
@@ -40,10 +40,32 @@
                             <ListVendedor :empresa="empresa" />
                         </v-stepper-content>
                         <v-stepper-content step="3">
-                            <ListProductos :productos="conceptos" />
+                            <ListPagos :pagos="pagos" />
+                            <!--ListProductos :productos="conceptos" :detalles="$parent.bandera.detalles" /-->
                         </v-stepper-content>
                         <v-stepper-content step="4">
-                            <ListPagos :pagos="pagos" />
+                            <v-select
+                                dense filled single-line
+                                rounded label="Repartidor"
+                                hint="Asignar pedido" persistent-hint
+                                color="#2950c3" :disabled="loading"
+                                :rules="[requiredObject('Repartidor')]" return-object
+                                :items="repartidores"
+                                item-text="nombre" v-model="repartidor"
+                            >
+                                <template slot="item" slot-scope="{ item }">
+                                    <v-avatar size="40" class="mr-5">
+                                        <v-img :src="image+item.imagen"></v-img>
+                                    </v-avatar>  
+                                    {{ item.nombre+' '+item.apellido}} 
+                                </template>
+                                <template v-slot:selection="{item}">
+                                    <v-avatar size="30" class="mr-5">
+                                        <v-img :src="image+item.imagen"></v-img>
+                                    </v-avatar>  
+                                    <span>{{ item.nombre+' '+item.apellido}}</span>
+                                </template>
+                            </v-select>
                         </v-stepper-content>
                     </v-stepper-items>
                 </v-stepper>
@@ -54,9 +76,10 @@
                 <slot name="close"></slot>
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
-                    :loading="loading" @click="sendNots()"
+                    :loading="loading" @click="generarFactura()"
+                    :disabled="loading2 && repartidor !== null"
                 >
-                    Verificar
+                    Aceptar
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -64,6 +87,9 @@
 </template>
 
 <script>
+import {mapState} from 'vuex';
+import variables from '@/services/variables_globales';
+import validations from '@/validations/validations';
 import Clientes from '@/services/Clientes';
 import Nots from '@/services/Nots';
 import Usuario from '@/services/Usuario';
@@ -74,15 +100,16 @@ import Vendedores from '@/services/Vendedores';
 import LoaderRect from '@/components/loaders/LoaderRect';
 import ListVendedor from '@/components/lists/ListVendedor';
 import ListCliente from '@/components/lists/ListCliente';
-import ListProductos from '@/components/lists/ListProductos';
+//import ListProductos from '@/components/lists/ListProductos';
 import ListPagos from '@/components/lists/ListPagos';
+import { v4 as uuidv4 } from 'uuid';
 
     export default {
         components:{
             LoaderRect,
             ListVendedor,
             ListCliente,
-            ListProductos,
+            //ListProductos,
             ListPagos
         },
         props:{
@@ -90,11 +117,22 @@ import ListPagos from '@/components/lists/ListPagos';
                 type:Boolean,
                 default:false
             },
+            tasa:{
+                type:Number,
+                default:0
+            },
+            repartidores:{
+                type:Array,
+                default:() => ([])
+            }
         },
         data() {
             return {
+                ...variables,
+                ...validations,
                 e1:1,
                 pagos:[],
+                repartidor:null,
                 mensaje:'',
                 type:'error',
                 loading:false,
@@ -108,8 +146,28 @@ import ListPagos from '@/components/lists/ListPagos';
                 },
                 cliente:{},
                 vendedor:{},
-                conceptos:[],
+                //conceptos:[],
+                data:{
+                    fecha_at:new Date().toISOString().substr(0, 10),
+                    fecha_in:new Date().toISOString().substr(0, 10),
+                    adm_vendedor_id:null,
+                    adm_clientes_id:null,
+                    subtotal:0,
+                    subtotal_dolar:0,
+                    estatus_pago:1,
+                    adm_tipos_facturas_id:1,
+                    rest_pedidos_id: null,
+                    iva:0,
+                    facturado:1,
+                    adm_usuarios_id:0,
+                    adm_caja_id:1,
+                    devuelto:0
+                },
+                data1:[]
             }
+        },
+        computed:{
+            ...mapState(['user'])
         },
         watch: {
             dialog(){
@@ -126,10 +184,11 @@ import ListPagos from '@/components/lists/ListPagos';
             },
             init(){
                 this.loading2 = true;
-                this.getUsuario();
+                this.getCliente();
             },
             reset(){
                 this.showMessage = false;
+                this.repartidor = {};
                 this.pagos = [];
                 this.empresa = {
                     imagen:'default.png'
@@ -139,19 +198,20 @@ import ListPagos from '@/components/lists/ListPagos';
                 };
                 this.cliente = {};
                 this.vendedor = {};
-                this.conceptos = [];
+                //this.conceptos = [];
+                this.data1 = [];
             },
-            getUsuario(){
-                Usuario().get(`/${this.$parent.bandera.usuario_id}`).then((response) => {
-                    this.usuario = response.data.data;
-                    this.getCliente();
+            getCliente(){
+                Clientes().get(`/${this.$parent.bandera.adm_clientes_id}`).then((response) => {
+                    this.cliente = response.data.data;
+                    this.getUsuario();
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getCliente(){
-                Clientes().get(`/?usuario_id=${this.usuario.id}&fields=id,nombre,imagen`).then((response) => {
-                    this.cliente = response.data.data[0];
+            getUsuario(){
+                Usuario().get(`/${this.cliente.usuario_id}`).then((response) => {
+                    this.usuario = response.data.data;
                     this.getEmpresa();
                 }).catch(e => {
                     console.log(e);
@@ -176,45 +236,78 @@ import ListPagos from '@/components/lists/ListPagos';
             getPagos(){
                 Pedidos().get(`/${this.$parent.bandera.id}/pagos`).then((response) => {
                     this.pagos = response.data.data;
-                    console.log(this.pagos);
-                    this.getConceptos();
+                    this.loading2 = false;
+                    //this.getConceptos();
                 }).catch(e => {
                     console.log(e);
                 });
             },
-            getConceptos(){
+            /*getConceptos(){
                 Pedidos().get(`/${this.$parent.bandera.id}/conceptos/?fields=id,nombre,imagen`).then((response) => {
                     this.conceptos = response.data.data;
                     this.loading2 = false;
                 }).catch(e => {
                     console.log(e);
                 });
-            },
+            },*/
             updatePedido(){
-                Pedidos().post(`/${this.$parent.bandera.id}`,{data:{rest_estatus_id:3}});
-            },
-            postFactura(){
-                Factura().post("/",{data:this.data}).then((response) => {
-                    console.log(response);
-                    this.updatePedidos();
+                Pedidos().post(`/${this.$parent.bandera.id}`,{data:{rest_estatus_id:3,usuario_id:this.repartidor.id}}).then(() => {
+                    this.sendNots();
+                    this.$parent.bandera.estatus = "Verificado";
                 }).catch(e => {
                     console.log(e);
+                    this.respuesta("Error al facturar.","error");
+                });
+            },
+            generarFactura(){
+                this.data.numero_factura = uuidv4();
+                this.data.adm_vendedor_id = this.vendedor.id;
+                this.data.adm_clientes_id = this.cliente.id;
+                this.data.rest_pedidos_id = this.$parent.bandera.id;
+                this.pagos.filter(a => this.data.subtotal += Number.parseInt(a.monto));
+                this.data.subtotal_dolar = this.data.subtotal / this.tasa;
+                this.data.subtotal_dolar = this.data.subtotal_dolar.toFixed(2);
+                this.data.adm_usuarios_id = this.user.data.id;
+
+                for (let i = 0; i < this.$parent.bandera.detalles.length; i++) {
+                    this.data1.push({
+                        adm_conceptos_id:this.$parent.bandera.detalles[i].adm_conceptos_id,
+                        adm_vendedor_id:this.vendedor.id,
+                        precio:this.$parent.bandera.detalles[i].precio,
+                        precio_dolar:(this.$parent.bandera.detalles[i].precio/this.tasa).toFixed(2),
+                        cantidad:this.$parent.bandera.detalles[i].cantidad,
+                        fecha_at:new Date().toISOString().substr(0, 10),
+                    });
+                }
+                this.postFactura();
+            },
+            postFactura(){
+                this.loading = true;
+                console.log(this.data,this.data1);
+                Factura().post("/",{data:this.data,data1:this.data1}).then(() => {
+                    this.updatePedido();
+                }).catch(e => {
+                    console.log(e);
+                    this.respuesta("Error al facturar.","error");
                 });
             },
             sendNots(){
-                this.loading = true;
                 let data = {
-                    message:"te llego ?",
-                    usuario_id:this.usuario.id
+                    link:"https://hoyprovoca.com/account/soporte",
+                    subject:"Pedido verificado",
+                    type:"any",
+                    email:this.usuario.email,
+                    message:`Su pedido fue verificado exitosamente, numero de factura:${this.data.numero_factura}, \n,Dentro de unas horas el repartidor se comunicara con usted por el chat de Atención al cliente,\n al cual puede ingresar entrando en ajustes, Atención al cliente.`
                 };
-
-                Nots().post("/push/new-message",{data:{subscription_data:data}}).then((response) => {
-                    console.log(response);
+                this.loading = true;
+                Nots().post("/mail/sendmail",{data:data}).then(() => {
                     this.loading = false;
+                    this.respuesta("Facturado exitosamente.","success");
                 }).catch(e => {
                     console.log(e);
+                    this.respuesta("Error al facturar.","error");
                 });
-            }
+            },
         },
     }
 </script>

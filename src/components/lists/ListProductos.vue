@@ -7,6 +7,9 @@
             <v-list-item-title>
                 {{producto.nombre}}
             </v-list-item-title>
+            <v-list-item-title>
+                {{Number.parseInt(detalles[i].cantidad)}}
+            </v-list-item-title>
         </v-list-item>
     </v-list>
 </template>
@@ -17,6 +20,10 @@ import variables from '@/services/variables_globales';
     export default {
         props:{
             productos:{
+                type:Array,
+                default:() => ([])
+            },
+            detalles:{
                 type:Array,
                 default:() => ([])
             }
