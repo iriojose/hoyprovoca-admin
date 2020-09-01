@@ -51,7 +51,6 @@ export default new Vuex.Store({
         },
         //autenticacion
         SET_LOGGED(state,val){//logea al usuario
-            window.localStorage.clear();//se elimina el cache guardado
             let data = {};
             data.loggedIn = true;
             data.token = val.token;

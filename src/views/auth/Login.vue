@@ -170,12 +170,11 @@ import {mapActions} from 'vuex';
                     }else if(response.data.data.perfil_id < 3){
                         this.logged(response.data);
                         this.respuesta("Bienvenido",'success');
-                        setTimeout(() => {router.push('/');},500);
+                        setTimeout(() => {router.push('/dashboard');},500);
                     }else{
                         this.respuesta('Este no es un Administrador o un super usuario','error');
                     }
                 }).catch(e => {
-                    console.log(e);
                     this.respuesta('Usuario y/o contraseña incorrecta.','error');
                 });
             },
