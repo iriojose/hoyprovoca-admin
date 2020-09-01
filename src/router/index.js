@@ -1,20 +1,5 @@
 import Vue from "vue";
 import Router from "vue-router";
-import store from '@/store';
-
-import Home from "@/views/home/Home";
-import Login from '@/views/auth/Login';
-import Forgot from '@/views/auth/Forgot';
-import Usuarios from '@/views/usuarios/Usuarios';
-import Empresas from '@/views/empresas/Empresas';
-import Pagos from '@/views/pagos/Pagos';
-import Grupos from '@/views/inventario/Grupos';
-import Cargos from '@/views/inventario/Cargos';
-import Subgrupos from '@/views/inventario/Subgrupos';
-import Productos from '@/views/inventario/Productos';
-import Profile from '@/views/account/Profile';
-import Notificaciones from '@/views/account/Notificaciones' 
-import Ayuda from '@/views/account/ayuda';
 
 Vue.use(Router);
 
@@ -24,99 +9,104 @@ const router = new Router({
 	routes:[
 		{
 			path: "/",
-			name: "dashboard",
-			component: Home,
+			name: "home",
+			component:() => import("@/views/home/Home"),
 			meta:{
+                auth:false
+            },
+        },
+        {
+            path:"/dashboard",
+            name:"dashboard",
+            component: () => import("@/views/dashboard/Dashboard"),
+            meta:{
+                auth:true
+            }
+        },
+        {
+            path:'usuarios',
+            name:"usuarios",
+            component:() => import('@/views/usuarios/Usuarios'),
+            meta:{
                 auth:true
             },
-            children:[
-                {
-                    path:'usuarios',
-                    name:"usuarios",
-                    component:Usuarios,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'pagos',
-                    name:"pagos",
-                    component:Pagos,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'empresas',
-                    name:"empresas",
-                    component:Empresas,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'profile',
-                    name:"profile",
-                    component:Profile,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path: "ayuda",
-                    name: "ayuda",
-                    component: Ayuda,
-                    meta: {
-                        auth: true
-                    }
-                },
-                {
-                    path:'notificaciones',
-                    name:"notificaciones",
-                    component:Notificaciones,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'grupos',
-                    name:"grupos",
-                    component:Grupos,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'subgrupos',
-                    name:"subgrupos",
-                    component:Subgrupos,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'productos',
-                    name:"productos",
-                    component:Productos,
-                    meta:{
-                        auth:true
-                    },
-                },
-                {
-                    path:'cargos',
-                    name:"cargos",
-                    component:Cargos,
-                    meta:{
-                        auth:true
-                    },
-                },
-            ]
-
-		},
+        },
+        {
+            path:'pagos',
+            name:"pagos",
+            component:() => import('@/views/pagos/Pagos'),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path:'empresas',
+            name:"empresas",
+            component:() => import("@/views/empresas/Empresas"),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path:'profile',
+            name:"profile",
+            component:() => import('@/views/account/Profile'),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path: "ayuda",
+            name: "ayuda",
+            component: () => import('@/views/account/Ayuda'),
+            meta: {
+                auth: true
+            }
+        },
+        {
+            path:'notificaciones',
+            name:"notificaciones",
+            component: () => import('@/views/account/Notificaciones'),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path:'grupos',
+            name:"grupos",
+            component:() => import('@/views/inventario/Grupos'),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path:'subgrupos',
+            name:"subgrupos",
+            component:() => import('@/views/inventario/Subgrupos'),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path:'productos',
+            name:"productos",
+            component:() => import('@/views/inventario/Productos'),
+            meta:{
+                auth:true
+            },
+        },
+        {
+            path:'cargos',
+            name:"cargos",
+            component:() => import('@/views/inventario/Cargos'),
+            meta:{
+                auth:true
+            },
+        },
 		{
 			path: "/login",
 			name: "login",
-			component: Login,
+			component:() => import("@/views/auth/Login"),
 			meta:{
                 auth:false
             }
@@ -124,7 +114,7 @@ const router = new Router({
         {
 			path: "/forgot",
 			name: "forgot",
-			component: Forgot,
+			component: () => import("@/views/auth/Forgot"),
 			meta:{
                 auth:false
             }
@@ -144,25 +134,23 @@ const router = new Router({
 });
 
 router.beforeEach((to,from,next) => {
-    let user = store.state.user.loggedIn;
+    let user =  window.sessionStorage.getItem('admin_token');
 
     if(to.meta.auth){
-        if(user){
+        if(user !== "" && user){
             next();
         }else{
-            next({name:'login'});
+            next({name:'home'});
         }
     }else{
         if(to.name == 'login' && user){
-            next({name:'home'});
+            next({name:'dashboard'});
         }else if(to.name == 'login' && user){
-            next({name:'home'});
+            next({name:'dashboard'});
         }else if(to.name == 'register' && user){
-            next({name:'home'});
-        }else if(to.name == 'resetPassword' && user){
-            next({name:'home'});
+            next({name:'dashboard'});
         }else if(to.name == 'forgot' && user){
-            next({name:'forgot'});
+            next({name:'dashboard'});
         }else{
             next();
         }
