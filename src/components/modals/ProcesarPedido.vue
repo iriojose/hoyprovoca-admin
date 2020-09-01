@@ -77,7 +77,7 @@
                 <v-btn 
                     color="#2950c3" class="text-capitalize white--text" 
                     :loading="loading" @click="generarFactura()"
-                    :disabled="loading2 && repartidor !== null"
+                    :disabled="loading2 || repartidor == null || showMessage"
                 >
                     Aceptar
                 </v-btn>
@@ -283,7 +283,6 @@ import { v4 as uuidv4 } from 'uuid';
             },
             postFactura(){
                 this.loading = true;
-                console.log(this.data,this.data1);
                 Factura().post("/",{data:this.data,data1:this.data1}).then(() => {
                     this.updatePedido();
                 }).catch(e => {
@@ -293,11 +292,11 @@ import { v4 as uuidv4 } from 'uuid';
             },
             sendNots(){
                 let data = {
-                    link:"https://hoyprovoca.com/account/soporte",
+                    link:"https://hoyprovoca.com/account/ayuda",
                     subject:"Pedido verificado",
                     type:"any",
                     email:this.usuario.email,
-                    message:`Su pedido fue verificado exitosamente, numero de factura:${this.data.numero_factura}, \n,Dentro de unas horas el repartidor se comunicara con usted por el chat de Atención al cliente,\n al cual puede ingresar entrando en ajustes, Atención al cliente.`
+                    message:`Su pedido fue verificado exitosamente, numero de factura :${this.data.numero_factura} \n,Dentro de unas horas el repartidor se comunicara con usted por el chat de Atención al cliente,\n al cual puede ingresar entrando en ajustes, Atención al cliente.`
                 };
                 this.loading = true;
                 Nots().post("/mail/sendmail",{data:data}).then(() => {

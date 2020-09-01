@@ -1,14 +1,14 @@
 <template>
-    <v-card width="100%" elevation="0" color="#1f3b63" height="1200">
+    <v-card width="100%" elevation="0" color="#fff" height="1200">
         <v-card-text>
             <v-row justify="center" class="py-2">
                 <v-col cols="12" md="9" sm="12" :class="$vuetify.breakpoint.smAndDown ? 'mx-4':null">
                     <v-row justify="center" class="pb-4">
-                        <v-img contain width="100" height="50" :src="require('@/assets/logo 6.png')"></v-img>
+                        <v-img contain width="100" height="50" :src="require('@/assets/logo2.png')"></v-img>
                     </v-row>
-                    <v-card width="100%" elevation="0">
+                    <v-card width="100%" elevation="3">
                         <v-row justify="center">
-                            <v-col cols="12" md="6" class="hidden-sm-and-down">
+                            <v-col cols="12" md="6" class="hidden-sm-and-down fondo">
                                 <v-img width="100%" height="400" contain :src="require('@/assets/dashboard.svg')"></v-img>
                             </v-col>
                             <v-col cols="12" md="6" sm="12" class="pa-12">
@@ -44,7 +44,7 @@
                                                     color="#0f2441"
                                                     indeterminate
                                                 ></v-progress-circular>
-                                                <img v-else width="24" height="24" :src="require('@/assets/logo 3.png')">
+                                                <img v-else width="24" height="24" :src="require('@/assets/2.png')">
                                             </v-fade-transition>
                                         </template>
                                     </v-text-field>
@@ -84,8 +84,8 @@
             </v-row>
         </v-card-text>
 
-        <v-footer fixed class="font-weight-medium" elevation="0" color="#1f3b63">
-            <v-col class="text-center white--text" cols="12">
+        <v-footer fixed class="font-weight-medium" elevation="0" color="#fff">
+            <v-col class="text-center black--text" cols="12">
                 {{ new Date().getFullYear() }} — <strong>Hoyprovoca</strong> 
             </v-col>
         </v-footer>
@@ -187,6 +187,9 @@ import {mapActions} from 'vuex';
     .color{
         color:#000;
         background:#fff;
+    }
+    .fondo{
+        background:#eee;
     }
     .color:hover{
         cursor:pointer;
