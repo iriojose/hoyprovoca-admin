@@ -136,7 +136,7 @@ const router = new Router({
 });
 
 router.beforeEach((to,from,next) => {
-    let user =  window.sessionStorage.getItem('admin_token');
+    let user =  window.localStorage.getItem('admin_token');
 
     if(to.meta.auth){
         if(user !== "" && user){
