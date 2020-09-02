@@ -81,17 +81,27 @@ import { mapActions, mapState } from "vuex";
                 this.loading = true;
                 this.error = false;
                 Auth().post("/sesion", { token: token }).then((response) => {
-                    if(response.data.response.data.bloqueado == 1) {
+                    if(response.data.code == 440){
+                        this.loading = false;
+                        this.error = false;
+                        router.push("/");
+                        localStorage.removeItem("admin_token");
+                    }
+                    if(response.data.response.data.bloqueado == 1){
                         this.setModalBloqueado(true);
                         this.loading = false;
-                    } else {
+                        this.error = false;
+                        localStorage.removeItem("admin_token");
+                    } 
+                    if(response.data.code == 200) {
                         response.data.response.token = token;
                         //response.data.response.cliente = response.data.response.data.cliente[0];
                         //delete response.data.response.data.vendedor;
                         this.logged(response.data.response);
                         this.loading = false;
-                        router.push("/dashboard");
+                        //router.push("/dashboard");
                     }
+                    
                 }).catch(() => {
                     this.error = true;
                 });
