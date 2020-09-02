@@ -30,7 +30,7 @@
 
         <ModalBloqueado />
 
-        <Footer />
+        <Footer v-if="ruta() && !loading" />
     </v-app>
 </template>
 
