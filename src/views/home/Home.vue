@@ -77,7 +77,7 @@
                     </v-col>
                     <v-col cols="12" md="6" sm="12">
                         <v-row justify="center">
-                            <v-img src="@/assets/information.svg" contain width="100%" height="400"></v-img>
+                            <v-img src="@/assets/team.svg" contain width="100%" height="400"></v-img>
                         </v-row>
                     </v-col>
                 </v-row>
@@ -101,9 +101,8 @@
 
                                     <v-row justify="center" :class="i==1 ? 'mx-2':'mx-2 my-4'">
                                         <v-col cols="4" md="4" sm="4">
-                                            <v-card elevation="3" class="border" width="100%" height="50">
-
-                                            </v-card>
+                                            <v-avatar size="50" :color="plan.color">
+                                            </v-avatar>
                                         </v-col>
                                         <v-col cols="8" md="8" sm="8">
                                             <div :class="i==1 ? 'text-left white--text text-capitalize font-weight-black':'text-left black--text text-capitalize font-weight-black'">{{plan.title}}</div>
@@ -159,6 +158,7 @@
                     {
                         title:"Emprende",
                         precio:"Free",
+                        color:"#EF5350",
                         beneficios:[
                             {text:"20 productos."},
                             {text:"Se retiene 10%."},
@@ -168,6 +168,7 @@
                     {
                         title:"Distribuidor",
                         precio:"20$",
+                        color:"#43A047",
                         beneficios:[
                             {text:"120 productos."},
                             {text:"Se retiene 15%."},
@@ -178,6 +179,7 @@
                     {
                         title:"Retail",
                         precio:"10$",
+                        color:"#AB47BC",
                         beneficios:[
                             {text:"60 productos."},
                             {text:"se retiene 9%."},
