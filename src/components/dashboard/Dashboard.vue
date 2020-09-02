@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-card elevation="0" width="100%" color="transparent">
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text @click="reload()" :loading="loading" class="text-capitalize font-weight-black">
@@ -8,73 +8,75 @@
             </v-btn>
         </v-card-actions>
         
-        <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-if="user.data.adm_empresa_id == null || user.data.adm_empresa_id == 0">
-            <v-col cols="12" sm="12" md="3" v-for="(card,i) in cards" :key="i">
-                <div class="sombre">
-                    <v-card elevation="0">
-                        <v-alert
-                            border="left"
-                            colored-border
-                            :color="card.clases"
-                            elevation="0"
-                        >
-                            <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
-                                <v-col cols="9">
-                                    <div :class="card.clases">{{card.text}}</div>
-                                    <div :class="i == 0 ? 'subtitle-1 font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+        <v-card-text>
+            <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-if="user.data.adm_empresa_id == null || user.data.adm_empresa_id == 0">
+                <v-col cols="12" sm="12" md="3" v-for="(card,i) in cards" :key="i">
+                    <div class="sombre">
+                        <v-card elevation="0">
+                            <v-alert
+                                border="left"
+                                colored-border
+                                :color="card.clases"
+                                elevation="0"
+                            >
+                                <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
+                                    <v-col cols="9">
+                                        <div :class="card.clases">{{card.text}}</div>
+                                        <div :class="i == 0 ? 'subtitle-1 font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+                                    </v-col>
+                                
+                                <v-col cols="3">
+                                    <v-icon size="40" color="grey lighten-2">{{card.icon}}</v-icon>
                                 </v-col>
-                               
-                               <v-col cols="3">
-                                   <v-icon size="40" color="grey lighten-2">{{card.icon}}</v-icon>
-                               </v-col>
-                            </v-row>
-                            <v-row v-else justify="center">
-                                <Puntos />
-                            </v-row>
-                        </v-alert>
-                    </v-card>
-                </div>
-            </v-col>
-        </v-row>
+                                </v-row>
+                                <v-row v-else justify="center">
+                                    <Puntos />
+                                </v-row>
+                            </v-alert>
+                        </v-card>
+                    </div>
+                </v-col>
+            </v-row>
 
-        <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-else>
-            <v-col cols="12" sm="12" md="3" v-for="(card,i) in cards1" :key="i">
-                <div class="sombre">
-                    <v-card elevation="0">
-                        <v-alert
-                            border="left"
-                            colored-border
-                            :color="card.clases"
-                            elevation="0"
-                        >
-                            <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
-                                <v-col cols="9">
-                                    <div :class="card.clases">{{card.text}}</div>
-                                    <div :class="i == 0 ? 'subtitle-1 font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+            <v-row justify="center" :class="$vuetify.breakpoint.smAndDown ? 'mx-2':null" v-else>
+                <v-col cols="12" sm="12" md="3" v-for="(card,i) in cards1" :key="i">
+                    <div class="sombre">
+                        <v-card elevation="0">
+                            <v-alert
+                                border="left"
+                                colored-border
+                                :color="card.clases"
+                                elevation="0"
+                            >
+                                <v-row :justify="$vuetify.breakpoint.smAndDown ? 'center':null" v-if="!loading">
+                                    <v-col cols="9">
+                                        <div :class="card.clases">{{card.text}}</div>
+                                        <div :class="i == 0 ? 'subtitle-1 font-weight-black':'subtitle-1 font-weight-black'">{{card.number}}</div>
+                                    </v-col>
+                                
+                                <v-col cols="3">
+                                    <v-icon size="40" color="grey lighten-2">{{card.icon}}</v-icon>
                                 </v-col>
-                               
-                               <v-col cols="3">
-                                   <v-icon size="40" color="grey lighten-2">{{card.icon}}</v-icon>
-                               </v-col>
-                            </v-row>
-                            <v-row v-else justify="center">
-                                <Puntos />
-                            </v-row>
-                        </v-alert>
-                    </v-card>
-                </div>
-            </v-col>
-        </v-row>
+                                </v-row>
+                                <v-row v-else justify="center">
+                                    <Puntos />
+                                </v-row>
+                            </v-alert>
+                        </v-card>
+                    </div>
+                </v-col>
+            </v-row>
 
-        <v-row justify="center">
-            <v-col cols="12" md="7" sm="12">
-                <ChartDonut />
-            </v-col>
-            <v-col cols="12" md="5" sm="12">
-                <CardTasa />
-            </v-col>
-        </v-row>
-    </div>
+            <v-row justify="center">
+                <v-col cols="12" md="7" sm="12">
+                    <ChartDonut />
+                </v-col>
+                <v-col cols="12" md="5" sm="12">
+                    <CardTasa />
+                </v-col>
+            </v-row>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>

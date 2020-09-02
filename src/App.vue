@@ -1,5 +1,5 @@
 <template>
-    <v-app style="background-color:#f7f7f7;">
+    <v-app style="background-color:#fff;">
         <AppBar v-if="ruta() && !loading" />
 
         <transition name="fade" v-if="!loading">

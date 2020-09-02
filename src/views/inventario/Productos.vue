@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <v-card  width="100%">
+    <div :class="$vuetify.breakpoint.smAndDown ? null:drawer ? 'left':null">
+        <v-card width="100%" elevation="0">
             <v-card-title>
                 <v-btn color="#2950c3" @click="dialogCrear = true" fab small>
                     <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
@@ -155,7 +155,7 @@ import EditarProducto from '@/components/modals/EditarProducto';
             }
         },
         computed:{
-            ...mapState(['user']),
+            ...mapState(['user','drawer']),
 
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.productos.length >= this.total) return true;
@@ -248,5 +248,8 @@ import EditarProducto from '@/components/modals/EditarProducto';
 <style lang="scss" scoped>
     .rounded{
         border-radius:5px;
+    }
+    .left{
+        margin-left:250px;
     }
 </style>

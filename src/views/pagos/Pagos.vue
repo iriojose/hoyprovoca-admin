@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <v-card  width="100%">
+    <div :class="$vuetify.breakpoint.smAndDown ? null:drawer ? 'left':null">
+        <v-card  width="100%" elevation="0">
             <v-card-title>
                 <v-btn color="#2950c3" @click="reload()" fab small class="mx-2">
                     <v-icon color="#fff" :loading="loading" class="mx-2">mdi-reload</v-icon>
@@ -83,6 +83,7 @@ import Puntos from '@/components/loaders/Puntos';
 import accounting from 'accounting';
 import ProcesarPedido from '@/components/modals/ProcesarPedido';
 import Cambio from '@/services/Cambio';
+import {mapState} from 'vuex';
 
     export default {
         components: {
@@ -123,6 +124,8 @@ import Cambio from '@/services/Cambio';
             }
         },
         computed:{
+            ...mapState(['drawer']),
+
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.pedidos.length >= this.total) return true;
                 else return false;
@@ -191,5 +194,8 @@ import Cambio from '@/services/Cambio';
 <style lang="scss" scoped>
     .rounded{
         border-radius:5px;
+    }
+    .left{
+        margin-left:250px;
     }
 </style>

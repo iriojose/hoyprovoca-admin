@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <v-card  width="100%">
+    <div :class="$vuetify.breakpoint.smAndDown ? null:drawer ? 'left':null">
+        <v-card width="100%" elevation="0">
             <v-card-title>
                 <v-btn color="#2950c3" @click="dialogCrear = true" fab small>
                     <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
@@ -123,7 +123,7 @@ import CrearCargo from '@/components/modals/CrearCargo';
             }else this.getCargos(this.user.data.adm_empresa_id);
         },
         computed:{
-            ...mapState(['user']),
+            ...mapState(['user','drawer']),
 
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.cargos.length >= this.total) return true;
@@ -177,5 +177,8 @@ import CrearCargo from '@/components/modals/CrearCargo';
 <style lang="scss" scoped>
     .rounded{
         border-radius:5px;
+    }
+    .left{
+        margin-left:250px;
     }
 </style>

@@ -1,20 +1,22 @@
 <template>
-    <v-card class="fixHeight" style="margin-top:5px;padding: 25px 45px 0 45px;background:#fdfdfd;"  min-height="570px">
-        <div class="font-weight-black title" style="padding-top:10px;">Centro de Soporte al Cliente</div>
-        <v-row justify="center" align="center" class="mt-3" style="padding-top:15px;">
-            <div id="talkjs-container" style="width: 100%;; height: 450px"><i><v-spacer></v-spacer><loader style="padding-top:20%" /> <v-spacer></v-spacer></i></div>
-        </v-row>
-
-    </v-card>
+    <div :class="$vuetify.breakpoint.smAndDown ? null:drawer ? 'left':null">
+        <v-card min-height="570px" elevation="0">
+            <v-card-text>
+                <div class="font-weight-black title text-center">Centro de Soporte al Cliente</div>
+                <v-row justify="center" align="center" class="mt-3">
+                    <div id="talkjs-container" style="width: 100%;; height: 450px"></div>
+                </v-row>
+            </v-card-text>
+        </v-card>
+    </div>
 </template>
 
 <script>
 import {mapState,mapActions} from 'vuex';
 import Talk from 'talkjs';
 import w from '@/services/variables_globales';
+
     export default {
-        components:{
-        },
         head: {
             title() {
                 return {
@@ -32,7 +34,7 @@ import w from '@/services/variables_globales';
             }
         },
         computed:{
-            ...mapState(['user','fotoChanged','foto','fotoFile']),
+            ...mapState(['user','fotoChanged','foto','fotoFile','drawer']),
         },
         watch: {
             fotoFile:function(){
@@ -47,14 +49,13 @@ import w from '@/services/variables_globales';
         },
         mounted() {
             let inbox;
-            console.log(this.user.data.id)
             Talk.ready.then(async () => {
                 this.me = new Talk.User({
-                    id: this.user.data.id !== 2 ? this.user.data.id : 2,
-                    name: this.user.data.id !== 2 ? this.user.data.nombre + " " + this.user.data.apellido: "Soporte SOMOS SISTEMAS C.A",
+                    id: this.user.data.id !== 2 ? this.user.data.email : "teamlead@somossistemas.com",
+                    name: this.user.data.id !== 2 ? this.user.data.nombre + " " + this.user.data.apellido: "Soporte Hoyproca",
                     email: this.user.data.id !== 2 ? this.user.data.email !== "" ? this.user.data.email : null : null, 
-                    photoUrl: this.user.data.id !== 2 ? this.user.data.imagen === 'default.png' ? require('@/assets/user.jpg') : this.image+this.user.data.imagen : require('@/assets/AFTIM.png'),
-                    welcomeMessage: this.user.data.id !== 2 ?  null : "En Somos Sistemas C.A, estamos encantados de ayudarte a solventar tus problemas. Déjanos un mensaje!",
+                    photoUrl: this.user.data.id !== 2 ? this.user.data.imagen === 'default.png' ? require('@/assets/user.jpg') : this.image+this.user.data.imagen : require('@/assets/2.png'),
+                    welcomeMessage: this.user.data.id !== 2 ?  null : "En Hoyprovoca, estamos encantados de ayudarte a solventar tus problemas. Déjanos un mensaje!",
                     role: 'Customer',
                     locale: 'es-ES'
                 });
@@ -66,11 +67,11 @@ import w from '@/services/variables_globales';
                 
                 if(this.user.data.id !== 2){
                     this.other = new Talk.User({
-                        id: "2",
-                        name: "Soporte SOMOS SISTEMAS C.A",
-                        email: "azukadizero@gmail.com",
-                        photoUrl: require('@/assets/AFTIM.png'),
-                        welcomeMessage: "En Somos Sistemas C.A, estamos encantados de ayudarte a solventar tus problemas. Déjanos un mensaje!",
+                        id: "teamlead@somossistemas.com",
+                        name: "Soporte Hoyprovoca",
+                        email: "teamlead@somossistemas.com",
+                        photoUrl: require('@/assets/2.png'),
+                        welcomeMessage: "En Hoyprovoca, estamos encantados de ayudarte a solventar tus problemas. Déjanos un mensaje!",
                         role:'Support',
                         locale: 'es-ES'
                     });
@@ -97,6 +98,9 @@ import w from '@/services/variables_globales';
 </script>
 
 <style lang="scss">
+    .left{
+        margin-left:250px;
+    }
     .slide-left-enter-active,
     .slide-left-leave-active,
     .slide-right-enter-active,

@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <v-card  width="100%">
+    <div :class="$vuetify.breakpoint.smAndDown ? null:drawer ? 'left':null">
+        <v-card width="100%" elevation="0">
             <v-card-title>
                 <v-btn color="#2950c3" @click="dialogCrear = true" fab small>
                     <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
@@ -111,6 +111,7 @@ import Puntos from '@/components/loaders/Puntos';
 import CrearGrupo from '@/components/modals/CrearGrupo';
 import EliminarGrupo from '@/components/modals/EliminarGrupo';
 import EditarGrupo from '@/components/modals/EditarGrupo';
+import {mapState} from 'vuex';
 
     export default {
         components: {
@@ -148,6 +149,8 @@ import EditarGrupo from '@/components/modals/EditarGrupo';
             }
         },
         computed:{
+            ...mapState(['drawer']),
+
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.grupos.length >= this.total) return true;
                 else return false;
@@ -236,5 +239,8 @@ import EditarGrupo from '@/components/modals/EditarGrupo';
 <style lang="scss" scoped>
     .rounded{
         border-radius:5px;
+    }
+    .left{
+        margin-left:250px;
     }
 </style>

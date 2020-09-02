@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <v-card  width="100%">
+    <div :class="$vuetify.breakpoint.smAndDown ? null:drawer ? 'left':null">
+        <v-card width="100%" elevation="0">
             <v-card-title>
                 <v-btn color="#2950c3" @click="dialogCrear = true" fab small>
                     <v-icon color="#fff" class="mx-2">mdi-plus-circle</v-icon>
@@ -111,6 +111,7 @@ import Puntos from '@/components/loaders/Puntos';
 import CrearUsuario from '@/components/modals/CrearUsuario';
 import EliminarUsuario from '@/components/modals/EliminarUsuario';
 import EditarUsuario from '@/components/modals/EditarUsuario';
+import {mapState} from 'vuex';
 
     export default {
         components: {
@@ -152,6 +153,8 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
             }
         },
         computed:{
+            ...mapState(['drawer']),
+
             bloqueado(){//bloquea el boton de ver mas segun la condicion
                 if(this.usuarios.length >= this.total) return true;
                 else return false;
@@ -173,7 +176,7 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
                 this.usuarios = data.usuarios;
                 this.total = data.total;
                 this.offset = data.offset;
-            }else this.getUsuarios();
+            }else this.getUsuarios(); 
         },
         watch: {
             dialogCrear(){
@@ -258,5 +261,8 @@ import EditarUsuario from '@/components/modals/EditarUsuario';
 <style lang="scss" scoped>
     .rounded{
         border-radius:5px;
+    }
+    .left{
+        margin-left:250px;
     }
 </style>
