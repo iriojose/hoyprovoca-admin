@@ -1,17 +1,16 @@
 <template>
     <v-navigation-drawer 
-        app width="256" 
+        app width="230" 
         hide-overlay
         class="mx-auto"
         v-model="drawers"
-        color="#1f3b63"
-    >
-            
+        color="#232323"
+    >    
         <v-row justify="center" class="mt-4 mx-5">
-            <v-img :src="require('@/assets/logo 6.png')" contain width="150" height="100"></v-img>
+            <v-img :src="require('@/assets/2.png')" contain width="80" height="80"></v-img>
         </v-row>
 
-        <v-divider class="mt-5 mb-2 back mx-5"></v-divider>
+        <v-divider class="mt-5 mb-2 back"></v-divider>
 
         <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
             <v-list-item 
@@ -20,7 +19,7 @@
                 active-class="background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
+                    <v-icon small :color="$route.path == item.to ? '#232323':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
@@ -37,7 +36,7 @@
                 active-class="font-weight-black background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
+                    <v-icon small :color="$route.path == item.to ? '#232323':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
@@ -47,7 +46,7 @@
             </v-list-item>
         </v-list>
 
-        <v-divider class="mt-5 mb-2 back mx-5"></v-divider>
+        <v-divider class="mt-5 mb-2 back"></v-divider>
                 
         <v-list dense nav v-if="user.data.adm_empresa_id !== null && user.data.adm_empresa_id !==0">
             <v-list-item 
@@ -56,7 +55,7 @@
                 active-class="font-weight-black background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
+                    <v-icon small :color="$route.path == item.to ? '#232323':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
@@ -73,7 +72,7 @@
                 active-class="font-weight-black background color" 
             >
                 <v-list-item-icon>
-                    <v-icon small :color="$route.path == item.to ? '#3b61d1':'#fff'">
+                    <v-icon small :color="$route.path == item.to ? '#232323':'#fff'">
                         {{item.icon}}
                     </v-icon>
                 </v-list-item-icon>
@@ -83,7 +82,7 @@
             </v-list-item>
         </v-list>
 
-        <v-divider class="mt-5 mb-2 back mx-5"></v-divider>
+        <v-divider class="mt-5 mb-2 back"></v-divider>
 
         <v-list dense nav>
             <v-list-item 
@@ -113,7 +112,7 @@ import variables from '@/services/variables_globales';
             return {
                 ...variables,
                 items: [
-                    { title: 'Dashboard', icon: 'mdi-view-dashboard',to:'/' },
+                    { title: 'Dashboard', icon: 'mdi-view-dashboard',to:'/dashboard' },
                     { title: 'Perfil', icon: 'mdi-account',to:'/profile' },
                     { title: 'Notificaciones', icon: 'mdi-bell',to:'/notificaciones' },
                     { title: 'Empresas', icon: 'mdi-domain',to:'/empresas' },
@@ -165,12 +164,11 @@ import variables from '@/services/variables_globales';
     .back{
         background: rgba(255,255,255,0.3) !important;
     }
-
     .background{
         background:#fff;
     }
     .color{
-        color:#3b61d1;
+        color:#232323;
     }
     
 </style>

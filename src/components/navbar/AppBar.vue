@@ -2,7 +2,7 @@
     <div>
         <BarraLateral />
 
-        <v-app-bar color="#f7f7f7" elevation="0" :class="$vuetify.breakpoint.smAndDown || !drawer ? '':'margen'">
+        <v-app-bar color="#232323" elevation="0" :class="$vuetify.breakpoint.smAndDown || !drawer ? '':'margen'">
             <v-btn fab class="mx-3" small elevation="2" @click="change">
                 <v-icon v-if="drawer">
                     mdi-dots-vertical
@@ -12,13 +12,13 @@
                 </v-icon>
             </v-btn>
 
-            <div class="text-capitalize font-weight-bold color"> {{$route.name}} </div>
+            <div class="text-capitalize font-weight-bold white--text"> {{$route.name}} </div>
             
             <v-spacer></v-spacer>
 
             <v-btn text fab to="/notificaciones" small>
-                <v-badge color="#005598" dot class="mx-3" bordered overlap>
-                    <v-icon>
+                <v-badge color="#232323" dot class="mx-3" bordered overlap>
+                    <v-icon color="#fff">
                         mdi-bell
                     </v-icon>
                 </v-badge>
@@ -61,7 +61,7 @@ import {mapState,mapActions} from 'vuex';
         box-shadow: 0px 0px 35px 5px rgba(173, 185, 201,0.2);
     }
     .margen{
-        margin-left:256px;
+        margin-left:230px;
     }
     .color{
         color:#1f3b63;
