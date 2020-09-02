@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="margen"></div>
-        <v-bottom-navigation color="#c9242b" fixed v-if="$vuetify.breakpoint.smAndDown">
+        <div v-if="$vuetify.breakpoint.smAndDown" class="margen"></div>
+        <v-bottom-navigation color="#232323" fixed v-if="$vuetify.breakpoint.smAndDown">
             <v-btn to="/dashboard">
                 <span>Dashboard</span>
                 <v-icon color="#232323">mdi-view-dashboard</v-icon>
@@ -18,8 +18,8 @@
     </div>
 </template>
 
-<style lang="scope">
+<style lang="scss" scope>
     .margen{
-        margin-top:100px;
+        margin-bottom:100px;
     }
-</style>
+</style> 

@@ -29,6 +29,8 @@
         </v-card>
 
         <ModalBloqueado />
+
+        <Footer />
     </v-app>
 </template>
 
@@ -42,7 +44,8 @@ import { mapActions, mapState } from "vuex";
         components:{
             AppBar:() => import('@/components/navbar/AppBar'),
             ModalBloqueado:() => import('@/components/dialogs/ModalBloqueado'),
-            Loading:() => import("@/components/loaders/Loading")
+            Loading:() => import("@/components/loaders/Loading"),
+            Footer:() => import("@/components/footer/FooterDashboard")
         },
         data(){
             return {
