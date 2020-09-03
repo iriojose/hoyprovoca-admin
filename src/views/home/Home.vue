@@ -133,26 +133,40 @@
             </v-card-text>
         </v-card>
 
-        <v-card color="#232323" elevation="0" width="100%" height="300">
+        <v-card color="#232323" elevation="0" width="100%" :height="$vuetify.breakpoint.smAndDown ? null:250">
             <v-card-text>
                 <v-row justify="center">
                     <v-col cols="12" md="3" sm="12">
-                        <v-row justify="center">
+                        <v-img v-if="!$vuetify.breakpoint.smAndDown" class="position" src="@/assets/2.png" contain width="50" height="50"></v-img>
+                        <v-row v-else justify="center">
                             <v-img src="@/assets/2.png" contain width="50" height="50"></v-img>
-                            <div class="text-right title white--text font-weight-bold">
-                                HoyProvoca.
-                            </div>
                         </v-row>
+                        <div :class="$vuetify.breakpoint.smAndDown ? 'text-center title white--text font-weight-bold':'text-right title white--text font-weight-bold'">
+                            HoyProvoca.
+                        </div>
                     </v-col>
-                    <v-col cols="12" md="3" sm="12" v-for="(n,i) in 3" :key="i">
-
+                    <v-col cols="12" md="8" sm="12">
+                        <v-row justify="center">
+                            <v-col cols="12" md="3" sm="12" v-for="(footer,i) in footers" :key="i">
+                                <v-list dense color="transparent">
+                                    <v-list-item v-for="(item,e) in footer.list" :key="e">
+                                        <v-list-item-title class="white--text font-weight-black">
+                                            {{item.text}}
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-col>
+                        </v-row>
                     </v-col>
                 </v-row>
             </v-card-text>
         </v-card>
-        <v-divider></v-divider>
-        <v-card color="#232323" elevation="0" width="100%" height="50">
-
+        <v-card height="50" color="#232323" elevation="0">
+            <v-footer absolute class="font-weight-medium white--text" color="#232323">
+                <v-col class="text-center" cols="12">
+                    {{ new Date().getFullYear() }} — <strong><a style="color:white;text-decoration:none;" href="https://hoyprovoca.com">HoyProvoca</a></strong>
+                </v-col>
+            </v-footer>
         </v-card>
 
         <div class="margen2" v-if="$vuetify.breakpoint.smAndDown"></div>
@@ -191,6 +205,28 @@
                     {img:"collaborator.svg",text:"Amplifica tu reputación"},
                     {img:"online collaborator.svg",text:"Genera nuevas oportunidades"},
                     {img:"subscription.svg",text:"Maneja tus recursos"},
+                ],
+                footers:[
+                    {
+                        list:[
+                            {text:"Características"},
+                            {text:"Planes"},
+                            {text:"Contactanos"}
+                        ]
+                    },
+                    {
+                        list:[
+                            {text:"Inicia sesíon"},
+                            {text:"Registrate"},
+                        ]
+                    },
+                    {
+                        list:[
+                            {text:"Terminos y condiciones"},
+                            {text:"Privacidad"},
+                            {text:"About "}
+                        ]
+                    }
                 ],
                 planes:[
                     {
@@ -252,5 +288,10 @@
     }
     .scale2{
         transform:scale(1.1);
+    }
+    .position{
+        position:relative;
+        left:38%;
+        top:25%;
     }
 </style>
