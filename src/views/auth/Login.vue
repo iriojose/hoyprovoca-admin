@@ -4,7 +4,7 @@
             <v-row justify="center" class="py-2">
                 <v-col cols="12" md="9" sm="12" :class="$vuetify.breakpoint.smAndDown ? 'mx-4':null">
                     <v-row justify="center" class="pb-4">
-                        <v-img contain width="100" height="50" :src="require('@/assets/logo2.png')"></v-img>
+                        <v-img contain width="100" height="50" :src="require('@/assets/2.png')"></v-img>
                     </v-row>
                     <v-card width="100%" elevation="3">
                         <v-row justify="center">

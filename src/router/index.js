@@ -109,6 +109,14 @@ const routes = [
         }
     },
     {
+        path: "/register",
+        name: "register",
+        component:() => import("@/views/auth/Register"),
+        meta:{
+            auth:false
+        }
+    },
+    {
         path: "/forgot",
         name: "forgot",
         component: () => import("@/views/auth/Forgot"),
