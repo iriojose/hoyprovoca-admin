@@ -55,7 +55,7 @@ const routes = [
     {
         path: "/ayuda",
         name: "ayuda",
-        component: () => import('@/views/account/ayuda'),
+        component: () => import('@/views/account/Ayuda'),
         meta: {
             auth: true
         }
