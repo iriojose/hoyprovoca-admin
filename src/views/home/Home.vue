@@ -132,6 +132,44 @@
                 </v-row>
             </v-card-text>
         </v-card>
+
+        <v-card color="#232323" elevation="0" width="100%" height="300">
+            <v-card-text>
+                <v-row justify="center">
+                    <v-col cols="12" md="3" sm="12">
+                        <v-row justify="center">
+                            <v-img src="@/assets/2.png" contain width="50" height="50"></v-img>
+                            <div class="text-right title white--text font-weight-bold">
+                                HoyProvoca.
+                            </div>
+                        </v-row>
+                    </v-col>
+                    <v-col cols="12" md="3" sm="12" v-for="(n,i) in 3" :key="i">
+
+                    </v-col>
+                </v-row>
+            </v-card-text>
+        </v-card>
+        <v-divider></v-divider>
+        <v-card color="#232323" elevation="0" width="100%" height="50">
+
+        </v-card>
+
+        <div class="margen2" v-if="$vuetify.breakpoint.smAndDown"></div>
+        <v-bottom-navigation color="#0D47A1" fixed v-if="$vuetify.breakpoint.smAndDown">
+            <v-btn to="/login" class="black--text text-capitalize">
+                <span>Iniciar sesíon</span>
+                <v-icon color="#0D47A1">mdi-exit-to-app</v-icon>
+            </v-btn>
+            <v-btn to="/" class="black--text text-capitalize">
+                <span>Home</span>
+                <v-icon color="#0D47A1">mdi-home</v-icon>
+            </v-btn>
+            <v-btn to="/register" class="black--text text-capitalize">
+                <span>Registrate</span>
+                <v-icon color="#0D47A1">mdi-text-box-minus</v-icon>
+            </v-btn>
+        </v-bottom-navigation>
     </div>
 </template>
 
@@ -198,6 +236,9 @@
     }
     .margen{
         margin-top:80px;
+    }
+    .margen2{
+        margin-top:60px;
     }
     .border{
         border-radius:5%;
