@@ -30,7 +30,8 @@
 
         <ModalBloqueado />
 
-        <Footer v-if="ruta() && !loading" />
+        <FooterOn v-if="ruta() && !loading" />
+        <FooterOff v-if="!ruta() && !loading" />
     </v-app>
 </template>
 
@@ -45,7 +46,8 @@ import { mapActions, mapState } from "vuex";
             AppBar:() => import('@/components/navbar/AppBar'),
             ModalBloqueado:() => import('@/components/dialogs/ModalBloqueado'),
             Loading:() => import("@/components/loaders/Loading"),
-            Footer:() => import("@/components/footer/FooterDashboard")
+            FooterOn:() => import("@/components/footer/FooterDashboard"),
+            FooterOff:() => import("@/components/footer/Footer")
         },
         data(){
             return {

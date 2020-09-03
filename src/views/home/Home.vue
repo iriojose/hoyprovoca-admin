@@ -168,22 +168,6 @@
                 </v-col>
             </v-footer>
         </v-card>
-
-        <div class="margen2" v-if="$vuetify.breakpoint.smAndDown"></div>
-        <v-bottom-navigation color="#0D47A1" fixed v-if="$vuetify.breakpoint.smAndDown">
-            <v-btn to="/login" class="black--text text-capitalize">
-                <span>Iniciar sesíon</span>
-                <v-icon color="#0D47A1">mdi-exit-to-app</v-icon>
-            </v-btn>
-            <v-btn to="/" class="black--text text-capitalize">
-                <span>Home</span>
-                <v-icon color="#0D47A1">mdi-home</v-icon>
-            </v-btn>
-            <v-btn to="/register" class="black--text text-capitalize">
-                <span>Registrate</span>
-                <v-icon color="#0D47A1">mdi-text-box-minus</v-icon>
-            </v-btn>
-        </v-bottom-navigation>
     </div>
 </template>
 
@@ -234,29 +218,29 @@
                         precio:"Free",
                         color:"#EF5350",
                         beneficios:[
-                            {text:"20 productos."},
+                            {text:"15 productos."},
                             {text:"Se retiene 10%."},
                             {text:"Membresía gratuita."},
                         ]
                     },
                     {
                         title:"Distribuidor",
-                        precio:"20$",
+                        precio:"30$",
                         color:"#43A047",
                         beneficios:[
                             {text:"120 productos."},
-                            {text:"Se retiene 15%."},
+                            {text:"Se retiene 20%."},
                             {text:"Cargas masivas."},
                             {text:"modulo de Estadísticas."},
                         ]
                     },
                     {
                         title:"Retail",
-                        precio:"10$",
+                        precio:"20$",
                         color:"#AB47BC",
                         beneficios:[
-                            {text:"60 productos."},
-                            {text:"se retiene 9%."},
+                            {text:"50 productos."},
+                            {text:"se retiene 10%."},
                             {text:"Cargas masivas."},
                         ]
                     }
