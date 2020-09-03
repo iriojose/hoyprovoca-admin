@@ -7,8 +7,6 @@ import toasted from "./plugins/toasted";
 import vuetify from './plugins/vuetify';
 import "@babel/polyfill";
 import "@mdi/font/css/materialdesignicons.css";
-import croppa from 'vue-croppa';
-Vue.use(croppa);
 
 new Vue({
     store,
