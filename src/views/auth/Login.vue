@@ -1,6 +1,110 @@
 <template>
     <div>
+        <v-app-bar app color="#fff" :elevation="$vuetify.breakpoint.smAndDown ? 1:0" :class="$vuetify.breakpoint.smAndDown ? null:'px-12'">  
+            <v-spacer class="hidden-sm-and-up"></v-spacer>
+            <v-avatar size="50">
+                <v-img src="@/assets/2.png" />
+            </v-avatar>
+            <v-spacer></v-spacer>
+            <v-btn class="text-capitalize font-weight-bold mx-2" text to="/register" v-if="!$vuetify.breakpoint.smAndDown">
+                Registrate
+                <v-icon class="mx-2">
+                    mdi-text-box-minus
+                </v-icon>
+            </v-btn>
+            <v-btn class="text-capitalize font-weight-bold mx-2" text to="/" v-if="!$vuetify.breakpoint.smAndDown">
+                Inicio
+                <v-icon class="mx-2">
+                    mdi-home
+                </v-icon>
+            </v-btn>
+        </v-app-bar>
 
+        <v-card width="100%" elevation="0" color="transparent" class="margen">
+            <v-card-text>
+                <v-row justify="center">
+                    <v-col cols="12" md="9" sm="12">
+                        <v-card color="#fff" elevation="3" width="100%">
+                            <v-row justify="center">
+                                <v-col cols="12" md="6" class="hidden-sm-and-down fondo">
+                                    <v-img width="100%" height="400" contain :src="require('@/assets/dashboard.svg')"
+                                    ></v-img>
+                                </v-col>
+                                <v-col cols="12" md="6" sm="12" class="py-10 px-8">
+                                    <div class="headline black--text font-weight-bold text-center mb-5">
+                                        Inicia sesión ahora!
+                                    </div>
+
+                                    <v-card elevation="0" height="50">
+                                        <v-fade-transition>
+                                            <v-alert border="left" colored-border elevation="2"  dense :type="type" v-show="showMessage">
+                                                {{mensaje}}
+                                            </v-alert>
+                                        </v-fade-transition>
+                                    </v-card>
+
+                                    <v-form v-model="valid" @submit.prevent="">
+                                        <v-text-field
+                                            filled
+                                            rounded
+                                            :disabled="loading"
+                                            v-model="data.user"
+                                            single-line
+                                            dense
+                                            color="#0f2441"
+                                            :success-messages="success"
+                                            :error-messages="errors"
+                                            @input="getUser(data.user)"
+                                            label="Ingrese correo electrónico"
+                                        >
+                                            <template v-slot:append>
+                                                <v-fade-transition leave-absolute>
+                                                    <v-progress-circular
+                                                        v-if="loading2"
+                                                        size="24"
+                                                        color="#0f2441"
+                                                        indeterminate
+                                                    ></v-progress-circular>
+                                                     <img v-else width="24" height="24" :src="require('@/assets/2.png')">
+                                                </v-fade-transition>
+                                            </template>
+                                        </v-text-field>
+
+                                        <v-text-field
+                                            filled
+                                            rounded
+                                            dense
+                                            :disabled="loading"
+                                            v-model="data.password"
+                                            single-line
+                                            type="password"
+                                            color="#0f2441"
+                                            :rules="[required('Contraseña'),minLength('Contraseña',6)]"
+                                            label="Contraseña"
+                                        ></v-text-field>
+
+                                        <v-btn
+                                            rounded color="#2950c3"
+                                            block
+                                            :loading="loading" height="40"
+                                            :disabled="valid && success !== '' ? false:true"
+                                            @click="login()"
+                                            class="text-capitalize caption white--text"
+                                        >
+                                            Iniciar sesión
+                                        </v-btn>
+                                    </v-form>
+
+                                    <v-divider class="my-10"></v-divider>
+
+                                    <div class="subtitle-2 text-center color" @click="forgot">¿Olvido su contraseña?</div> 
+                                </v-col>
+                            </v-row>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+        </v-card>
     </div>
 </template>
 
@@ -95,6 +199,9 @@ import {mapActions} from 'vuex';
 </script>
 
 <style lang="scss" scoped>
+    .margen{
+        margin-top:80px;
+    }
     .color{
         color:#000;
         background:#fff;
