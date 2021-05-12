@@ -11,7 +11,7 @@
     "accounting": "^0.4.1",
     "apexcharts": "^3.20.0",
     "axios": "^0.20.0",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "core-js": "^3.6.5",
     "filepond": "^4.20.1",
     "filepond-plugin-image-preview": "^4.6.4",
